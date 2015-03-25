@@ -7,6 +7,7 @@ __url__ = 'https://github.com/ThreatConnect-Inc/threatconnect-python'
 from threatconnect.ThreatConnect import *
 from threatconnect.Config.IndicatorType import IndicatorType
 from threatconnect.Config.VictimAssetType import VictimAssetType
+from threatconnect.DataFormatter import pd
 
 from threatconnect.Resources.Adversaries import (Adversaries, AdversaryObject, AdversaryFilterObject)
 from threatconnect.Resources.Emails import (Emails, EmailObject, EmailFilterObject)

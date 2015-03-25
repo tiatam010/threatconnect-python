@@ -7,11 +7,11 @@ from working_init import *
 """ Working with Indicators """
 
 """ Toggle the Boolean to enable specific examples """
-enable_example1 = False
+enable_example1 = True
 enable_example2 = False
 enable_example3 = False
 enable_example4 = False
-enable_example5 = True
+enable_example5 = False
 
 
 def show_data(result_obj):

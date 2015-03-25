@@ -14,7 +14,6 @@ packages.urllib3.disable_warnings()
 
 """ custom """
 from threatconnect.ErrorCodes import ErrorCodes
-from threatconnect.Resources import Indicators
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceProperties import ResourceProperties
 from threatconnect.Config.PropertiesEnums import (ApiStatus, FilterSetOperator)
@@ -25,6 +24,7 @@ from threatconnect.Resources.Emails import Emails
 from threatconnect.Resources.FileOccurrences import FileOccurrences
 from threatconnect.Resources.Groups import Groups
 from threatconnect.Resources.Incidents import Incidents
+from threatconnect.Resources.Indicators import Indicators
 from threatconnect.Resources.Owners import Owners
 from threatconnect.Resources.Tags import Tags
 from threatconnect.Resources.Threats import Threats

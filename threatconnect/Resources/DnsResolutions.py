@@ -4,6 +4,7 @@ import types
 
 """ custom """
 from threatconnect import FilterMethods, ResourceMethods
+from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.DnsResolutionProperties import DnsResolutionProperties
 from threatconnect.Resource import Resource, ResourceObject
 from threatconnect.FilterObject import FilterObject

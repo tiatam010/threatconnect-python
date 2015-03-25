@@ -2,7 +2,7 @@ import inspect
 import os
 import re
 import types
-from colored import (fg, attr)
+# from colored import (fg, attr)
 
 
 # def split_msg(msg, block_size):
@@ -45,13 +45,13 @@ def pd(title='', msg='', header=False, color=False, indent=0):
     call_line = inspect.stack()[1][0].f_lineno
     border = '=' * int((130 - (len(title)+2))/2)
 
-    if color:
-        call_file = '%s%s%s' % (fg('yellow'), call_file, attr('reset'))
-        call_module = '%s%s%s' % (fg('yellow'), call_module, attr('reset'))
-        call_line = '%s%s%s' % (fg('yellow'), call_line, attr('reset'))
-        title = '%s%s%s:%s' % (fg('white'), attr('bold'), title, attr('reset'))
-        msg = '%s%s%s%s' % (fg('cyan'), attr('bold'), msg, attr('reset'))
-        border = '%s%s%s' % (fg('green'), border, attr('reset'))
+    # if color:
+    #     call_file = '%s%s%s' % (fg('yellow'), call_file, attr('reset'))
+    #     call_module = '%s%s%s' % (fg('yellow'), call_module, attr('reset'))
+    #     call_line = '%s%s%s' % (fg('yellow'), call_line, attr('reset'))
+    #     title = '%s%s%s:%s' % (fg('white'), attr('bold'), title, attr('reset'))
+    #     msg = '%s%s%s%s' % (fg('cyan'), attr('bold'), msg, attr('reset'))
+    #     border = '%s%s%s' % (fg('green'), border, attr('reset'))
 
     if header:
         header = '%s %s %s' % (border, title, border)
