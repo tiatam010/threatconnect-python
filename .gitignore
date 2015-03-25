@@ -52,3 +52,12 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# PyCharm
+.idea
+
+# ThreatConnect
+examples/tc.conf
+examples/bcs.py
+NOTES.txt
+ThreatConnect API Documentation 2.0.1.pdf
