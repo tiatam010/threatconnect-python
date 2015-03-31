@@ -1,7 +1,10 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.Properties import Properties
+from threatconnect.ResourceObject import resource_class
 
 
 class FileOccurrencesProperties(Properties):
@@ -24,10 +27,10 @@ class FileOccurrencesProperties(Properties):
       "date" : "2014-09-28T00:00:00Z"
     }
     """
-
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
         super(FileOccurrencesProperties, self).__init__()
+        self._action = action
 
         # resource properties
         self._resource_key = 'fileOccurrence'
@@ -35,23 +38,12 @@ class FileOccurrencesProperties(Properties):
         self._resource_type = ResourceType.FILE_OCCURRENCES
         self._resource_uri_attribute = 'fileOccurrences'
 
-        self._data_methods = {
-            'date': {
-                'get': 'get_date',
-                'set': 'set_date',
-                'var': '_date'},
-            'fileName': {
-                'get': 'get_file_name',
-                'set': 'set_file_name',
-                'var': '_file_name'},
-            'id': {
-                'get': 'get_id',
-                'set': 'set_id',
-                'var': '_id'},
-            'path': {
-                'get': 'get_path',
-                'set': 'set_path',
-                'var': '_path'}}
+        # object attributes
+        self._object_attributes = [
+            ResourceMethods.date_attr,
+            ResourceMethods.file_name_attr,
+            ResourceMethods.id_attr,
+            ResourceMethods.path_attr]
 
         self._filter_methods = [
             'add_hash',
@@ -81,3 +73,7 @@ class FileOccurrencesProperties(Properties):
     def hash_path(self):
         """ """
         return ResourceUri.INDICATORS.value + '/files/%s/' + self._resource_uri_attribute
+
+    @property
+    def resource_object(self):
+        return resource_class(self._object_attributes, self._action)()

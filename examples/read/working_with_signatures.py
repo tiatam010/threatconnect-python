@@ -1,6 +1,6 @@
-from working_init import *
+from examples.working_init import *
 
-""" Working with Documents """
+""" Working with Signatures """
 
 """ Toggle the Boolean to enable specific examples """
 enable_example1 = False
@@ -12,14 +12,14 @@ enable_example5 = False
 
 def show_data(result_obj):
     """  """
-    pd('Documents', header=True)
+    pd('Signatures', header=True)
     pd('Status', result_obj.get_status())
     pd('Status Code', result_obj.get_status_code())
     pd('URIs', result_obj.get_uris())
 
     if result_obj.get_status().name == "SUCCESS":
         for obj in result_obj:
-            pd('Document Data', header=True)
+            pd('Signature Data', header=True)
             pd('_api_request_url', obj.get_request_url())
             pd('_matched_filters', obj.get_matched_filters())
 
@@ -40,31 +40,31 @@ def main():
     owners.get_owner_names()
 
     if enable_example1:
-        """ get documents for owner org """
+        """ get signatures for owner org """
 
         # optionally set max results
         tc.set_max_results("500")
 
-        # documents object
-        documents = tc.documents()
+        # signatures object
+        signatures = tc.signatures()
 
         # retrieve indicators
-        documents.retrieve()
+        signatures.retrieve()
 
         # show indicator data
-        show_data(documents)
+        show_data(signatures)
 
     if enable_example2:
-        """ get documents for filtered owners """
+        """ get signatures for filtered owners """
 
         # optionally set max results
         tc.set_max_results("500")
 
-        # documents object
-        documents = tc.documents()
+        # signatures object
+        signatures = tc.signatures()
 
         # get filter
-        filter1 = documents.add_filter()
+        filter1 = signatures.add_filter()
         owners = ['Acme Corp']
         filter1.add_owner(owners)
 
@@ -75,27 +75,26 @@ def main():
             sys.exit(1)
 
         # retrieve indicators
-        documents.retrieve()
+        signatures.retrieve()
 
         # show indicator data
-        show_data(documents)
+        show_data(signatures)
 
     if enable_example3:
-        """ get documents by id """
+        """ get signatures by id """
+
         # optionally set max results
         tc.set_max_results("500")
 
-        # documents object
-        documents = tc.documents()
+        # signatures object
+        signatures = tc.signatures()
 
         # get filter
-        filter1 = documents.add_filter()
+        filter1 = signatures.add_filter()
         owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_id(683083)
-        # filter1.add_tag('Company X')
-        # filter1.add_tag('China')
-        # filter1.add_threat_id(125220)
+        # filter1.add_id(675649)
+        # filter1.add_id(675649, download=True)
 
         # check for any error on filter creation
         if filter1.error:
@@ -104,32 +103,26 @@ def main():
             sys.exit(1)
 
         # retrieve indicators
-        documents.retrieve()
+        signatures.retrieve()
 
         # show indicator data
-        show_data(documents)
+        show_data(signatures)
 
     if enable_example4:
-        """ get documents by indicator/indicator_type """
+        """ get signatures by indicator/indicator_type """
 
         # optionally set max results
         tc.set_max_results("500")
 
-        # documents object
-        documents = tc.documents()
+        # signatures object
+        signatures = tc.signatures()
 
         # get filter
-        filter1 = documents.add_filter()
+        filter1 = signatures.add_filter()
         owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_incident_id(708917)
-        filter1.add_indicator('bigdocomojp.com')
-        filter1.add_security_label('DO NOT SHARE')
+        filter1.add_indicator('00DF326EEE18617FAE2FDD3684AC1546')
         filter1.add_tag('China')
-        filter1.add_threat_id(125220)
-        filter1.add_email_id(45621)
-        filter1.add_signature_id(130269)
-        filter1.add_victim_id(374)
 
         # check for any error on filter creation
         if filter1.error:
@@ -138,31 +131,25 @@ def main():
             sys.exit(1)
 
         # retrieve indicators
-        documents.retrieve()
+        signatures.retrieve()
 
         # show indicator data
-        show_data(documents)
+        show_data(signatures)
 
     if enable_example5:
-        """ get documents by multiple filters """
+        """ get signatures by multiple filters """
 
         # optionally set max results
         tc.set_max_results("500")
 
-        # documents object
-        documents = tc.documents()
+        # signatures object
+        signatures = tc.signatures()
 
         # get filter
-        filter1 = documents.add_filter()
+        filter1 = signatures.add_filter()
         owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_tag('Company X')
-
-        filter2 = documents.add_filter()
-        filter2.add_filter_operator(FilterSetOperator.AND)
-        owners = ['Acme Corp']
-        filter2.add_owner(owners)
-        filter2.add_indicator('60.1.2.243')
+        filter1.add_tag('BCS')
 
         # check for any error on filter creation
         if filter1.error:
@@ -170,17 +157,23 @@ def main():
                 pd(error)
             sys.exit(1)
 
+        # get filter
+        filter2 = signatures.add_filter()
+        owners = ['Acme Corp']
+        filter2.add_owner(owners)
+        filter2.add_indicator('00DF326EEE18617FAE2FDD3684AC1546')
+
         # check for any error on filter creation
-        if filter2.error:
-            for error in filter2.get_errors():
+        if filter1.error:
+            for error in filter1.get_errors():
                 pd(error)
             sys.exit(1)
 
         # retrieve indicators
-        documents.retrieve()
+        signatures.retrieve()
 
         # show indicator data
-        show_data(documents)
+        show_data(signatures)
 
 if __name__ == "__main__":
     main()

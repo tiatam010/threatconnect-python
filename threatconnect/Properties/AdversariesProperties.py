@@ -1,11 +1,13 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Properties.GroupsProperties import GroupsProperties
 from threatconnect.Config.ResourceType import ResourceType
 
 
 class AdversariesProperties(GroupsProperties):
     """ """
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """
         URIs:
         /<api version>/groups/adversaries
@@ -26,7 +28,7 @@ class AdversariesProperties(GroupsProperties):
          "webLink" : "https://app.threatconnect.com/tc/auth/adversary/
              adversary.xhtml?adversary=47328"}
         """
-        super(AdversariesProperties, self).__init__()
+        super(AdversariesProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'adversary'
@@ -34,8 +36,8 @@ class AdversariesProperties(GroupsProperties):
         self._resource_type = ResourceType.ADVERSARIES
         self._resource_uri_attribute += '/adversaries'
 
-        # update data methods
-        self._data_methods.pop('type')
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.type_attr)
 
         # update filter methods
         self._filter_methods.remove('add_adversary_id')

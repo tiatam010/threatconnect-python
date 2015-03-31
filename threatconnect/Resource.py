@@ -55,9 +55,11 @@ class Resource(object):
             self._objects.append(data_obj)
 
             # build indexes
-            if data_obj.get_id() is None:
+            if data_obj.get_id() is not None:
                 self._object_id_idx.setdefault(data_obj.get_id(), data_obj)
-            self._object_name_idx.setdefault(data_obj.get_name(), []).append(data_obj)
+
+            if hasattr(data_obj, 'get_name'):
+                self._object_name_idx.setdefault(data_obj.get_name(), []).append(data_obj)
 
     def add_api_response(self, data):
         """ """
@@ -276,9 +278,9 @@ class ResourceObject(object):
         self._object_type = None
         self._url = None
 
-    def add_id(self, data):
-        """ """
-        self._id = data
+    # def add_id(self, data):
+    #     """ """
+    #     self._id = data
 
     def add_matched_filter(self, data):
         """ """
@@ -288,17 +290,17 @@ class ResourceObject(object):
         """ """
         self._methods.append(data)
 
-    def add_name(self, data):
-        """ """
-        self._name = data
+    # def add_name(self, data):
+    #     """ """
+    #     self._name = data
 
     def add_request_url(self, data):
         """ """
         self._url = data
 
-    def get_id(self):
-        """ """
-        return self._id
+    # def get_id(self):
+    #     """ """
+    #     return self._id
 
     def get_data_methods(self):
         """ """
@@ -312,9 +314,9 @@ class ResourceObject(object):
         """ """
         return self._methods
 
-    def get_name(self):
-        """ """
-        return self._name
+    # def get_name(self):
+    #     """ """
+    #     return self._name
 
     def get_request_url(self):
         """ """

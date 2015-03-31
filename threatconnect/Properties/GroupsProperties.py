@@ -1,34 +1,38 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.Properties import Properties
+from threatconnect.ResourceObject import resource_class
 
 
 class GroupsProperties(Properties):
-    """ """
-    def __init__(self):
-        """
-        URIs:
-        /<api version>/groups
-        /<api version>/indicators/<indicator type>/<value>/groups
-        /<api version>/groups/adversaries/<ID>/groups
-        /<api version>/groups/emails/<ID>/groups
-        /<api version>/groups/incidents/<ID>/groups
-        /<api version>/groups/threats/<ID>/groups
-        /<api version>/securityLabels/<security label>/groups
-        /<api version>/tags/<tag name>/groups
-        /<api version>/victims/<ID>/groups
+    """
+    URIs:
+    /<api version>/groups
+    /<api version>/indicators/<indicator type>/<value>/groups
+    /<api version>/groups/adversaries/<ID>/groups
+    /<api version>/groups/emails/<ID>/groups
+    /<api version>/groups/incidents/<ID>/groups
+    /<api version>/groups/threats/<ID>/groups
+    /<api version>/securityLabels/<security label>/groups
+    /<api version>/tags/<tag name>/groups
+    /<api version>/victims/<ID>/groups
 
-        JSON Data:
-        {"id" : 64571,
-         "name" : "Bad Guy",
-         "type" : "Adversary",
-         "ownerName" : "Acme Corp",
-         "dateAdded" : "2014-03-12T15:11:32Z",
-         "webLink" : "https://app.threatconnect.com/tc/auth/adversary/
-             adversary.xhtml?adversary=64571"}
-        """
+    JSON Data:
+    {"id" : 64571,
+     "name" : "Bad Guy",
+     "type" : "Adversary",
+     "ownerName" : "Acme Corp",
+     "dateAdded" : "2014-03-12T15:11:32Z",
+     "webLink" : "https://app.threatconnect.com/tc/auth/adversary/
+         adversary.xhtml?adversary=64571"}
+    """
+    def __init__(self, action=PropertiesAction.READ):
+        """ """
         super(GroupsProperties, self).__init__()
+        self._action = action
 
         # resource properties
         self._resource_key = 'group'
@@ -36,32 +40,14 @@ class GroupsProperties(Properties):
         self._resource_type = ResourceType.GROUPS
         self._resource_uri_attribute = 'groups'
 
-        # data methods
-        self._data_methods = {
-            'dateAdded': {
-                'get': 'get_date_added',
-                'set': 'set_date_added',
-                'var': '_date_added'},
-            'id': {
-                'get': 'get_id',
-                'set': 'set_id',
-                'var': '_id'},
-            'name': {
-                'get': 'get_name',
-                'set': 'set_name',
-                'var': '_name'},
-            'ownerName': {
-                'get': 'get_owner_name',
-                'set': 'set_owner_name',
-                'var': '_owner_name'},
-            'type': {
-                'get': 'get_type',
-                'set': 'set_type',
-                'var': '_type'},
-            'webLink': {
-                'get': 'get_web_link',
-                'set': 'set_web_link',
-                'var': '_web_link'}}
+        self._object_attributes = [
+            ResourceMethods.date_added_attr,
+            ResourceMethods.id_attr,
+            ResourceMethods.matched_filters_attr,
+            ResourceMethods.name_attr,
+            ResourceMethods.owner_name_attr,
+            ResourceMethods.type_attr,
+            ResourceMethods.web_link_attr]
 
         self._filter_methods = [
             'add_adversary_id',
@@ -100,10 +86,10 @@ class GroupsProperties(Properties):
         """ """
         return ResourceUri.ADVERSARIES.value + '/%s/' + self._resource_uri_attribute
 
-    @property
-    def data_methods(self):
-        """ """
-        return self._data_methods
+    # @property
+    # def data_methods(self):
+    #     """ """
+    #     return self._data_methods
 
     @property
     def email_owner_allowed(self):
@@ -135,6 +121,10 @@ class GroupsProperties(Properties):
     @property
     def indicator_path(self):
         return ResourceUri.INDICATORS.value + '/%s/%s/' + self._resource_uri_attribute
+
+    @property
+    def resource_object(self):
+        return resource_class(self._object_attributes, self._action)()
 
     @property
     def signature_owner_allowed(self):

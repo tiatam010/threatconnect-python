@@ -45,19 +45,14 @@ sha256_re = re.compile(sha256_pat)
 #
 # host indicator
 #
-# host_pat = r'\b(([a-zA-Z0-9\-_]+)\.)+(?!exe|php|dll|doc|docx|txt|rtf|odt|xls|xlsx|ppt|pptx|bin|pcap|ioc
-# |pdf|mdb|asp|html|xml|jpg|gif|png|lnk|log|vbs|lco|bat|shell|quit|pdb|vbp|bdoda|bsspx|save|cpl|wav|tmp|close
-# |py|ico|ini|sleep|run|dat|scr|jar|jxr|apt|w32|css|js|xpi|class|apk|rar|zip|hlp|tmp|cpp|crl|cfg|cer|plg
-# |tmp)([a-zA-Z]{2,5})\b'
-# host_re = re.compile(host_pat)
-host_re = re.compile(
-    '\b(([a-zA-Z0-9\-_]+)\.)+(?!exe|php|dll|doc|docx|txt|'
-    'rtf|odt|xls|xlsx|ppt|pptx|bin|pcap|ioc|pdf|mdb|asp|html'
-    '|xml|jpg|gif|png|lnk|log|vbs|lco|bat|shell|quit|pdb|vbp'
-    '|bdoda|bsspx|save|cpl|wav|tmp|close|py|ico|ini|sleep|run'
-    '|dat|scr|jar|jxr|apt|w32|css|js|xpi|class|apk|rar|zip|hlp'
-    '|tmp|cpp|crl|cfg|cer|plg|tmp)(support|report|i2p|technology'
-    '|xn--p1ai|com#|moscow|technology)\b')
+host_pat = r'\b(([a-zA-Z0-9\-_]+)\.)+(?!exe|php|dll|doc|docx|txt|'
+host_pat += r'rtf|odt|xls|xlsx|ppt|pptx|bin|pcap|ioc|pdf|mdb|asp|html'
+host_pat += r'|xml|jpg|gif|png|lnk|log|vbs|lco|bat|shell|quit|pdb|vbp'
+host_pat += r'|bdoda|bsspx|save|cpl|wav|tmp|close|py|ico|ini|sleep|run'
+host_pat += r'|dat|scr|jar|jxr|apt|w32|css|js|xpi|class|apk|rar|zip|hlp'
+host_pat += r'|tmp|cpp|crl|cfg|cer|plg|tmp)(support|report|i2p|technology'
+host_pat += r'|xn--p1ai|com|moscow|technology)\b'
+host_re = re.compile(host_pat)
 
 #
 # url indicator (this regex needs some work)

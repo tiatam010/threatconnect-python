@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.IndicatorsProperties import IndicatorsProperties
 
@@ -29,9 +31,9 @@ class UrlsProperties(IndicatorsProperties):
          Associated with the phone number 1-888-996-0235",
      "text" : "http://warning4.media4.netdna-cdn.com/lpbrowser_1_6_mac/"}
     """
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(UrlsProperties, self).__init__()
+        super(UrlsProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'url'
@@ -39,9 +41,7 @@ class UrlsProperties(IndicatorsProperties):
         self._resource_type = ResourceType.URLS
         self._resource_uri_attribute += '/urls'
 
-        # update data methods
-        self._data_methods.pop('summary')
-        self._data_methods['text'] = {
-            'get': 'get_indicator',
-            'set': 'set_text',
-            'var': '_indicator'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.summary_attr)
+        self._object_attributes.append(ResourceMethods.text_attr)
+

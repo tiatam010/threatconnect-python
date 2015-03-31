@@ -1,4 +1,4 @@
-from working_init import *
+from examples.working_init import *
 
 """ Working with Attributes """
 
@@ -18,14 +18,15 @@ def show_data(result_obj):
 
     if result_obj.get_status().name == "SUCCESS":
         for obj in result_obj:
-            pd('Attribute Data', header=True)
-            pd('_api_request_url', obj.get_request_url())
-            pd('_matched_filters', obj.get_matched_filters())
-
-            # print resource data using dynamic method calls
-            for method_data in sorted(obj.get_methods()):
-                method = getattr(obj, method_data['method_name'])
-                pd(' %s' % method_data['name'], method())
+            print(obj)
+            # pd('Attribute Data', header=True)
+            # pd('_api_request_url', obj.get_request_url())
+            # pd('_matched_filters', obj.get_matched_filters())
+            #
+            # # print resource data using dynamic method calls
+            # for method_data in sorted(obj.get_methods()):
+            #     method = getattr(obj, method_data['method_name'])
+            #     pd(' %s' % method_data['name'], method())
     pd('Stats', header=True)
     pd('Result Count (Total)', result_obj.get_result_count())
     pd('Result Count (Filtered)', len(result_obj))
@@ -34,9 +35,10 @@ def show_data(result_obj):
 def main():
     """  """
     # get all owner names
-    owners = tc.owners()
-    owners.retrieve()
-    owners.get_owner_names()
+    # owners = tc.owners()
+    # owners.retrieve()
+    # owners.get_owner_names()
+    owners = ['Test & Org']
 
     if enable_example1:
         """ get attributes for filtered owners """
@@ -49,9 +51,8 @@ def main():
 
         # get filter
         filter1 = attributes.add_filter()
-        owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_indicator('23.27.80.231')
+        filter1.add_indicator('4.3.2.1')
 
         # check for any error on filter creation
         if filter1.error:
@@ -76,9 +77,8 @@ def main():
 
         # get filter
         filter1 = attributes.add_filter()
-        owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_email_id(45621)
+        filter1.add_email_id(711175)
 
         # check for any error on filter creation
         if filter1.error:
@@ -103,10 +103,9 @@ def main():
 
         # get filter
         filter1 = attributes.add_filter()
-        owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_indicator('23.27.80.231')
-        filter1.add_indicator('8.3.7.34')
+        filter1.add_indicator('4.3.2.1')
+        filter1.add_indicator('https://www.bcs.com')
 
         # check for any error on filter creation
         if filter1.error:
@@ -131,9 +130,8 @@ def main():
 
         # get filter
         filter1 = attributes.add_filter()
-        owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_indicator('23.27.80.231')
+        filter1.add_indicator('4.3.2.1')
 
         # check for any error on filter creation
         if filter1.error:
@@ -142,9 +140,8 @@ def main():
             sys.exit(1)
 
         filter2 = attributes.add_filter()
-        owners = ['Acme Corp']
         filter2.add_owner(owners)
-        filter2.add_indicator('23.27.80.231')
+        filter2.add_indicator('https://www.bcs.com')
 
         # check for any error on filter creation
         if filter2.error:

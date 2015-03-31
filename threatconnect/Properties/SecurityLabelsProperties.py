@@ -1,7 +1,10 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.Properties import Properties
+from threatconnect.ResourceObject import resource_class
 
 
 class SecurityLabelsProperties(Properties):
@@ -20,10 +23,10 @@ class SecurityLabelsProperties(Properties):
      "description" : "This data is ACME CONFIDENTIAL and is not approved for external release.",
      "dateAdded" : "2014-03-17T15:29:53Z"}
     """
-
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
         super(SecurityLabelsProperties, self).__init__()
+        self._action = action
 
         # resource properties
         self._resource_key = 'securityLabel'
@@ -31,20 +34,11 @@ class SecurityLabelsProperties(Properties):
         self._resource_type = ResourceType.SECURITY_LABELS
         self._resource_uri_attribute = 'securityLabels'
 
-        # data methods
-        self._data_methods = {
-            'dateAdded': {
-                'get': 'get_date_added',
-                'set': 'set_date_added',
-                'var': '_date_added'},
-            'description': {
-                'get': 'get_description',
-                'set': 'set_description',
-                'var': '_description'},
-            'name': {
-                'get': 'get_name',
-                'set': 'set_name',
-                'var': '_name'}}
+        # object attributes
+        self._object_attributes = [
+            ResourceMethods.date_added_attr,
+            ResourceMethods.description_attr,
+            ResourceMethods.name_attr]
 
         # fileter methods
         self._filter_methods = [
@@ -93,10 +87,6 @@ class SecurityLabelsProperties(Properties):
         return ResourceUri.EMAILS.value + '/%s/' + self._resource_uri_attribute
 
     @property
-    def data_methods(self):
-        return self._data_methods
-
-    @property
     def filters(self):
         return self._filter_methods
 
@@ -115,6 +105,10 @@ class SecurityLabelsProperties(Properties):
     @property
     def indicator_path(self):
         return ResourceUri.INDICATORS.value + '/%s/%s/' + self._resource_uri_attribute
+
+    @property
+    def resource_object(self):
+        return resource_class(self._object_attributes, self._action)()
 
     @property
     def signature_owner_allowed(self):

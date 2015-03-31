@@ -1,4 +1,5 @@
 """ custom """
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.SecurityLabelsProperties import SecurityLabelsProperties
@@ -20,10 +21,9 @@ class SecurityLabelProperties(SecurityLabelsProperties):
      "description" : "This data is ACME CONFIDENTIAL and is not approved for external release.",
      "dateAdded" : "2014-03-17T15:29:53Z"}
     """
-
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(SecurityLabelProperties, self).__init__()
+        super(SecurityLabelProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'securityLabel'

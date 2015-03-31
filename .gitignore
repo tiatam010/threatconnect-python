@@ -61,3 +61,4 @@ examples/tc.conf
 examples/bcs.py
 NOTES.txt
 ThreatConnect API Documentation 2.0.1.pdf
+examples/tc_test.conf

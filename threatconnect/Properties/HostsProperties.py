@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.IndicatorsProperties import IndicatorsProperties
 
@@ -28,9 +30,9 @@ class HostsProperties(IndicatorsProperties):
      "description" : "Steal Rat Indicators",
      "hostName" : "rss.openpicz.net"}
     """
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(HostsProperties, self).__init__()
+        super(HostsProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'host'
@@ -38,9 +40,6 @@ class HostsProperties(IndicatorsProperties):
         self._resource_type = ResourceType.HOSTS
         self._resource_uri_attribute += '/hosts'
 
-        # data methods
-        self._data_methods.pop('summary')
-        self._data_methods['hostName'] = {
-            'get': 'get_indicator',
-            'set': 'set_hostname',
-            'var': '_indicator'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.summary_attr)
+        self._object_attributes.append(ResourceMethods.hostname_attr)

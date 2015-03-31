@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.GroupProperties import GroupProperties
@@ -21,10 +23,9 @@ class ThreatProperties(GroupProperties):
      "webLink" : "https://app.threatconnect.com/tc/auth/threat/
          threat.xhtml?threat=728252"}
     """
-
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(ThreatProperties, self).__init__()
+        super(ThreatProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'threat'
@@ -32,13 +33,8 @@ class ThreatProperties(GroupProperties):
         self._resource_type = ResourceType.THREAT
         self._resource_uri_attribute = 'threats'
 
-        # update data methods
-        self._data_methods.pop('ownerName')
-        self._data_methods.pop('type')
-        self._data_methods['owner'] = {
-            'get': 'get_owner_name',
-            'set': 'set_owner',
-            'var': '_owner_name'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.type_attr)
 
     @property
     def id_owner_allowed(self):

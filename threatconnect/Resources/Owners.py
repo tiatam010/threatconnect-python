@@ -97,6 +97,5 @@ class OwnerFilterObject(FilterObject):
         # add filter methods
         #
         for method_name in self._properties.filters:
-            print(method_name)
             method = getattr(FilterMethods, method_name)
             setattr(self, method_name, types.MethodType(method, self))

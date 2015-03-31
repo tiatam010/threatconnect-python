@@ -2,12 +2,12 @@
 from datetime import datetime
 
 """ custom """
-from working_init import *
+from examples.working_init import *
 
 """ Working with Indicators """
 
 """ Toggle the Boolean to enable specific examples """
-enable_example1 = True
+enable_example1 = False
 enable_example2 = False
 enable_example3 = False
 enable_example4 = False
@@ -23,14 +23,8 @@ def show_data(result_obj):
 
     if result_obj.get_status().name == "SUCCESS":
         for obj in result_obj:
-            pd('Indicator Data', header=True)
-            pd('_api_request_url', obj.get_request_url())
-            pd('_matched_filters', obj.get_matched_filters())
+            print(obj)
 
-            # print resource data using dynamic method calls
-            for method_data in sorted(obj.get_methods()):
-                method = getattr(obj, method_data['method_name'])
-                pd(' %s' % method_data['name'], method())
     pd('Stats', header=True)
     pd('Result Count (Total)', result_obj.get_result_count())
     pd('Result Count (Filtered)', len(result_obj))
@@ -39,10 +33,10 @@ def show_data(result_obj):
 def main():
     """ """
     # get all owner names
-    owners_obj = tc.owners()
-    owners_obj.retrieve()
+    # owners_obj = tc.owners()
+    # owners_obj.retrieve()
     # all owners
-    owners = owners_obj.get_owner_names()
+    # owners = owners_obj.get_owner_names()
 
     if enable_example1:
         """ get indicators for owner org """

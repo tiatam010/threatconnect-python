@@ -37,3 +37,9 @@ class ErrorCodes(Enum):
     e5011 = 'Filter Error: (%s) is an invalid indicator type. The Indicator Type must be an GroupType Enum.'
     e5020 = 'Filter Error: (%s) is an invalid Victim ID. The Victim ID must be an integer.'
     e5100 = 'Filter Error: Only one type can be added to a filter. The current filter type is (%s).'
+
+    #
+    # Resource Object Error Codes
+    #
+    e10010 = 'Resource Error: Confidence must be >= 0 and <=100. (%s) is not in this range.'
+    e10011 = 'Resource Error: Confidence must be of integer type. (%s) is not an integer value.'

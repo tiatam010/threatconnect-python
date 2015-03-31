@@ -33,6 +33,8 @@ from threatconnect.Resources.Signatures import Signatures
 from threatconnect.Resources.Victims import Victims
 from threatconnect.Resources.VictimAssets import VictimAssets
 
+from threatconnect.DataFormatter import pd
+
 
 class ThreatConnect:
     """ """
@@ -60,7 +62,7 @@ class ThreatConnect:
 
     def _api_build_request(self, resource_obj, body=None):
         """ """
-        # pd('api_build_request', header=True)
+        pd('api_build_request', header=True)
         obj_list = []
 
         # get resource object values
@@ -75,12 +77,13 @@ class ThreatConnect:
         request_uri = resource_obj.get_request_uri()
 
         # DEBUG
-        # pd('http_method', http_method)
-        # pd('modified_since', modified_since)
-        # pd('resource_type', resource_type)
-        # pd('request_uri', request_uri)
-        # pd('get_owner_allowed', resource_obj.get_owner_allowed())
-        # pd('get_resource_pagination', resource_obj.get_resource_pagination())
+        pd('body', body)
+        pd('http_method', http_method)
+        pd('modified_since', modified_since)
+        pd('resource_type', resource_type)
+        pd('request_uri', request_uri)
+        pd('get_owner_allowed', resource_obj.get_owner_allowed())
+        pd('get_resource_pagination', resource_obj.get_resource_pagination())
 
         # update group object
         resource_obj.set_max_results(self._api_max_results)
@@ -152,7 +155,7 @@ class ThreatConnect:
                     # pd(api_response_dict['status'], header=True)
 
                     if api_response_dict['status'] == 'Success':
-                        obj_list.extend(self._api_process_response(resource_obj, api_response_dict))
+                        obj_list.extend(self._api_process_response(resource_obj, api_response))
 
                         # add resource_pagination if required
                         if resource_obj.get_resource_pagination():
@@ -183,7 +186,7 @@ class ThreatConnect:
             resource_obj.current_url = api_response_url
 
             # DEBUG
-            # pd('api_response_url', api_response_url)
+            pd('api_response_url', api_response_url)
 
             # update group object with api response data
             resource_obj.add_api_response(api_response.content)
@@ -192,7 +195,7 @@ class ThreatConnect:
 
             # process the response data
             if api_response_dict['status'] == 'Success':
-                processed_data = self._api_process_response(resource_obj, api_response_dict)
+                processed_data = self._api_process_response(resource_obj, api_response)
 
                 #
                 # special case for signature downloads
@@ -214,16 +217,20 @@ class ThreatConnect:
         return obj_list
 
     @staticmethod
-    def _api_process_response(resource_obj, api_response_dict):
+    def _api_process_response(resource_obj, api_response):
         """ """
         # DEBUG
-        # pd('api_process_response', header=True)
+        pd('api_process_response', header=True)
         obj_list = []
+
+        # convert json response to dict
+        api_response_dict = api_response.json()
+        api_response_url = api_response.url
 
         # update group object with result data
         current_filter = resource_obj.get_current_filter()
 
-        # user resource type from resource object to get the resource properties
+        # use resource type from resource object to get the resource properties
         resource_type = resource_obj.resource_type
         properties = ResourceProperties[resource_type.name].value()
         resource_key = properties.resource_key
@@ -235,6 +242,7 @@ class ThreatConnect:
         # pd('resource_type', resource_type)
         # pd('resource_key', resource_key)
 
+        # wrap single response item in a list
         if isinstance(response_data, dict):
             response_data = [response_data]
 
@@ -246,13 +254,11 @@ class ThreatConnect:
 
         # update group object with result data
         for data in response_data:
-            data_obj_class = resource_obj.get_object_class()
-            data_obj = data_obj_class(properties.data_methods)
+            data_obj = properties.resource_object
             data_methods = data_obj.get_data_methods()
 
             for attrib, obj_method in data_methods.items():
                 # DEBUG
-                # pd('attrib', attrib)
                 if attrib in data:
                     obj_method(data[attrib])
                     # DEBUG
@@ -260,6 +266,9 @@ class ThreatConnect:
                 # else:
                     # DEBUG
                     # pd('missing data object method', attrib)
+
+            data_obj.validate()
+            # print(data_obj)
 
             resource_obj.add_resource_obj(data_obj)
             # TODO: does this work with matching ids from different owners???
@@ -270,7 +279,9 @@ class ThreatConnect:
             else:
                 stored_obj = resource_obj.get_resource_by_id(data_obj.get_id())
 
-            stored_obj.add_request_url(resource_obj.current_url)
+            # pd('stored _type', type(stored_obj))
+
+            stored_obj.set_request_url(api_response_url)
             if current_filter is not None:
                 stored_obj.add_matched_filter(current_filter)
             obj_list.append(stored_obj)
@@ -280,10 +291,11 @@ class ThreatConnect:
     def _api_request(self, request_uri, request_payload, http_method='GET', body=None, activity_log='false'):
         """ """
         # DEBUG
-        # pd('_api_request', header=True)
-        # pd('request_uri', request_uri)
-        # pd('request_payload', request_payload)
-        # pd('http_method', http_method)
+        pd('_api_request', header=True)
+        pd('request_uri', request_uri)
+        pd('request_payload', request_payload)
+        pd('http_method', http_method)
+        pd('body', body)
 
         request_uri = request_uri
 
@@ -292,14 +304,11 @@ class ThreatConnect:
 
         url = '%s%s' % (self._api_url, request_uri)
 
-        if body is not None:
-            body_json = json.dumps(body)
-        else:
-            body_json = None
-
         # api request
+        # api_request = Request(
+        #     http_method, url, params=request_payload)
         api_request = Request(
-            http_method, url, params=request_payload)
+            http_method, url, data=body, params=request_payload)
         request_prepped = api_request.prepare()
         # get path url to add to header (required for hmac)
         path_url = request_prepped.path_url
@@ -307,7 +316,7 @@ class ThreatConnect:
         api_headers = self._api_request_headers(http_method, path_url)
         if http_method in ['POST', 'PUSH']:
             api_headers['Content-Type'] = 'application/json'
-            request_prepped.prepare_body(body_json)
+            api_headers['Content-Length'] = len(body)
         request_prepped.prepare_headers(api_headers)
 
         # send api request
@@ -320,9 +329,12 @@ class ThreatConnect:
             sys.exit(1)
 
         # DEBUG
+        # pd('dir', dir(api_response))
         # pd('url', api_response.url)
+        # pd('body', request_prepped.body)
+        pd('text', api_response.text)
+
         # pd('path_url', path_url)
-        # pd('text', api_response.text)
 
         # pd('END _api_request', header=True)
         return api_response
@@ -422,6 +434,20 @@ class ThreatConnect:
     def indicators(self):
         """ """
         return Indicators(self)
+        # if indicator is None:
+        #     return Indicators(self)
+        # else:
+        #     return IndicatorPost(self, indicator)
+            # # validate indicator
+            # if validate_indicator(indicator):
+            #     # get indicator type
+            #     resource_type = _get_resource_type(indicator)
+            #
+            #     # set properties
+            #     resource_type = ResourceType(resource_type.value - 5)
+            #     properties = ResourceProperties[resource_type.name].value(PropertiesAction.WRITE)
+            #
+            #     return properties.resource_object
 
     def owners(self):
         """ """

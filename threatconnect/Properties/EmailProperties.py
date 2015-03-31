@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.GroupProperties import GroupProperties
@@ -27,9 +29,10 @@ class EmailProperties(GroupProperties):
      "body" : "INVOICE #765293\r\n\r\nSTATUS: Unpaid\r\n\r\n<truncated>'}
     """
 
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(EmailProperties, self).__init__()
+        super(EmailProperties, self).__init__(action)
+        self._action = action
 
         # resource properties
         self._resource_key = 'email'
@@ -37,37 +40,14 @@ class EmailProperties(GroupProperties):
         self._resource_type = ResourceType.EMAIL
         self._resource_uri_attribute = 'emails'
 
-        # update data methods
-        self._data_methods.pop('ownerName')
-        self._data_methods.pop('type')
-        self._data_methods['body'] = {
-            'get': 'get_body',
-            'set': 'set_body',
-            'var': '_body'}
-        self._data_methods['from'] = {
-            'get': 'get_from',
-            'set': 'set_from',
-            'var': '_from'}
-        self._data_methods['header'] = {
-            'get': 'get_header',
-            'set': 'set_header',
-            'var': '_header'}
-        self._data_methods['owner'] = {
-            'get': 'get_owner_name',
-            'set': 'set_owner',
-            'var': '_owner_name'}
-        self._data_methods['score'] = {
-            'get': 'get_score',
-            'set': 'set_score',
-            'var': '_score'}
-        self._data_methods['subject'] = {
-            'get': 'get_subject',
-            'set': 'set_subject',
-            'var': '_subject'}
-        self._data_methods['to'] = {
-            'get': 'get_to',
-            'set': 'set_to',
-            'var': '_to'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.type_attr)
+        self._object_attributes.append(ResourceMethods.body_attr)
+        self._object_attributes.append(ResourceMethods.from_attr)
+        self._object_attributes.append(ResourceMethods.header_attr)
+        self._object_attributes.append(ResourceMethods.score_attr)
+        self._object_attributes.append(ResourceMethods.subject_attr)
+        self._object_attributes.append(ResourceMethods.to_attr)
 
     @property
     def id_owner_allowed(self):

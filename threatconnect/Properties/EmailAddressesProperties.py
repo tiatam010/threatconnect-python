@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.IndicatorsProperties import IndicatorsProperties
 
@@ -28,9 +30,9 @@ class EmailAddressesProperties(IndicatorsProperties):
      "address" : "elder.gudiel@telefonica.com"}
 
     """
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(EmailAddressesProperties, self).__init__()
+        super(EmailAddressesProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'emailAddress'
@@ -38,9 +40,6 @@ class EmailAddressesProperties(IndicatorsProperties):
         self._resource_type = ResourceType.EMAIL_ADDRESSES
         self._resource_uri_attribute += '/emailAddresses'
 
-        # update data methods
-        self._data_methods.pop('summary')
-        self._data_methods['address'] = {
-            'get': 'get_indicator',
-            'set': 'set_address',
-            'var': '_indicator'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.summary_attr)
+        self._object_attributes.append(ResourceMethods.address_attr)

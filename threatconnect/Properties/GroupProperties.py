@@ -1,45 +1,40 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
+from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.Properties import Properties
+from threatconnect.ResourceObject import resource_class
 
 
 class GroupProperties(Properties):
     """ """
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
         super(GroupProperties, self).__init__()
+        self._action = action
 
-        self._data_methods = {
-            'dateAdded': {
-                'get': 'get_date_added',
-                'set': 'set_date_added',
-                'var': '_date_added'},
-            'id': {
-                'get': 'get_id',
-                'set': 'set_id',
-                'var': '_id'},
-            'name': {
-                'get': 'get_name',
-                'set': 'set_name',
-                'var': '_name'},
-            'ownerName': {
-                'get': 'get_owner_name',
-                'set': 'set_owner_name',
-                'var': '_owner_name'},
-            'type': {
-                'get': 'get_type',
-                'set': 'set_type',
-                'var': '_type'},
-            'webLink': {
-                'get': 'get_web_link',
-                'set': 'set_web_link',
-                'var': '_web_link'}}
+        if self._action == PropertiesAction.WRITE:
+            self._http_method = 'POST'
 
-    @property
-    def data_methods(self):
-        """ """
-        return self._data_methods
+        self._object_attributes = [
+            ResourceMethods.date_added_attr,
+            ResourceMethods.id_attr,
+            ResourceMethods.matched_filters_attr,
+            ResourceMethods.name_attr,
+            ResourceMethods.owner_name_attr,
+            ResourceMethods.type_attr,
+            ResourceMethods.web_link_attr]
 
     # @property
     # def filters(self):
     #     """ """
     #     return self._filter_methods
+
+    @property
+    def write_path(self):
+        """ """
+        return ResourceUri.GROUPS.value + '/' + self._resource_uri_attribute
+
+    @property
+    def resource_object(self):
+        return resource_class(self._object_attributes, self._action)()

@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.GroupProperties import GroupProperties
@@ -22,9 +24,9 @@ class AdversaryProperties(GroupProperties):
          adversary.xhtml?adversary=734631"}
     """
 
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(AdversaryProperties, self).__init__()
+        super(AdversaryProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'adversary'
@@ -32,13 +34,8 @@ class AdversaryProperties(GroupProperties):
         self._resource_type = ResourceType.ADVERSARY
         self._resource_uri_attribute = 'adversaries'
 
-        # update data methods
-        self._data_methods.pop('ownerName')
-        self._data_methods.pop('type')
-        self._data_methods['owner'] = {
-            'get': 'get_owner_name',
-            'set': 'set_owner',
-            'var': '_owner_name'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.type_attr)
 
     @property
     def id_owner_allowed(self):

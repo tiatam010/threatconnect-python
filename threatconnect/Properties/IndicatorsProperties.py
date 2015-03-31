@@ -1,7 +1,10 @@
 """ custom """
+from threatconnect import ResourceMethods
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Properties.Properties import Properties
+from threatconnect.ResourceObject import resource_class
 
 
 class IndicatorsProperties(Properties):
@@ -31,7 +34,7 @@ class IndicatorsProperties(Properties):
          credentials and used to extract card information.',
      'summary' : '60.1.2.243'}
     """
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
         super(IndicatorsProperties, self).__init__()
 
@@ -41,47 +44,18 @@ class IndicatorsProperties(Properties):
         self._resource_type = ResourceType.INDICATORS
         self._resource_uri_attribute = 'indicators'
 
-        self._data_methods = {
-            'confidence': {
-                'get': 'get_confidence',
-                'set': 'set_confidence',
-                'var': '_confidence'},
-            'dateAdded': {
-                'get': 'get_date_added',
-                'set': 'set_date_added',
-                'var': '_date_added'},
-            'description': {
-                'get': 'get_description',
-                'set': 'set_description',
-                'var': '_description'},
-            'id': {
-                'get': 'get_id',
-                'set': 'set_id',
-                'var': '_id'},
-            'lastModified': {
-                'get': 'get_last_modified',
-                'set': 'set_last_modified',
-                'var': '_last_modified'},
-            'ownerName': {
-                'get': 'get_owner_name',
-                'set': 'set_owner_name',
-                'var': '_owner_name'},
-            'rating': {
-                'get': 'get_rating',
-                'set': 'set_rating',
-                'var': '_rating'},
-            'summary': {
-                'get': 'get_indicator',
-                'set': 'set_indicator',
-                'var': '_indicator'},
-            'type': {
-                'get': 'get_type',
-                'set': 'set_type',
-                'var': '_type'},
-            'webLink': {
-                'get': 'get_web_link',
-                'set': 'set_web_link',
-                'var': '_web_link'}}
+        self._object_attributes = [
+            ResourceMethods.confidence_attr,
+            ResourceMethods.date_added_attr,
+            ResourceMethods.description_attr,
+            ResourceMethods.id_attr,
+            ResourceMethods.last_modified_attr,
+            ResourceMethods.owner_name_attr,
+            ResourceMethods.matched_filters_attr,
+            ResourceMethods.rating_attr,
+            ResourceMethods.summary_attr,
+            ResourceMethods.type_attr,
+            ResourceMethods.web_link_attr]
 
     @property
     def base_owner_allowed(self):
@@ -102,11 +76,6 @@ class IndicatorsProperties(Properties):
     def adversary_path(self):
         """ """
         return ResourceUri.ADVERSARIES.value + '/%s/' + self._resource_uri_attribute
-
-    @property
-    def data_methods(self):
-        """ """
-        return self._data_methods
 
     @property
     def email_owner_allowed(self):
@@ -153,6 +122,10 @@ class IndicatorsProperties(Properties):
     @property
     def indicator_path(self):
         return ResourceUri.INDICATORS.value + '/%s/%s/' + self._resource_uri_attribute
+
+    @property
+    def resource_object(self):
+        return resource_class(self._object_attributes)()
 
     @property
     def security_label_owner_allowed(self):

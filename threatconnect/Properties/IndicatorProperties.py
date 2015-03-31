@@ -1,53 +1,42 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
+from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.Properties import Properties
+from threatconnect.ResourceObject import resource_class
 
 
 class IndicatorProperties(Properties):
     """ """
 
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
         super(IndicatorProperties, self).__init__()
+        self._action = action
 
-        self._data_methods = {
-            'dateAdded': {
-                'get': 'get_date_added',
-                'set': 'set_date_added',
-                'var': '_date_added'},
-            'description': {
-                'get': 'get_description',
-                'set': 'set_description',
-                'var': '_description'},
-            'id': {
-                'get': 'get_id',
-                'set': 'set_id',
-                'var': '_id'},
-            'lastModified': {
-                'get': 'get_last_modified',
-                'set': 'set_last_modified',
-                'var': '_last_modified'},
-            'owner': {
-                'get': 'get_owner_name',
-                'set': 'set_owner',
-                'var': '_owner_name'},
-            'threatAssessConfidence': {
-                'get': 'get_confidence',
-                'set': 'set_confidence',
-                'var': '_confidence'},
-            'threatAssessRating': {
-                'get': 'get_rating',
-                'set': 'set_rating',
-                'var': '_rating'},
-            'type': {
-                'get': 'get_type',
-                'set': 'set_type',
-                'var': '_type'},
-            'webLink': {
-                'get': 'get_web_link',
-                'set': 'set_web_link',
-                'var': '_web_link'}}
+        if self._action == PropertiesAction.WRITE:
+            self._http_method = 'POST'
+
+        self._object_attributes = [
+            ResourceMethods.confidence_attr,
+            ResourceMethods.date_added_attr,
+            ResourceMethods.description_attr,
+            ResourceMethods.id_attr,
+            ResourceMethods.last_modified_attr,
+            ResourceMethods.owner_name_attr,
+            ResourceMethods.matched_filters_attr,
+            ResourceMethods.rating_attr,
+            ResourceMethods.summary_attr,
+            ResourceMethods.type_attr,
+            ResourceMethods.web_link_attr,
+        ]
 
     @property
-    def data_methods(self):
+    def write_path(self):
         """ """
-        return self._data_methods
+        return ResourceUri.INDICATORS.value + '/' + self._resource_uri_attribute
+
+    @property
+    def resource_object(self):
+        # return self._resource_class()
+        return resource_class(self._object_attributes, self._action)()

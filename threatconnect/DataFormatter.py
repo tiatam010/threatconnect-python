@@ -16,23 +16,28 @@ import sys
 
 def format_header(header):
     """  """
-    h_len = int((48 - len(header)) / 2)
-    h_wrapper = '=' * h_len
+    h_len = int((80 - len(str(header))) / 2)
+    l_wrapper = '>' * h_len
+    r_wrapper = '<' * h_len
 
-    return "\n%s %s %s\n" % (h_wrapper, header, h_wrapper)
+    return "\n%s %s %s\n" % (l_wrapper, header, r_wrapper)
 
 
 def format_item(key, val):
     """  """
-    formatted_item = ""
+    formatted_item = ''
     if isinstance(val, list):
         first_run = True
         for item in val:
             if first_run:
-                formatted_item += "%-25s%-25s\n" % ('%s:' % key, item)
+                # formatted_item = '%-25s%-25s\n' % ('%s:' % key, item)
+                formatted_item += '%-25s%-25s\n' % ('%s:' % key, item.encode('utf-8').strip())
             else:
-                formatted_item += "%-25s%-25s\n" % ('', item)
+                # formatted_item += '%-25s%-25s\n' % ('', item)
+                formatted_item += '%-25s%-25s\n' % ('', item.encode('utf-8').strip())
             first_run = False
+    elif isinstance(val, str):
+        formatted_item += "%-25s%-25s\n" % ('%s:' % key, val.encode('utf-8').strip())
     else:
         formatted_item += "%-25s%-25s\n" % ('%s:' % key, val)
     return formatted_item

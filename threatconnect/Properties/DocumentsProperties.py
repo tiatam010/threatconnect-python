@@ -1,31 +1,32 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.GroupsProperties import GroupsProperties
 
 
 class DocumentsProperties(GroupsProperties):
-    """ """
-    def __init__(self):
-        """
-        URIs:
-        /<api version>/groups/documents
-        /<api version>/indicators/<indicator type>/<value>/groups/documents
-        /<api version>/groups/emails/<ID>/groups/documents
-        /<api version>/groups/incidents/<ID>/groups/documents
-        /<api version>/groups/signatures/<ID>/groups/signatures
-        /<api version>/groups/threats/<ID>/groups/documents
-        /<api version>/securityLabels/<security label>/groups/documents
-        /<api version>/tags/<tag name>/groups/documents
-        /<api version>/victims/<ID>/groups/documents
+    """
+    URIs:
+    /<api version>/groups/documents
+    /<api version>/indicators/<indicator type>/<value>/groups/documents
+    /<api version>/groups/emails/<ID>/groups/documents
+    /<api version>/groups/incidents/<ID>/groups/documents
+    /<api version>/groups/signatures/<ID>/groups/signatures
+    /<api version>/groups/threats/<ID>/groups/documents
+    /<api version>/securityLabels/<security label>/groups/documents
+    /<api version>/tags/<tag name>/groups/documents
+    /<api version>/victims/<ID>/groups/documents
 
-        JSON Data:
-        {"id" : 675385,
-         "name" : "Test4",
-         "ownerName" : "Acme Corp",
-         "dateAdded" : "2015-01-26T14:14:37Z",
-         "webLink" : "https://app.threatconnect.com/tc/auth/document/document.xhtml?document=675385"}
-        """
-        super(DocumentsProperties, self).__init__()
+    JSON Data:
+    {"id" : 675385,
+     "name" : "Test4",
+     "ownerName" : "Acme Corp",
+     "dateAdded" : "2015-01-26T14:14:37Z",
+     "webLink" : "https://app.threatconnect.com/tc/auth/document/document.xhtml?document=675385"}
+    """
+    def __init__(self, action=PropertiesAction.READ):
+        super(DocumentsProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'document'
@@ -34,7 +35,7 @@ class DocumentsProperties(GroupsProperties):
         self._resource_uri_attribute += '/' + 'documents'
 
         # update data methods
-        self._data_methods.pop('type')
+        self._object_attributes.remove(ResourceMethods.type_attr)
 
         # update filter methods
         self._filter_methods.remove('add_adversary_id')

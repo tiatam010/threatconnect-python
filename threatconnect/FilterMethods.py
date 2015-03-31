@@ -112,8 +112,6 @@ def add_id(self, data_int, asset_id=None):
         ro = RequestObject(filter_type, data_int)
         ro.set_owner_allowed(properties.id_owner_allowed)
         ro.set_resource_pagination(properties.resource_pagination)
-        print(type(properties))
-        print(properties.id_path)
         ro.set_request_uri(properties.id_path, uri_data)
         ro.set_resource_type(properties.resource_type)
         self._add_request_objects(ro)
@@ -211,8 +209,6 @@ def add_indicator(self, data, data_type_enum=None):
         # url
         if data_type_enum == ResourceType.URLS:
             data = urllib.quote(data, safe='~')
-
-        print(type(properties))
 
         filter_type = data_type_enum.name.lower()
 

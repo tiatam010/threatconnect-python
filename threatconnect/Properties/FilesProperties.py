@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.IndicatorsProperties import IndicatorsProperties
 
@@ -32,9 +34,9 @@ class FilesProperties(IndicatorsProperties):
     }
 
     """
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(FilesProperties, self).__init__()
+        super(FilesProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'file'
@@ -42,17 +44,6 @@ class FilesProperties(IndicatorsProperties):
         self._resource_type = ResourceType.FILES
         self._resource_uri_attribute += '/files'
 
-        # update data methods
-        self._data_methods.pop('summary')
-        self._data_methods['md5'] = {
-            'get': 'get_indicator',
-            'set': 'set_hash',
-            'var': '_indicator'}
-        self._data_methods['sha1'] = {
-            'get': 'get_indicator',
-            'set': 'set_hash',
-            'var': '_indicator'}
-        self._data_methods['sha256'] = {
-            'get': 'get_indicator',
-            'set': 'set_hash',
-            'var': '_indicator'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.summary_attr)
+        self._object_attributes.append(ResourceMethods.ip_attr)

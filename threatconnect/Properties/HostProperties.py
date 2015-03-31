@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.IndicatorProperties import IndicatorProperties
@@ -27,9 +29,9 @@ class HostProperties(IndicatorProperties):
      "whoisActive" : "true"}
     """
 
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(HostProperties, self).__init__()
+        super(HostProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'host'
@@ -37,22 +39,12 @@ class HostProperties(IndicatorProperties):
         self._resource_type = ResourceType.HOST
         self._resource_uri_attribute = 'hosts'
 
-        # update data methods
-        self._data_methods['dnsActive'] = {
-            'get': 'get_dns_active',
-            'set': 'set_dns_active',
-            'var': '_dns_active'}
-        self._data_methods['hostName'] = {
-            'get': 'get_indicator',
-            'set': 'set_hostname',
-            'var': '_indicator'}
-        self._data_methods['whoisActive'] = {
-            'get': 'get_whois_active',
-            'set': 'set_whois_active',
-            'var': '_whois_active'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.summary_attr)
+        self._object_attributes.append(ResourceMethods.hostname_attr)
 
     @property
-    def indicator_owner_albellowed(self):
+    def indicator_owner_allowed(self):
         """ """
         return False
 

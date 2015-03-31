@@ -1,4 +1,5 @@
 """ custom """
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.TagsProperties import TagsProperties
@@ -14,10 +15,9 @@ class TagProperties(TagsProperties):
       "webLink" : "https://app.threatconnect.com/tc/auth/tags/
           tag.xhtml?tag=32bit&owner=Acme Corp"}
     """
-
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(TagProperties, self).__init__()
+        super(TagProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'tag'

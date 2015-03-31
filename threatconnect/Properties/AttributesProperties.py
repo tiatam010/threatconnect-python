@@ -1,7 +1,10 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.Properties import Properties
+from threatconnect.ResourceObject import resource_class
 
 
 class AttributesProperties(Properties):
@@ -22,9 +25,10 @@ class AttributesProperties(Properties):
      'value' : 'Actions on Objectives'}
     """
 
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
         super(AttributesProperties, self).__init__()
+        self._action = action
 
         # resource properties
         self._resource_key = 'attribute'
@@ -32,27 +36,14 @@ class AttributesProperties(Properties):
         self._resource_type = ResourceType.ATTRIBUTES
         self._resource_uri_attribute = 'attributes'
 
-        self._data_methods = {
-            'dateAdded': {
-                'get': 'get_date_added',
-                'set': 'set_date_added',
-                'var': '_date_added'},
-            'displayed': {
-                'get': 'get_displayed',
-                'set': 'set_displayed',
-                'var': '_displayed'},
-            'id': {
-                'get': 'get_id',
-                'set': 'set_id',
-                'var': '_id'},
-            'lastModified': {
-                'get': 'get_last_modified',
-                'set': 'set_last_modified',
-                'var': '_last_modified'},
-            'type': {
-                'get': 'get_type',
-                'set': 'set_type',
-                'var': '_type'}}
+        self._object_attributes = [
+            ResourceMethods.date_added_attr,
+            ResourceMethods.displayed_attr,
+            ResourceMethods.id_attr,
+            ResourceMethods.last_modified_attr,
+            ResourceMethods.matched_filters_attr,
+            ResourceMethods.value_attr,
+            ResourceMethods.type_attr]
 
         self._filter_methods = [
             'add_adversary_id',
@@ -88,9 +79,9 @@ class AttributesProperties(Properties):
         """ """
         return ResourceUri.EMAILS.value + '/%s/' + self._resource_uri_attribute
 
-    @property
-    def data_methods(self):
-        return self._data_methods
+    # @property
+    # def data_methods(self):
+    #     return self._data_methods
 
     @property
     def filters(self):
@@ -113,6 +104,10 @@ class AttributesProperties(Properties):
         return ResourceUri.INDICATORS.value + '/%s/%s/' + self._resource_uri_attribute
 
     @property
+    def resource_object(self):
+        return resource_class(self._object_attributes, self._action)()
+
+    @property
     def signature_owner_allowed(self):
         return False
 
@@ -127,3 +122,7 @@ class AttributesProperties(Properties):
     @property
     def threat_path(self):
         return ResourceUri.THREATS.value + '/%s/' + self._resource_uri_attribute
+
+    def write_path(self):
+        """ """
+        return ResourceUri.GROUPS.value + '/' + self._resource_uri_attribute

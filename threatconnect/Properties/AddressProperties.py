@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.IndicatorProperties import IndicatorProperties
@@ -25,9 +27,9 @@ class AddressProperties(IndicatorProperties):
 
     """
 
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(AddressProperties, self).__init__()
+        super(AddressProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'address'
@@ -35,11 +37,9 @@ class AddressProperties(IndicatorProperties):
         self._resource_type = ResourceType.ADDRESS
         self._resource_uri_attribute = 'addresses'
 
-        # update data methods
-        self._data_methods['ip'] = {
-            'get': 'get_indicator',
-            'set': 'set_ip',
-            'var': '_indicator'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.summary_attr)
+        self._object_attributes.append(ResourceMethods.ip_attr)
 
     @property
     def indicator_owner_allowed(self):

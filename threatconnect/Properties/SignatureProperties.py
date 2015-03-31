@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.GroupProperties import GroupProperties
@@ -23,10 +25,9 @@ class SignatureProperties(GroupProperties):
      "fileName" : "APT_EPO_HBS.yara"}
 
     """
-
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(SignatureProperties, self).__init__()
+        super(SignatureProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'signature'
@@ -34,25 +35,11 @@ class SignatureProperties(GroupProperties):
         self._resource_type = ResourceType.SIGNATURE
         self._resource_uri_attribute = 'signatures'
 
-        # update data methods
-        self._data_methods.pop('ownerName')
-        self._data_methods.pop('type')
-        self._data_methods['download'] = {
-            'get': 'get_download',
-            'set': 'set_download',
-            'var': '_download'}
-        self._data_methods['fileName'] = {
-            'get': 'get_file_name',
-            'set': 'set_file_name',
-            'var': '_file_name'}
-        self._data_methods['fileType'] = {
-            'get': 'get_file_type',
-            'set': 'set_file_type',
-            'var': '_file_name'}
-        self._data_methods['owner'] = {
-            'get': 'get_owner_name',
-            'set': 'set_owner',
-            'var': '_owner_name'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.type_attr)
+        self._object_attributes.append(ResourceMethods.download_attr)
+        self._object_attributes.append(ResourceMethods.file_name_attr)
+        self._object_attributes.append(ResourceMethods.file_type_attr)
 
     @property
     def id_owner_allowed(self):

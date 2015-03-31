@@ -1,7 +1,10 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.Properties import Properties
+from threatconnect.ResourceObject import resource_class
 
 
 class OwnersProperties(Properties):
@@ -17,18 +20,24 @@ class OwnersProperties(Properties):
     }
     """
 
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """
         /<api version>/owners
         /<api version>/indicators/<indicator type>/<value>/owners
         """
         super(OwnersProperties, self).__init__()
+        self._action = action
 
         # resource properties
         self._resource_key = 'owner'
         self._resource_pagination = False
         self._resource_type = ResourceType.OWNERS
         self._resource_uri_attribute = 'owners'
+
+        self._object_attributes = [
+            ResourceMethods.id_attr,
+            ResourceMethods.name_attr,
+            ResourceMethods.type_attr]
 
     @property
     def base_owner_allowed(self):
@@ -41,27 +50,9 @@ class OwnersProperties(Properties):
         return ResourceUri.OWNERS.value
 
     @property
-    def data_methods(self):
-        """ """
-        return {
-            'id': {
-                'get': 'get_id',
-                'set': 'set_id',
-                'var': '_id'},
-            'name': {
-                'get': 'get_name',
-                'set': 'set_name',
-                'var': '_name'},
-            'type': {
-                'get': 'get_type',
-                'set': 'set_type',
-                'var': '_type'}}
-
-    @property
     def filters(self):
         """ """
-        return [
-            'add_indicator']
+        return ['add_indicator']
 
     @property
     def indicator_owner_allowed(self):
@@ -70,3 +61,8 @@ class OwnersProperties(Properties):
     @property
     def indicator_path(self):
         return ResourceUri.INDICATORS.value + '/%s/%s/' + self._resource_uri_attribute
+
+    @property
+    def resource_object(self):
+        return resource_class(self._object_attributes, self._action)()
+

@@ -1,7 +1,10 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.Properties import Properties
+from threatconnect.ResourceObject import resource_class
 
 
 class TagsProperties(Properties):
@@ -20,10 +23,10 @@ class TagsProperties(Properties):
      "webLink" : "https://app.threatconnect.com/tc/auth/tags/
          tag.xhtml?tag=32bit&owner=Acme Corp"}
     """
-
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
         super(TagsProperties, self).__init__()
+        self._action = action
 
         # resource properties
         self._resource_key = 'tag'
@@ -31,16 +34,11 @@ class TagsProperties(Properties):
         self._resource_type = ResourceType.TAGS
         self._resource_uri_attribute = 'tags'
 
-        # data methods
-        self._data_methods = {
-            'name': {
-                'get': 'get_name',
-                'set': 'set_name',
-                'var': '_name'},
-            'webLink': {
-                'get': 'get_web_link',
-                'set': 'set_web_link',
-                'var': '_web_link'}}
+        # object attributes
+        self._object_attributes = [
+            ResourceMethods.matched_filters_attr,
+            ResourceMethods.name_attr,
+            ResourceMethods.web_link_attr]
 
         # filter methods
         self._filter_methods = [
@@ -88,11 +86,6 @@ class TagsProperties(Properties):
         return ResourceUri.EMAILS.value + '/%s/' + self._resource_uri_attribute
 
     @property
-    def data_methods(self):
-        """ """
-        return self._data_methods
-
-    @property
     def filters(self):
         """ """
         return self._filter_methods
@@ -112,6 +105,10 @@ class TagsProperties(Properties):
     @property
     def indicator_path(self):
         return ResourceUri.INDICATORS.value + '/%s/%s/' + self._resource_uri_attribute
+
+    @property
+    def resource_object(self):
+        return resource_class(self._object_attributes, self._action)()
 
     @property
     def signature_owner_allowed(self):

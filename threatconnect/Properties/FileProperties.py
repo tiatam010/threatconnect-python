@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.IndicatorProperties import IndicatorProperties
@@ -25,9 +27,9 @@ class FileProperties(IndicatorProperties):
      "sha256": "B4C1E9C99F861A4DD7654DCC3548AB5DDC15EE5FEB9690B9F716C4849714B20D"}
     """
 
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(FileProperties, self).__init__()
+        super(FileProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'file'
@@ -35,20 +37,9 @@ class FileProperties(IndicatorProperties):
         self._resource_type = ResourceType.FILE
         self._resource_uri_attribute = 'files'
 
-        # TODO: handle multiple indicators indicator dictionary with ResourceType as key
-        # update data methods
-        self._data_methods['md5'] = {
-            'get': 'get_indicator',
-            'set': 'set_hash',
-            'var': '_indicator'}
-        self._data_methods['sha1'] = {
-            'get': 'get_indicator',
-            'set': 'set_hash',
-            'var': '_indicator'}
-        self._data_methods['sha256'] = {
-            'get': 'get_indicator',
-            'set': 'set_hash',
-            'var': '_indicator'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.summary_attr)
+        self._object_attributes.append(ResourceMethods.hash_attr)
 
     @property
     def indicator_owner_allowed(self):

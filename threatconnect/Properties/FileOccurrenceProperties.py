@@ -1,4 +1,5 @@
 """ custom """
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.FileOccurrencesProperties import FileOccurrencesProperties
 
@@ -16,9 +17,9 @@ class FileOccurrenceProperties(FileOccurrencesProperties):
       "date" : "2014-09-28T00:00:00Z"}
     """
 
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(FileOccurrenceProperties, self).__init__()
+        super(FileOccurrenceProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'fileOccurrence'

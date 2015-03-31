@@ -1,4 +1,6 @@
 """ custom """
+from threatconnect import ResourceMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.GroupProperties import GroupProperties
@@ -25,9 +27,9 @@ class DocumentProperties(GroupProperties):
      "status" : "Success"}
     """
 
-    def __init__(self):
+    def __init__(self, action=PropertiesAction.READ):
         """ """
-        super(DocumentProperties, self).__init__()
+        super(DocumentProperties, self).__init__(action)
 
         # resource properties
         self._resource_key = 'document'
@@ -35,21 +37,10 @@ class DocumentProperties(GroupProperties):
         self._resource_type = ResourceType.DOCUMENT
         self._resource_uri_attribute = 'documents'
 
-        # update data methods
-        self._data_methods.pop('ownerName')
-        self._data_methods.pop('type')
-        self._data_methods['fileName'] = {
-            'get': 'get_file_name',
-            'set': 'set_file_name',
-            'var': '_file_name'}
-        self._data_methods['fileSize'] = {
-            'get': 'get_file_size',
-            'set': 'set_file_size',
-            'var': '_file_size'}
-        self._data_methods['owner'] = {
-            'get': 'get_owner_name',
-            'set': 'set_owner',
-            'var': '_owner_name'}
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.type_attr)
+        self._object_attributes.append(ResourceMethods.file_name_attr)
+        self._object_attributes.append(ResourceMethods.file_size_attr)
 
     @property
     def id_owner_allowed(self):

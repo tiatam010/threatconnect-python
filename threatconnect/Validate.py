@@ -1,21 +1,22 @@
 """ custom """
 from threatconnect.Config.ResourceRegexes import indicators_regex
+from threatconnect.Config.ResourceType import ResourceType
 
 
-def validate_confidence(confidence):
+def _get_resource_type(indicator):
     """ """
-    if not isinstance(confidence, int):
-        return False
-
-    # todo - 0?
-    return confidence in range(1, 101)
+    for indicator_type, regex in indicators_regex.items():
+        for rex in regex:
+            if rex.match(indicator):
+                return ResourceType[indicator_type]
+    return None
 
 
 def validate_indicator(indicator):
     """ """
     for indicator_type, regex in indicators_regex.items():
         for rex in regex:
-            if rex.match(indicator):
+            if rex.match(str(indicator)):
                 return True
     return False
 
