@@ -6,29 +6,29 @@ from threatconnect.Config.ResourceType import ResourceType
 
 
 class AdversariesProperties(GroupsProperties):
-    """ """
-    def __init__(self, action=PropertiesAction.READ):
-        """
-        URIs:
-        /<api version>/groups/adversaries
-        /<api version>/indicators/<indicator type>/<value>/groups/adversaries
-        /<api version>/groups/emails/<ID>/groups/adversaries
-        /<api version>/groups/incidents/<ID>/groups/adversaries
-        /<api version>/groups/signatures/<ID>/groups/signatures
-        /<api version>/groups/threats/<ID>/groups/adversaries
-        /<api version>/securityLabels/<security label>/groups/adversaries
-        /<api version>/tags/<tag name>/groups/adversaries
-        /<api version>/victims/<ID>/groups/adversaries
+    """
+    URIs:
+    /<api version>/groups/adversaries
+    /<api version>/indicators/<indicator type>/<value>/groups/adversaries
+    /<api version>/groups/emails/<ID>/groups/adversaries
+    /<api version>/groups/incidents/<ID>/groups/adversaries
+    /<api version>/groups/signatures/<ID>/groups/signatures
+    /<api version>/groups/threats/<ID>/groups/adversaries
+    /<api version>/securityLabels/<security label>/groups/adversaries
+    /<api version>/tags/<tag name>/groups/adversaries
+    /<api version>/victims/<ID>/groups/adversaries
 
-        JSON Data:
-        {"id" : 47328,
-         "name" : "Adversary Name",
-         "ownerName" : "Acme Corp",
-         "dateAdded" : "2013-12-17T21:33:58Z",
-         "webLink" : "https://app.threatconnect.com/tc/auth/adversary/
-             adversary.xhtml?adversary=47328"}
-        """
-        super(AdversariesProperties, self).__init__(action)
+    JSON Data:
+    {"id" : 47328,
+     "name" : "Adversary Name",
+     "ownerName" : "Acme Corp",
+     "dateAdded" : "2013-12-17T21:33:58Z",
+     "webLink" : "https://app.threatconnect.com/tc/auth/adversary/
+         adversary.xhtml?adversary=47328"}
+    """
+    def __init__(self, http_method=PropertiesAction.GET):
+        """ """
+        super(AdversariesProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'adversary'

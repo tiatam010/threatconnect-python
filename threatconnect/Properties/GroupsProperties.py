@@ -29,10 +29,10 @@ class GroupsProperties(Properties):
      "webLink" : "https://app.threatconnect.com/tc/auth/adversary/
          adversary.xhtml?adversary=64571"}
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(GroupsProperties, self).__init__()
-        self._action = action
+        super(GroupsProperties, self).__init__(http_method)
+        self._http_method = http_method
 
         # resource properties
         self._resource_key = 'group'
@@ -124,7 +124,7 @@ class GroupsProperties(Properties):
 
     @property
     def resource_object(self):
-        return resource_class(self._object_attributes, self._action)()
+        return resource_class(self._object_attributes, self._http_method)()
 
     @property
     def signature_owner_allowed(self):

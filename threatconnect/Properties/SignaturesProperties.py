@@ -26,9 +26,9 @@ class SignaturesProperties(GroupsProperties):
      "webLink" : "https://app.threatconnect.com/tc/auth/signature/signature.xhtml?signature=132117",
      "fileType" : "Snort"}
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(SignaturesProperties, self).__init__(action)
+        super(SignaturesProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'signature'

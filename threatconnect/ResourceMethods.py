@@ -271,6 +271,27 @@ file_size_attr = attr
 
 
 #
+# file_text
+#
+def get_file_text(self):
+    """ """
+    return self._file_text
+
+
+def set_file_text(self, data):
+    """ """
+    self._file_text = data
+
+attr = AttributeDef('_file_text')
+attr.add_api_name('fileText')
+attr.set_required(True)
+attr.set_writable(True)
+attr.set_method_get('get_file_text')
+attr.set_method_set('set_file_text')
+file_text_attr = attr
+
+
+#
 # file_type
 #
 def get_file_type(self):
@@ -305,7 +326,7 @@ def set_from(self, data):
 
 attr = AttributeDef('_from')
 attr.add_api_name('from')
-attr.set_required(False)
+attr.set_required(True)
 attr.set_writable(True)
 attr.set_method_get('get_from')
 attr.set_method_set('set_from')

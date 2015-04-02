@@ -23,10 +23,10 @@ class SecurityLabelsProperties(Properties):
      "description" : "This data is ACME CONFIDENTIAL and is not approved for external release.",
      "dateAdded" : "2014-03-17T15:29:53Z"}
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(SecurityLabelsProperties, self).__init__()
-        self._action = action
+        super(SecurityLabelsProperties, self).__init__(http_method)
+        self._http_method = http_method
 
         # resource properties
         self._resource_key = 'securityLabel'
@@ -108,7 +108,7 @@ class SecurityLabelsProperties(Properties):
 
     @property
     def resource_object(self):
-        return resource_class(self._object_attributes, self._action)()
+        return resource_class(self._object_attributes, self._http_method)()
 
     @property
     def signature_owner_allowed(self):

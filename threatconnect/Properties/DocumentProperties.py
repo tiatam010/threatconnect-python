@@ -26,10 +26,9 @@ class DocumentProperties(GroupProperties):
      "fileSize" : 5979,
      "status" : "Success"}
     """
-
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(DocumentProperties, self).__init__(action)
+        super(DocumentProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'document'

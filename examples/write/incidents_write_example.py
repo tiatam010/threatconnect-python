@@ -11,13 +11,13 @@ enable_del = True
 
 def main():
     """ """
-    resources = tc.documents()
+    resources = tc.incidents()
     resource_id = None
 
     if enable_add:
         """ """
-        resource = resources.add_resource('bcs bad doc')
-        resource.set_file_name('bcs.doc')
+        resource = resources.add_resource('bcs did it')
+        resource.set_event_date('2015-03-26T00:00:00Z ')
         resources.send()
 
         for res in resources:
@@ -27,8 +27,8 @@ def main():
     if enable_upd:
         """ """
         resource = resources.update(resource_id)
-        resource.set_name('bcs really bad doc')
-        resource.set_file_name('bcs.docx')
+        resource.set_name('bcs did it again')
+        resource.set_event_date('2015-03-26T12:00:00Z ')
         resources.send()
 
     if enable_del:

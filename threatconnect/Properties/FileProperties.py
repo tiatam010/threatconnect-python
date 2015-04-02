@@ -26,10 +26,9 @@ class FileProperties(IndicatorProperties):
      "sha1": "9F8CC0A150D272D9393F86B5F5F2D1265E8917D1",
      "sha256": "B4C1E9C99F861A4DD7654DCC3548AB5DDC15EE5FEB9690B9F716C4849714B20D"}
     """
-
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(FileProperties, self).__init__(action)
+        super(FileProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'file'

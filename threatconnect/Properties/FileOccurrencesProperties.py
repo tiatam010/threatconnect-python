@@ -27,10 +27,10 @@ class FileOccurrencesProperties(Properties):
       "date" : "2014-09-28T00:00:00Z"
     }
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(FileOccurrencesProperties, self).__init__()
-        self._action = action
+        super(FileOccurrencesProperties, self).__init__(http_method)
+        self._http_method = http_method
 
         # resource properties
         self._resource_key = 'fileOccurrence'
@@ -55,11 +55,6 @@ class FileOccurrencesProperties(Properties):
             'get_resource_type']
 
     @property
-    def data_methods(self):
-        """ """
-        return self._data_methods
-
-    @property
     def filters(self):
         """ """
         return self._filter_methods
@@ -76,4 +71,4 @@ class FileOccurrencesProperties(Properties):
 
     @property
     def resource_object(self):
-        return resource_class(self._object_attributes, self._action)()
+        return resource_class(self._object_attributes, self._http_method)()

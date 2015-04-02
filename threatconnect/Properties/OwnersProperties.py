@@ -20,13 +20,13 @@ class OwnersProperties(Properties):
     }
     """
 
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """
         /<api version>/owners
         /<api version>/indicators/<indicator type>/<value>/owners
         """
-        super(OwnersProperties, self).__init__()
-        self._action = action
+        super(OwnersProperties, self).__init__(http_method)
+        self._http_method = http_method
 
         # resource properties
         self._resource_key = 'owner'
@@ -36,6 +36,7 @@ class OwnersProperties(Properties):
 
         self._object_attributes = [
             ResourceMethods.id_attr,
+            ResourceMethods.matched_filters_attr,
             ResourceMethods.name_attr,
             ResourceMethods.type_attr]
 
@@ -64,5 +65,5 @@ class OwnersProperties(Properties):
 
     @property
     def resource_object(self):
-        return resource_class(self._object_attributes, self._action)()
+        return resource_class(self._object_attributes, self._http_method)()
 

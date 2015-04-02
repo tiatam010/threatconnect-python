@@ -28,10 +28,9 @@ class HostProperties(IndicatorProperties):
      "dnsActive" : "true",
      "whoisActive" : "true"}
     """
-
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(HostProperties, self).__init__(action)
+        super(HostProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'host'

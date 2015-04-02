@@ -21,9 +21,9 @@ class SecurityLabelProperties(SecurityLabelsProperties):
      "description" : "This data is ACME CONFIDENTIAL and is not approved for external release.",
      "dateAdded" : "2014-03-17T15:29:53Z"}
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(SecurityLabelProperties, self).__init__(action)
+        super(SecurityLabelProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'securityLabel'

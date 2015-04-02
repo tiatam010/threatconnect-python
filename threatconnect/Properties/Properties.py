@@ -1,10 +1,13 @@
+from threatconnect.Config.PropertiesAction import PropertiesAction
+
+
 class Properties(object):
     """ """
-    def __init__(self):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
         self._base_owner_allowed = False
         self._base_path = '/v2/'
-        self._http_method = 'GET'
+        self._http_method = http_method
         self._resource_pagination = False
         self._resource_type = None
         self._resource_uri_attribute = None
@@ -13,7 +16,7 @@ class Properties(object):
     @property
     def http_method(self):
         """Get the http method for the request."""
-        return self._http_method
+        return self._http_method.name
 
     @property
     def resource_key(self):

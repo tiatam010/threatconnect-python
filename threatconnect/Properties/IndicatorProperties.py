@@ -9,13 +9,10 @@ from threatconnect.ResourceObject import resource_class
 class IndicatorProperties(Properties):
     """ """
 
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(IndicatorProperties, self).__init__()
-        self._action = action
-
-        if self._action == PropertiesAction.WRITE:
-            self._http_method = 'POST'
+        super(IndicatorProperties, self).__init__(http_method)
+        self._http_method = http_method
 
         self._object_attributes = [
             ResourceMethods.confidence_attr,
@@ -32,11 +29,21 @@ class IndicatorProperties(Properties):
         ]
 
     @property
-    def write_path(self):
+    def delete_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/%s/%s'
+
+    @property
+    def post_path(self):
         """ """
         return ResourceUri.INDICATORS.value + '/' + self._resource_uri_attribute
 
     @property
+    def put_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/%s/%s'
+
+    @property
     def resource_object(self):
         # return self._resource_class()
-        return resource_class(self._object_attributes, self._action)()
+        return resource_class(self._object_attributes, self._http_method)()

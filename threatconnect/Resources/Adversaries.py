@@ -20,7 +20,6 @@ class Adversaries(Resource):
         """ """
         super(Adversaries, self).__init__(tc_obj)
         self._filter_class = AdversaryFilterObject
-        self._resource_object = None
 
         # set properties for non filtered request
         properties = AdversariesProperties()
@@ -30,39 +29,39 @@ class Adversaries(Resource):
         self._request_uri = properties.base_path
         self._resource_type = properties.resource_type
 
-    def add_resource(self, adversary):
-        """ """
+    # def add_resource(self, adversary):
+    #     """ """
+    #
+    #     # set properties
+    #     resource_type = ResourceType(self._resource_type.value - 5)
+    #     properties = ResourceProperties[resource_type.name].value(PropertiesAction.WRITE)
+    #     self._http_method = properties.http_method
+    #     self._owner_allowed = False
+    #     self._resource_pagination = False
+    #     self._request_uri = properties.post_path
+    #     self._resource_type = properties.resource_type
+    #
+    #     # resource object
+    #     self._resource_object = properties.resource_object
+    #
+    #     # set indicator
+    #     self._resource_object.set_name(adversary)
+    #
+    #     return self._resource_object
 
-        # set properties
-        resource_type = ResourceType(self._resource_type.value - 5)
-        properties = ResourceProperties[resource_type.name].value(PropertiesAction.WRITE)
-        self._http_method = properties.http_method
-        self._owner_allowed = False
-        self._resource_pagination = False
-        self._request_uri = properties.write_path
-        self._resource_type = properties.resource_type
-
-        # resource object
-        self._resource_object = properties.resource_object
-
-        # set indicator
-        self._resource_object.set_name(adversary)
-
-        return self._resource_object
-
-    def get_json(self):
-        """ """
-        return self._resource_object.get_json()
-
-    def send(self):
-        """ """
-        if self._resource_object.validate():
-            data_set = self._tc._api_build_request(self, body=self.get_json())
-            for obj in data_set:
-                self.add(obj)
-        else:
-            print('Validation of adversary failed.')
-            print(self._resource_object)
+    # def get_json(self):
+    #     """ """
+    #     return self._resource_object.get_json()
+    #
+    # def send(self):
+    #     """ """
+    #     if self._resource_object.validate():
+    #         data_set = self._tc._api_build_request(self, body=self.get_json())
+    #         for obj in data_set:
+    #             self.add(obj)
+    #     else:
+    #         print('Validation of adversary failed.')
+    #         print(self._resource_object)
 
 
 # class AdversaryObject(ResourceObject):

@@ -16,7 +16,6 @@ class Groups(Resource):
     def __init__(self, tc_obj):
         """ """
         super(Groups, self).__init__(tc_obj)
-        self._object_class = GroupObject
         self._filter_class = GroupFilterObject
 
         # set properties
@@ -28,39 +27,39 @@ class Groups(Resource):
         self._resource_type = properties.resource_type
 
 
-class GroupObject(ResourceObject):
-    """ """
-    def __init__(self, data_methods):
-        """ """
-        super(GroupObject, self).__init__()
-
-        #
-        # build data to method mapping
-        #
-        self._data_methods = {}
-        for data_name, methods in data_methods.items():
-            # create variables for object
-            attribute = methods['var']
-            if attribute is not None:
-                setattr(self, attribute, None)
-
-            # create add methods for object
-            method_name = methods['set']
-            method = getattr(ResourceMethods, method_name)
-            setattr(self, method_name, types.MethodType(method, self))
-
-            # build api data name to method mapping
-            if method_name not in self._data_methods:
-                self._data_methods[data_name] = getattr(self, method_name)
-
-            # create add methods for object
-            method_name = methods['get']
-            if method_name is not None:
-                method = getattr(ResourceMethods, method_name)
-                setattr(self, method_name, types.MethodType(method, self))
-                self.add_method({
-                    'name': attribute,
-                    'method_name': method_name})
+# class GroupObject(ResourceObject):
+#     """ """
+#     def __init__(self, data_methods):
+#         """ """
+#         super(GroupObject, self).__init__()
+#
+#         #
+#         # build data to method mapping
+#         #
+#         self._data_methods = {}
+#         for data_name, methods in data_methods.items():
+#             # create variables for object
+#             attribute = methods['var']
+#             if attribute is not None:
+#                 setattr(self, attribute, None)
+#
+#             # create add methods for object
+#             method_name = methods['set']
+#             method = getattr(ResourceMethods, method_name)
+#             setattr(self, method_name, types.MethodType(method, self))
+#
+#             # build api data name to method mapping
+#             if method_name not in self._data_methods:
+#                 self._data_methods[data_name] = getattr(self, method_name)
+#
+#             # create add methods for object
+#             method_name = methods['get']
+#             if method_name is not None:
+#                 method = getattr(ResourceMethods, method_name)
+#                 setattr(self, method_name, types.MethodType(method, self))
+#                 self.add_method({
+#                     'name': attribute,
+#                     'method_name': method_name})
 
 
 class GroupFilterObject(FilterObject):

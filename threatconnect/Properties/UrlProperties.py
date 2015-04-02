@@ -30,9 +30,9 @@ class UrlProperties(IndicatorProperties):
      "text" : "http://warning4.media4.netdna-cdn.com/lpbrowser_1_6_mac/"}
     """
 
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(UrlProperties, self).__init__(action)
+        super(UrlProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'url'

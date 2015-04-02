@@ -30,9 +30,9 @@ class HostsProperties(IndicatorsProperties):
      "description" : "Steal Rat Indicators",
      "hostName" : "rss.openpicz.net"}
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(HostsProperties, self).__init__(action)
+        super(HostsProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'host'

@@ -4,6 +4,8 @@ from enum import Enum
 
 class PropertiesAction(Enum):
     """ """
-    READ = 0
-    WRITE = 1
+    GET = 0
+    POST = 1
+    PUT = 2
+    DELETE = 3
 

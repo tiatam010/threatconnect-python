@@ -34,9 +34,9 @@ class IndicatorsProperties(Properties):
          credentials and used to extract card information.',
      'summary' : '60.1.2.243'}
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(IndicatorsProperties, self).__init__()
+        super(IndicatorsProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'indicator'

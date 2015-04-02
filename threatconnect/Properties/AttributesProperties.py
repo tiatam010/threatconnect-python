@@ -24,11 +24,10 @@ class AttributesProperties(Properties):
      'displayed' : false,
      'value' : 'Actions on Objectives'}
     """
-
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
         super(AttributesProperties, self).__init__()
-        self._action = action
+        self._http_method = http_method
 
         # resource properties
         self._resource_key = 'attribute'
@@ -70,6 +69,11 @@ class AttributesProperties(Properties):
         return ResourceUri.ADVERSARIES.value + '/%s/' + self._resource_uri_attribute
 
     @property
+    def delete_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/%s/%s/%s/%s'
+
+    @property
     def email_owner_allowed(self):
         """ """
         return False
@@ -104,8 +108,18 @@ class AttributesProperties(Properties):
         return ResourceUri.INDICATORS.value + '/%s/%s/' + self._resource_uri_attribute
 
     @property
+    def post_path(self):
+        """ """
+        return ResourceUri.GROUPS.value + '/' + self._resource_uri_attribute
+
+    @property
+    def put_path(self):
+        """ """
+        return ResourceUri.GROUPS.value + '/%s/%s/%s/%s'
+
+    @property
     def resource_object(self):
-        return resource_class(self._object_attributes, self._action)()
+        return resource_class(self._object_attributes, self._http_method)()
 
     @property
     def signature_owner_allowed(self):
@@ -123,6 +137,3 @@ class AttributesProperties(Properties):
     def threat_path(self):
         return ResourceUri.THREATS.value + '/%s/' + self._resource_uri_attribute
 
-    def write_path(self):
-        """ """
-        return ResourceUri.GROUPS.value + '/' + self._resource_uri_attribute

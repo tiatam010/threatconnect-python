@@ -1,4 +1,4 @@
-from working_init import *
+from examples.working_init import *
 
 """ Working with Groups """
 
@@ -19,14 +19,15 @@ def show_data(result_obj):
 
     if result_obj.get_status().name == "SUCCESS":
         for obj in result_obj:
-            pd('Group Data', header=True)
-            pd('_api_request_url', obj.get_request_url())
-            pd('_matched_filters', obj.get_matched_filters())
-
-            # print resource data using dynamic method calls
-            for method_data in sorted(obj.get_methods()):
-                method = getattr(obj, method_data['method_name'])
-                pd(' %s' % method_data['name'], method())
+            print(obj)
+            # pd('Group Data', header=True)
+            # pd('_api_request_url', obj.get_request_url())
+            # pd('_matched_filters', obj.get_matched_filters())
+            #
+            # # print resource data using dynamic method calls
+            # for method_data in sorted(obj.get_methods()):
+            #     method = getattr(obj, method_data['method_name'])
+            #     pd(' %s' % method_data['name'], method())
     pd('Stats', header=True)
     pd('Result Count (Total)', result_obj.get_result_count())
     pd('Result Count (Filtered)', len(result_obj))
@@ -35,9 +36,10 @@ def show_data(result_obj):
 def main():
     """  """
     # get all owner names
-    owners = tc.owners()
-    owners.retrieve()
-    owners.get_owner_names()
+    # owners = tc.owners()
+    # owners.retrieve()
+    # owners.get_owner_names()
+    owners = ['Test & Org']
 
     if enable_example1:
         """ get groups for owner org """
@@ -65,7 +67,6 @@ def main():
 
         # get filter
         filter1 = groups.add_filter()
-        owners = ['Acme Corp']
         filter1.add_owner(owners)
 
         # check for any error on filter creation
@@ -91,9 +92,8 @@ def main():
 
         # get filter
         filter1 = groups.add_filter()
-        owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_email_id(45621)
+        filter1.add_email_id(747227)
 
         # check for any error on filter creation
         if filter1.error:
@@ -118,9 +118,8 @@ def main():
 
         # get filter
         filter1 = groups.add_filter()
-        owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_indicator('8.3.7.34')
+        filter1.add_indicator('bcs_bad_guy@badguysareus.com')
 
         # check for any error on filter creation
         if filter1.error:
@@ -145,14 +144,12 @@ def main():
 
         # get filter
         filter1 = groups.add_filter()
-        owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_tag('China')
+        filter1.add_tag('BCS')
 
         filter2 = groups.add_filter()
-        owners = ['Acme Corp']
         filter2.add_owner(owners)
-        filter2.add_indicator('8.3.7.34')
+        filter2.add_indicator('bcs_bad_guy@badguysareus.com')
 
         # check for any error on filter creation
         if filter1.error:

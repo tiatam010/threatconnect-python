@@ -2,7 +2,10 @@
 import sys
 
 """ custom """
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.PropertiesEnums import ApiStatus
+from threatconnect.Config.ResourceProperties import ResourceProperties
+from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.DataFormatter import (format_header, format_item)
 
 
@@ -35,6 +38,7 @@ class Resource(object):
         self._owner_allowed = False
         self._request_object = None
         self._request_uri = None
+        self._resource_object = None
         self._resource_pagination = False
         self._resource_type = None
         self._result_count = 0
@@ -86,6 +90,25 @@ class Resource(object):
         else:
             self._owners.append(data)
 
+    def add_resource(self, resource):
+        """ """
+        # set properties
+        if self._resource_type.value % 10:
+            self._resource_type = ResourceType(self._resource_type.value - 5)
+        properties = ResourceProperties[self._resource_type.name].value(PropertiesAction.POST)
+        self._http_method = properties.http_method
+        self._owner_allowed = False
+        self._resource_pagination = False
+        self._request_uri = properties.post_path
+
+        # resource object
+        self._resource_object = properties.resource_object
+
+        # set indicator
+        self._resource_object.set_name(resource)
+
+        return self._resource_object
+
     def add_resource_obj(self, data_obj):
         """ """
         if data_obj.get_id() is None:
@@ -122,6 +145,22 @@ class Resource(object):
         else:
             self._uris.append(data)
 
+    def delete(self, resource_id):
+        """ """
+        # set properties
+        if self._resource_type.value % 10:
+            self._resource_type = ResourceType(self._resource_type.value - 5)
+        properties = ResourceProperties[self._resource_type.name].value(PropertiesAction.DELETE)
+        self._http_method = properties.http_method
+        self._owner_allowed = False
+        self._resource_pagination = False
+        uri_attribute = properties.resource_uri_attribute
+        self._request_uri = properties.delete_path % (uri_attribute, resource_id)
+
+        data_set = self._tc._api_build_request(self)
+        for obj in data_set:
+            self.add(obj)
+
     def get_api_response(self):
         """ """
         return self._api_response
@@ -133,6 +172,10 @@ class Resource(object):
     def get_http_method(self):
         """ """
         return self._http_method
+
+    def get_json(self):
+        """ """
+        return self._resource_object.get_json()
 
     def get_max_results(self):
         """ """
@@ -215,6 +258,16 @@ class Resource(object):
         if not self._error_messages:
             self._tc.get_filtered_resource(self, good_filters)
 
+    def send(self):
+        """ """
+        if self._resource_object.validate():
+            data_set = self._tc._api_build_request(self, body=self.get_json())
+            for obj in data_set:
+                self.add(obj)
+        else:
+            print('Validation of email failed.')
+            print(self._resource_object)
+
     def set_current_filter(self, data):
         """ """
         self._current_filter = data
@@ -246,6 +299,23 @@ class Resource(object):
     def set_resource_type(self, data_enum):
         """ """
         self._resource_type = data_enum
+
+    def update(self, resource_id):
+        """ """
+        # set properties
+        if self._resource_type.value % 10:
+            self._resource_type = ResourceType(self._resource_type.value - 5)
+        properties = ResourceProperties[self._resource_type.name].value(PropertiesAction.PUT)
+        self._http_method = properties.http_method
+        self._owner_allowed = False
+        self._resource_pagination = False
+        uri_attribute = properties.resource_uri_attribute
+        self._request_uri = properties.put_path % (uri_attribute, resource_id)
+
+        # resource object
+        self._resource_object = properties.resource_object
+
+        return self._resource_object
 
     def __iter__(self):
         """ """

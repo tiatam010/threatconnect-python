@@ -31,10 +31,9 @@ class AddressesProperties(IndicatorsProperties):
      "description" : "test",
      "ip" : "52.64.21.202"}
     """
-
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(AddressesProperties, self).__init__(action)
+        super(AddressesProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'address'

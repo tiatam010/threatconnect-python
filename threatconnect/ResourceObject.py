@@ -9,7 +9,7 @@ from threatconnect.ResourceMethods import *
 
 
 # def resource_class(dynamic_attributes):
-def resource_class(dynamic_attribute_objs, action=PropertiesAction.READ):
+def resource_class(dynamic_attribute_objs, action=PropertiesAction.GET):
     """
     This method will dynamically generate a ResourceObject class given
     an AttributeDef object. This method uses the passed object
@@ -67,19 +67,20 @@ def resource_class(dynamic_attribute_objs, action=PropertiesAction.READ):
                 setattr(self, a_obj.name, a_obj.type)
 
                 # add required attribute to required list
-                if a_obj.required and action == PropertiesAction.WRITE:
+                if a_obj.required and action == PropertiesAction.POST:
                     self.add_required_attr(a_obj.name)
 
                 # add writable to writable list
-                if a_obj.writable and action == PropertiesAction.WRITE:
+                if a_obj.writable and (action == PropertiesAction.POST or action == PropertiesAction.PUT):
                     self.add_writable_attr(a_obj.api_names[0], a_obj.name)
+                    self.add_method(a_obj.method_set)
 
                 # add get method
                 get_method = getattr(threatconnect.ResourceMethods, a_obj.method_get)
                 setattr(self, a_obj.method_get, types.MethodType(get_method, self))
 
                 # only add get methods
-                if action == PropertiesAction.READ:
+                if action == PropertiesAction.GET:
                     self.add_method(a_obj.method_get)
 
                 # add set method
@@ -87,8 +88,7 @@ def resource_class(dynamic_attribute_objs, action=PropertiesAction.READ):
                 setattr(self, a_obj.method_set, types.MethodType(set_method, self))
 
                 # only add write methods
-                if action == PropertiesAction.WRITE and a_obj.writable:
-                    self.add_method(a_obj.method_set)
+                # if action == PropertiesAction.POST and a_obj.writable:
 
                 # if a_obj.api_name is not None:
                 for api_name in a_obj.api_names:
@@ -139,8 +139,6 @@ def resource_class(dynamic_attribute_objs, action=PropertiesAction.READ):
             json_dict = {}
             for key, val in self._writable_attrs.items():
                 data_val = getattr(self, val)
-                print(key)
-                print(data_val)
                 if data_val is not None:
                     json_dict[key] = data_val
             return json.dumps(json_dict)

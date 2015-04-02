@@ -8,13 +8,10 @@ from threatconnect.ResourceObject import resource_class
 
 class GroupProperties(Properties):
     """ """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(GroupProperties, self).__init__()
-        self._action = action
-
-        if self._action == PropertiesAction.WRITE:
-            self._http_method = 'POST'
+        super(GroupProperties, self).__init__(http_method)
+        self._http_method = http_method
 
         self._object_attributes = [
             ResourceMethods.date_added_attr,
@@ -31,10 +28,20 @@ class GroupProperties(Properties):
     #     return self._filter_methods
 
     @property
-    def write_path(self):
+    def delete_path(self):
+        """ """
+        return ResourceUri.GROUPS.value + '/%s/%s'
+
+    @property
+    def post_path(self):
         """ """
         return ResourceUri.GROUPS.value + '/' + self._resource_uri_attribute
 
     @property
+    def put_path(self):
+        """ """
+        return ResourceUri.GROUPS.value + '/%s/%s'
+
+    @property
     def resource_object(self):
-        return resource_class(self._object_attributes, self._action)()
+        return resource_class(self._object_attributes, self._http_method)()

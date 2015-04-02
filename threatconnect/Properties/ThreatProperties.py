@@ -23,9 +23,9 @@ class ThreatProperties(GroupProperties):
      "webLink" : "https://app.threatconnect.com/tc/auth/threat/
          threat.xhtml?threat=728252"}
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(ThreatProperties, self).__init__(action)
+        super(ThreatProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'threat'

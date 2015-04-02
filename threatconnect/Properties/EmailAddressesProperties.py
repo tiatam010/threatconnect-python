@@ -30,9 +30,9 @@ class EmailAddressesProperties(IndicatorsProperties):
      "address" : "elder.gudiel@telefonica.com"}
 
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(EmailAddressesProperties, self).__init__(action)
+        super(EmailAddressesProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'emailAddress'

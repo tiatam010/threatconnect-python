@@ -25,9 +25,9 @@ class SignatureProperties(GroupProperties):
      "fileName" : "APT_EPO_HBS.yara"}
 
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(SignatureProperties, self).__init__(action)
+        super(SignatureProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'signature'
@@ -39,6 +39,7 @@ class SignatureProperties(GroupProperties):
         self._object_attributes.remove(ResourceMethods.type_attr)
         self._object_attributes.append(ResourceMethods.download_attr)
         self._object_attributes.append(ResourceMethods.file_name_attr)
+        self._object_attributes.append(ResourceMethods.file_text_attr)
         self._object_attributes.append(ResourceMethods.file_type_attr)
 
     @property

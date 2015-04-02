@@ -15,9 +15,9 @@ class TagProperties(TagsProperties):
       "webLink" : "https://app.threatconnect.com/tc/auth/tags/
           tag.xhtml?tag=32bit&owner=Acme Corp"}
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(TagProperties, self).__init__(action)
+        super(TagProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'tag'

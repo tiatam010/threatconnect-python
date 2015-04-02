@@ -26,9 +26,9 @@ class EmailsProperties(GroupsProperties):
      "webLink" : "https://app.threatconnect.com/tc/auth/email/email.xhtml?email=169256",
      "score" : 300}
     """
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(EmailsProperties, self).__init__(action)
+        super(EmailsProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'email'

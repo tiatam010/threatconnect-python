@@ -194,7 +194,7 @@ class ThreatConnect:
             resource_obj.add_status(ApiStatus[api_response_dict['status'].upper()])
 
             # process the response data
-            if api_response_dict['status'] == 'Success':
+            if api_response_dict['status'] == 'Success' and http_method != 'DELETE':
                 processed_data = self._api_process_response(resource_obj, api_response)
 
                 #
@@ -202,6 +202,7 @@ class ThreatConnect:
                 #
                 # TODO: there is probably a better way to do this, but for now this is it.
                 if (resource_type == ResourceType.SIGNATURE and
+                        http_method == 'GET' and
                         resource_obj.request_object.download):
 
                     request_uri += '/download'
@@ -210,8 +211,9 @@ class ThreatConnect:
                     api_response = self._api_request(
                         request_uri, request_payload={}, http_method=http_method, body=body)
 
-                    if api_response['status'] == 'Success':
-                        processed_data[0].set_download(api_response['data']['signatureDownload'])
+                    if api_response.status_code == 200:
+                        # processed_data[0].set_download(api_response['data']['signatureDownload'])
+                        processed_data[0].set_download(api_response.content)
 
                 obj_list.extend(processed_data)
         return obj_list
@@ -308,13 +310,14 @@ class ThreatConnect:
         # api_request = Request(
         #     http_method, url, params=request_payload)
         api_request = Request(
-            http_method, url, data=body, params=request_payload)
+            http_method, url, data=body)
+        # http_method, url, data=body, params=request_payload)
         request_prepped = api_request.prepare()
         # get path url to add to header (required for hmac)
         path_url = request_prepped.path_url
         # TODO: add content-type to api_request_header method
         api_headers = self._api_request_headers(http_method, path_url)
-        if http_method in ['POST', 'PUSH']:
+        if http_method in ['POST', 'PUT']:
             api_headers['Content-Type'] = 'application/json'
             api_headers['Content-Length'] = len(body)
         request_prepped.prepare_headers(api_headers)
@@ -330,9 +333,10 @@ class ThreatConnect:
 
         # DEBUG
         # pd('dir', dir(api_response))
-        # pd('url', api_response.url)
-        # pd('body', request_prepped.body)
+        pd('url', api_response.url)
         pd('text', api_response.text)
+        pd('content', api_response.content)
+        pd('status_code', api_response.status_code)
 
         # pd('path_url', path_url)
 

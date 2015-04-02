@@ -24,7 +24,6 @@ class Indicators(Resource):
         # self._object_class = IndicatorObject
         self._filter_class = IndicatorFilterObject
         self._modified_since = None
-        self._resource_object = None
 
         # set properties
         properties = IndicatorsProperties()
@@ -65,11 +64,11 @@ class Indicators(Resource):
 
             # set properties
             resource_type = ResourceType(resource_type.value - 5)
-            properties = ResourceProperties[resource_type.name].value(PropertiesAction.WRITE)
+            properties = ResourceProperties[resource_type.name].value(PropertiesAction.POST)
             self._http_method = properties.http_method
             self._owner_allowed = False
             self._resource_pagination = False
-            self._request_uri = properties.write_path
+            self._request_uri = properties.post_path
             self._resource_type = properties.resource_type
 
             # resource object
@@ -124,7 +123,7 @@ class Indicators(Resource):
 #
 #             # set properties
 #             self._resource_type = ResourceType(resource_type.value - 5)
-#             self._properties = ResourceProperties[self._resource_type.name].value(PropertiesAction.WRITE)
+#             self._properties = ResourceProperties[self._resource_type.name].value(PropertiesAction.POST)
 #
 #             # resource object
 #             self._resource_object = self._properties.resource_object

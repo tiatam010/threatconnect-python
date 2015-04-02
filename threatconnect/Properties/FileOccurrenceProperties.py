@@ -17,9 +17,9 @@ class FileOccurrenceProperties(FileOccurrencesProperties):
       "date" : "2014-09-28T00:00:00Z"}
     """
 
-    def __init__(self, action=PropertiesAction.READ):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(FileOccurrenceProperties, self).__init__(action)
+        super(FileOccurrenceProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'fileOccurrence'
