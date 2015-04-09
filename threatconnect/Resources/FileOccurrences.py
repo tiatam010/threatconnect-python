@@ -2,9 +2,10 @@
 import types
 
 """ custom """
-from threatconnect import FilterMethods, ResourceMethods
+from threatconnect import FilterMethods
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Properties.FileOccurrencesProperties import FileOccurrencesProperties
-from threatconnect.Resource import Resource, ResourceObject
+from threatconnect.Resource import Resource
 from threatconnect.FilterObject import FilterObject
 
 """ Note: PEP 8 intentionally ignored for variable/methods to match API standard. """
@@ -16,7 +17,6 @@ class FileOccurrences(Resource):
         """ """
         super(FileOccurrences, self).__init__(tc_obj)
         self._filter_class = FileOccurrenceFilterObject
-        self._object_class = FileOccurrenceObject
 
         # set properties
         properties = FileOccurrencesProperties()
@@ -26,40 +26,19 @@ class FileOccurrences(Resource):
         self._request_uri = properties.base_path
         self._resource_type = properties.resource_type
 
-
-class FileOccurrenceObject(ResourceObject):
-    """ """
-    def __init__(self, data_methods):
+    def add(self, file_hash):
         """ """
-        super(FileOccurrenceObject, self).__init__()
+        # set properties
+        properties = FileOccurrencesProperties(PropertiesAction.POST)
+        self._http_method = properties.http_method
+        self._owner_allowed = False
+        self._resource_pagination = False
+        self._request_uri = properties.post_path % file_hash
 
-        #
-        # build data to method mapping
-        #
-        self._data_methods = {}
-        for data_name, methods in data_methods.items():
-            # create variables for object
-            attribute = methods['var']
-            if attribute is not None:
-                setattr(self, attribute, None)
+        # resource object
+        self._resource_object = properties.resource_object
 
-            # create add methods for object
-            method_name = methods['set']
-            method = getattr(ResourceMethods, method_name)
-            setattr(self, method_name, types.MethodType(method, self))
-
-            # build api data name to method mapping
-            if method_name not in self._data_methods:
-                self._data_methods[data_name] = getattr(self, method_name)
-
-            # create add methods for object
-            method_name = methods['get']
-            if method_name is not None:
-                method = getattr(ResourceMethods, method_name)
-                setattr(self, method_name, types.MethodType(method, self))
-                self.add_method({
-                    'name': attribute,
-                    'method_name': method_name})
+        return self._resource_object
 
 
 class FileOccurrenceFilterObject(FilterObject):
@@ -78,7 +57,7 @@ class FileOccurrenceFilterObject(FilterObject):
         self._resource_type = self._properties.resource_type
 
         #
-        # add filter methods
+        # add_obj filter methods
         #
         for method_name in self._properties.filters:
             method = getattr(FilterMethods, method_name)

@@ -20,6 +20,7 @@ from threatconnect.Properties.HostProperties import HostProperties
 from threatconnect.Properties.HostsProperties import HostsProperties
 from threatconnect.Properties.IncidentProperties import IncidentProperties
 from threatconnect.Properties.IncidentsProperties import IncidentsProperties
+from threatconnect.Properties.IndicatorProperties import IndicatorProperties
 from threatconnect.Properties.IndicatorsProperties import IndicatorsProperties
 from threatconnect.Properties.OwnersProperties import OwnersProperties
 from threatconnect.Properties.SecurityLabelProperties import SecurityLabelProperties
@@ -73,6 +74,7 @@ class ResourceProperties(Enum):
     HOSTS = HostsProperties
     INCIDENT = IncidentProperties
     INCIDENTS = IncidentsProperties
+    INDICATOR = IndicatorProperties
     INDICATORS = IndicatorsProperties
     OWNERS = OwnersProperties
     SECURITY_LABEL = SecurityLabelProperties
@@ -87,6 +89,7 @@ class ResourceProperties(Enum):
     URLS = UrlsProperties
     VICTIM = VictimProperties
     VICTIMS = VictimsProperties
+    VICTIM_ASSET = VictimAssetsProperties
     VICTIM_ASSETS = VictimAssetsProperties
     VICTIM_EMAIL_ADDRESS = VictimEmailAddressProperties
     VICTIM_EMAIL_ADDRESSES = VictimEmailAddressesProperties

@@ -26,5 +26,3 @@ class VictimEmailAddressesProperties(VictimAssetsProperties):
         self._resource_pagination = False
         self._resource_type = ResourceType.VICTIM_EMAIL_ADDRESSES
         self._resource_uri_attribute += '/emailAddresses'
-
-        self._data_methods.pop('name')

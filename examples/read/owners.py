@@ -16,10 +16,6 @@ def show_data(result_obj):
     if result_obj.get_status().name == "SUCCESS":
         for obj in result_obj:
             print(obj)
-            # pd(obj.get_name(), header=True)
-            # pd('id', obj.get_id())
-            # pd('type', obj.get_type())
-            # pd('matched filters', obj.get_matched_filters())
     pd('Stats', header=True)
     pd('Result Count (Total)', result_obj.get_result_count())
     pd('Result Count (Filtered)', len(result_obj))

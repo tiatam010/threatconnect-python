@@ -1,4 +1,4 @@
-from working_init import *
+from examples.working_init import *
 
 """ Get FileOccurrence """
 enable_example1 = False
@@ -14,14 +14,7 @@ def show_data(result_obj):
 
     if result_obj.get_status().name == "SUCCESS":
         for obj in result_obj:
-            pd('File Occurrence Data', header=True)
-            pd('_api_request_url', obj.get_request_url())
-            pd('_matched_filters', obj.get_matched_filters())
-
-            # print resource data using dynamic method calls
-            for method_data in sorted(obj.get_methods()):
-                method = getattr(obj, method_data['method_name'])
-                pd(' %s' % method_data['name'], method())
+            print(obj)
     pd('Stats', header=True)
     pd('Result Count (Total)', result_obj.get_result_count())
     pd('Result Count (Filtered)', len(result_obj))
@@ -30,9 +23,10 @@ def show_data(result_obj):
 def main():
     """ """
     # get all owner names
-    owners = tc.owners()
-    owners.retrieve()
-    owners.get_owner_names()
+    # owners = tc.owners()
+    # owners.retrieve()
+    # owners.get_owner_names()
+    owners = ['Test & Org']
 
     if enable_example1:
 
@@ -44,9 +38,8 @@ def main():
 
         # get filter
         filter1 = file_occurrences.add_filter()
-        owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_hash('6B28B82CDCA09580100B67918E2F963CAAC8FBE2054F04AD26DCC5A5D47A52AA')
+        filter1.add_hash('AC11BA81F1DC6D3637589FFA04366599')
 
         # check for any error on filter creation
         if filter1.error:
@@ -70,9 +63,8 @@ def main():
 
         # get filter
         filter1 = file_occurrences.add_filter()
-        owners = ['Acme Corp']
         filter1.add_owner(owners)
-        filter1.add_hash('6B28B82CDCA09580100B67918E2F963CAAC8FBE2054F04AD26DCC5A5D47A52AA', '8771')
+        filter1.add_hash('AC11BA81F1DC6D3637589FFA04366599', '14727')
 
         # check for any error on filter creation
         if filter1.error:

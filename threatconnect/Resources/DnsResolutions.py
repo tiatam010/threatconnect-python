@@ -6,7 +6,7 @@ import types
 from threatconnect import FilterMethods, ResourceMethods
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.DnsResolutionProperties import DnsResolutionProperties
-from threatconnect.Resource import Resource, ResourceObject
+from threatconnect.Resource import Resource
 from threatconnect.FilterObject import FilterObject
 
 """ Note: PEP 8 intentionally ignored for variable/methods to match API standard. """
@@ -29,7 +29,7 @@ class DnsResolutions(Resource):
         self._resource_type = properties.resource_type
 
 
-class DnsResolutionObject(ResourceObject):
+class DnsResolutionObject(object):
     """ """
     def __init__(self, resource_type_enum=None):
         """ """
@@ -57,7 +57,7 @@ class DnsResolutionObject(ResourceObject):
             if attribute is not None:
                 setattr(self, attribute, None)
 
-            # create add methods for object
+            # create add_obj methods for object
             method_name = methods['set']
             method = getattr(ResourceMethods, method_name)
             setattr(self, method_name, types.MethodType(method, self))
@@ -66,7 +66,7 @@ class DnsResolutionObject(ResourceObject):
             if method_name not in self._data_methods:
                 self._data_methods[data_name] = getattr(self, method_name)
 
-            # create add methods for object
+            # create add_obj methods for object
             method_name = methods['get']
             if method_name is not None:
                 method = getattr(ResourceMethods, method_name)
@@ -95,7 +95,7 @@ class DnsResolutionFilterObject(FilterObject):
         self._resource_type = self._properties.resource_type
 
         #
-        # add filter methods
+        # add_obj filter methods
         #
         for method_name in self._properties.filters:
             method = getattr(FilterMethods, method_name)

@@ -92,6 +92,7 @@ class IndicatorsProperties(Properties):
         """ """
         return [
             'add_adversary_id',
+            'add_date_added',
             'add_email_id',
             'add_incident_id',
             'add_indicator',
@@ -106,6 +107,11 @@ class IndicatorsProperties(Properties):
             'get_resource_pagination',
             'get_request_uri',
             'get_resource_type']
+
+    # @property
+    # def association_indicator_path(self):
+    #     """ """
+    #     return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/indicators'
 
     @property
     def incident_owner_allowed(self):
@@ -125,7 +131,7 @@ class IndicatorsProperties(Properties):
 
     @property
     def resource_object(self):
-        return resource_class(self._object_attributes)()
+        return resource_class(self._object_attributes, self._resource_type, self._http_method)()
 
     @property
     def security_label_owner_allowed(self):

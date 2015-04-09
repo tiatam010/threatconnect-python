@@ -16,7 +16,7 @@ def main():
 
     if enable_add:
         """ """
-        resource = resources.add_resource('bcs detection signature')
+        resource = resources.add('bcs detection signature')
         resource.set_file_name('bcs_detection.txt')
         resource.set_file_type('YARA')
         file_text = '"rule example_sig : example\n{\n'
@@ -28,7 +28,7 @@ def main():
         file_text += '59 F7 F9}\n    condition:\n '
         file_text += '$a or $b or $c\n}"'
         resource.set_file_text(file_text)
-        resources.send()
+        resources.commit()
 
         for res in resources:
             print(res)
@@ -49,10 +49,11 @@ def main():
         file_text += '59 F7 F9}\n    condition:\n'
         file_text += '$a or $b or $c\n}"'
         resource.set_file_text(file_text)
-        resources.send()
+        resources.commit()
 
     if enable_del:
         resources.delete(resource_id)
 
 if __name__ == "__main__":
     main()
+    sys.exit()

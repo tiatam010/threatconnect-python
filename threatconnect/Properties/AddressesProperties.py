@@ -1,5 +1,4 @@
 """ custom """
-import types
 from threatconnect import ResourceMethods
 from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType

@@ -19,14 +19,6 @@ def show_data(result_obj):
     if result_obj.get_status().name == "SUCCESS":
         for obj in result_obj:
             print(obj)
-            # pd('Attribute Data', header=True)
-            # pd('_api_request_url', obj.get_request_url())
-            # pd('_matched_filters', obj.get_matched_filters())
-            #
-            # # print resource data using dynamic method calls
-            # for method_data in sorted(obj.get_methods()):
-            #     method = getattr(obj, method_data['method_name'])
-            #     pd(' %s' % method_data['name'], method())
     pd('Stats', header=True)
     pd('Result Count (Total)', result_obj.get_result_count())
     pd('Result Count (Filtered)', len(result_obj))

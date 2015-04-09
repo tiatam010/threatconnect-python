@@ -1,4 +1,5 @@
 """ custom """
+from threatconnect import ResourceMethods
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.VictimAssetsProperties import VictimAssetsProperties
 
@@ -27,6 +28,6 @@ class VictimSocialNetworksProperties(VictimAssetsProperties):
         self._resource_type = ResourceType.VICTIM_SOCIAL_NETWORKS
         self._resource_uri_attribute += '/socialNetworks'
 
-        # data methods
-        self._data_methods.pop('name')
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.name_attr)
 

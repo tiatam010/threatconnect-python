@@ -2,9 +2,12 @@
 import types
 
 """ custom """
-from threatconnect import FilterMethods, ResourceMethods
+from threatconnect import FilterMethods
+from threatconnect.Config.ResourceProperties import ResourceProperties
+from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.VictimsProperties import VictimsProperties
-from threatconnect.Resource import Resource, ResourceObject
+from threatconnect.RequestObject import RequestObject
+from threatconnect.Resource import Resource
 from threatconnect.FilterObject import FilterObject
 
 """ Note: PEP 8 intentionally ignored for variable/methods to match API standard. """
@@ -16,7 +19,6 @@ class Victims(Resource):
         """ """
         super(Victims, self).__init__(tc_obj)
         self._filter_class = VictimFilterObject
-        self._object_class = VictimObject
 
         # set properties
         properties = VictimsProperties()
@@ -25,41 +27,6 @@ class Victims(Resource):
         self._resource_pagination = properties.resource_pagination
         self._request_uri = properties.base_path
         self._resource_type = properties.resource_type
-
-
-class VictimObject(ResourceObject):
-    """ """
-    def __init__(self, data_methods):
-        """ """
-        super(VictimObject, self).__init__()
-
-        #
-        # build data to method mapping
-        #
-        self._data_methods = {}
-        for data_name, methods in data_methods.items():
-            # create variables for object
-            attribute = methods['var']
-            if attribute is not None:
-                setattr(self, attribute, None)
-
-            # create add methods for object
-            method_name = methods['set']
-            method = getattr(ResourceMethods, method_name)
-            setattr(self, method_name, types.MethodType(method, self))
-
-            # build api data name to method mapping
-            if method_name not in self._data_methods:
-                self._data_methods[data_name] = getattr(self, method_name)
-
-            # create add methods for object
-            method_name = methods['get']
-            if method_name is not None:
-                method = getattr(ResourceMethods, method_name)
-                setattr(self, method_name, types.MethodType(method, self))
-                self.add_method({
-                    'name': attribute,
-                    'method_name': method_name})
 
 
 class VictimFilterObject(FilterObject):
@@ -77,9 +44,37 @@ class VictimFilterObject(FilterObject):
         self._resource_type = self._properties.resource_type
 
         #
-        # add filter methods
+        # add_obj filter methods
         #
         for method_name in self._properties.filters:
             method = getattr(FilterMethods, method_name)
             setattr(self, method_name, types.MethodType(method, self))
+
+    # special case for indicator associations
+    def filter_associations(self, base_resource_type, identifier):
+        """Get victims associated with base resource object
+        GET /v2/groups/adversaries/747266/victims
+
+        GET /v2/indicators/addresses/4.3.2.1/victims
+
+        """
+        base_properties = ResourceProperties[base_resource_type.name].value()
+        print(base_resource_type)
+
+        request_uri = base_properties.base_path + '/'
+        request_uri += str(identifier)
+        request_uri += '/victims'
+
+        description = 'Get victim associations for %s resource (%s).' % (
+            base_resource_type.name.lower(), str(identifier))
+
+        filter_type = 'victim association'
+        ro = RequestObject(
+            filter_type, '%s|%s' % (base_resource_type.name.lower(), identifier))
+        ro.set_description(description)
+        ro.set_owner_allowed(False)
+        ro.set_resource_pagination(True)
+        ro.set_request_uri(request_uri)
+        ro.set_resource_type(ResourceType.VICTIMS)
+        self._add_request_objects(ro)
 

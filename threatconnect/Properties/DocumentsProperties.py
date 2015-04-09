@@ -36,6 +36,8 @@ class DocumentsProperties(GroupsProperties):
 
         # update data methods
         self._object_attributes.remove(ResourceMethods.type_attr)
+        # added for write functionality
+        self._object_attributes.append(ResourceMethods.file_name_attr)
 
         # update filter methods
         self._filter_methods.remove('add_adversary_id')

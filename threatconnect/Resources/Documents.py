@@ -3,10 +3,8 @@ import types
 
 """ custom """
 from threatconnect import FilterMethods
-from threatconnect.Config.PropertiesAction import PropertiesAction
-from threatconnect.Config.ResourceType import ResourceType
-from threatconnect.Config.ResourceProperties import ResourceProperties
 from threatconnect.Properties.DocumentsProperties import DocumentsProperties
+from threatconnect.RequestObject import RequestObject
 from threatconnect.Resource import Resource
 from threatconnect.FilterObject import FilterObject
 
@@ -15,6 +13,7 @@ from threatconnect.FilterObject import FilterObject
 
 class Documents(Resource):
     """ """
+
     def __init__(self, tc_obj):
         """ """
         super(Documents, self).__init__(tc_obj)
@@ -22,84 +21,32 @@ class Documents(Resource):
 
         # set properties for non filtered request
         properties = DocumentsProperties()
-        self._http_method = properties.http_method
-        self._owner_allowed = properties.base_owner_allowed
-        self._resource_pagination = properties.resource_pagination
-        self._request_uri = properties.base_path
         self._resource_type = properties.resource_type
 
-    # def add_resource(self, document):
-    #     """ """
-    #
+        # create default request object for non-filtered requests
+        self._request_object = RequestObject('documents', 'default')
+        self._request_object.set_http_method(properties.http_method)
+        self._request_object.set_owner_allowed(properties.base_owner_allowed)
+        self._request_object.set_request_uri(properties.base_path)
+        self._request_object.set_resource_pagination(properties.resource_pagination)
+        self._request_object.set_resource_type(properties.resource_type)
+
+    # def upload(self, data_id, data):
     #     # set properties
-    #     resource_type = ResourceType(self._resource_type.value - 5)
-    #     properties = ResourceProperties[resource_type.name].value(PropertiesAction.WRITE)
-    #     self._http_method = properties.http_method
-    #     self._owner_allowed = False
-    #     self._resource_pagination = False
-    #     self._request_uri = properties.post_path
-    #     self._resource_type = properties.resource_type
+    #     if self._resource_type.value % 10:
+    #         self._resource_type = ResourceType(self._resource_type.value - 5)
+    #     properties = ResourceProperties[self._resource_type.name].value(PropertiesAction.POST)
     #
-    #     # resource object
-    #     self._resource_object = properties.resource_object
+    #     http_method = properties.http_method
+    #     request_uri = properties.upload_path % data_id
     #
-    #     # set indicator
-    #     self._resource_object.set_name(document)
-    #
-    #     return self._resource_object
-    #
-    # def get_json(self):
-    #     """ """
-    #     return self._resource_object.get_json()
-    #
-    # def send(self):
-    #     """ """
-    #     if self._resource_object.validate():
-    #         data_set = self._tc._api_build_request(self, body=self.get_json())
-    #         for obj in data_set:
-    #             self.add(obj)
-    #     else:
-    #         print('Validation of document failed.')
-    #         print(self._resource_object)
-
-
-# class DocumentObject(ResourceObject):
-#     """ """
-#     def __init__(self, data_methods):
-#         """ """
-#         super(DocumentObject, self).__init__()
-#
-#         #
-#         # build data to method mapping
-#         #
-#         self._data_methods = {}
-#         for data_name, methods in data_methods.items():
-#             # create variables for object
-#             attribute = methods['var']
-#             if attribute is not None:
-#                 setattr(self, attribute, None)
-#
-#             # create add methods for object
-#             method_name = methods['set']
-#             method = getattr(ResourceMethods, method_name)
-#             setattr(self, method_name, types.MethodType(method, self))
-#
-#             # build api data name to method mapping
-#             if method_name not in self._data_methods:
-#                 self._data_methods[data_name] = getattr(self, method_name)
-#
-#             # create add methods for object
-#             method_name = methods['get']
-#             if method_name is not None:
-#                 method = getattr(ResourceMethods, method_name)
-#                 setattr(self, method_name, types.MethodType(method, self))
-#                 self.add_method({
-#                     'name': attribute,
-#                     'method_name': method_name})
+    #     api_response = self._tc._api_request(request_uri, request_payload={}, http_method=http_method, body=data,
+    #         content_type='application/octet-stream')
 
 
 class DocumentFilterObject(FilterObject):
     """ """
+
     def __init__(self):
         """ """
         super(DocumentFilterObject, self).__init__()
@@ -107,13 +54,18 @@ class DocumentFilterObject(FilterObject):
 
         # define properties for resource type
         self._properties = DocumentsProperties()
-        self._owner_allowed = self._properties.base_owner_allowed
-        self._resource_pagination = self._properties.resource_pagination
-        self._request_uri = self._properties.base_path
         self._resource_type = self._properties.resource_type
 
+        # create default request object for filtered request with only owners
+        self._request_object = RequestObject('documents', 'default')
+        self._request_object.set_http_method(self._properties.http_method)
+        self._request_object.set_owner_allowed(self._properties.base_owner_allowed)
+        self._request_object.set_request_uri(self._properties.base_path)
+        self._request_object.set_resource_pagination(self._properties.resource_pagination)
+        self._request_object.set_resource_type(self._properties.resource_type)
+
         #
-        # add filter methods
+        # add_obj filter methods
         #
         for method_name in self._properties.filters:
             method = getattr(FilterMethods, method_name)

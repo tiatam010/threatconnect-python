@@ -6,19 +6,18 @@ from examples.working_init import *
 
 enable_add = True
 enable_upd = True
-enable_del = True
+enable_del = False
 
 
 def main():
     """ """
-    resources = tc.documents()
+    resources = tc.threats()
     resource_id = None
 
     if enable_add:
         """ """
-        resource = resources.add_resource('bcs bad doc')
-        resource.set_file_name('bcs.doc')
-        resources.send()
+        resource = resources.add('bcs bad guy')
+        resources.commit()
 
         for res in resources:
             print(res)
@@ -27,12 +26,12 @@ def main():
     if enable_upd:
         """ """
         resource = resources.update(resource_id)
-        resource.set_name('bcs really bad doc')
-        resource.set_file_name('bcs.docx')
-        resources.send()
+        resource.set_name('bcs really bad guy')
+        resources.commit()
 
     if enable_del:
         resources.delete(resource_id)
 
 if __name__ == "__main__":
     main()
+    sys.exit()

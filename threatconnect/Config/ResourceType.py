@@ -33,7 +33,8 @@ class ResourceType(Enum):
     VICTIMS = 215
 
     # indicators
-    INDICATORS = 500
+    INDICATOR = 500
+    INDICATORS = 505
     ADDRESS = 510
     ADDRESSES = 515
     EMAIL_ADDRESS = 520
@@ -46,7 +47,8 @@ class ResourceType(Enum):
     URLS = 555
 
     # victims
-    VICTIM_ASSETS = 1000
+    VICTIM_ASSET = 1000
+    VICTIM_ASSETS = 1005
     VICTIM_EMAIL_ADDRESS = 1010
     VICTIM_EMAIL_ADDRESSES = 1015
     VICTIM_NETWORK_ACCOUNT = 1020

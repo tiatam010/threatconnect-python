@@ -1,8 +1,5 @@
 import inspect
 import os
-import re
-import sys
-import types
 
 
 def format_header(header):
@@ -14,25 +11,37 @@ def format_header(header):
     return "\n%s %s %s\n" % (l_wrapper, header, r_wrapper)
 
 
-def format_item(key, val):
+def format_item(key, val, indent=0):
     """  """
     formatted_item = ''
+    formatter = ' ' * indent + '%-' + str(25 - indent) + 's%-25s\n'
     if isinstance(val, list):
         first_run = True
         for item in val:
-            if first_run:
-                formatted_item += '%-25s%-25s\n' % ('%s:' % key, item.encode('utf-8').strip())
+            if isinstance(item, (str, unicode, int, bool)):
+                if first_run:
+                    formatted_item += formatter % ('%s:' % key, item.encode('utf-8').strip())
+                else:
+                    formatted_item += formatter % ('', item.encode('utf-8').strip())
+            elif isinstance(item, type(item)):
+                formatted_item += '%s\n' % str(item)
             else:
-                formatted_item += '%-25s%-25s\n' % ('', item.encode('utf-8').strip())
+                pd('Else')
+                if first_run:
+                    formatted_item += formatter % ('%s:' % key, item.encode('utf-8').strip())
+                else:
+                    formatted_item += formatter % ('', item.encode('utf-8').strip())
             first_run = False
     elif isinstance(val, str):
-        formatted_item += "%-25s%-25s\n" % ('%s:' % key, val.encode('utf-8').strip())
+        formatter = ' ' * indent + '%-' + str(25 - indent) + 's%-25s\n'
+        formatted_item += formatter % ('%s:' % key, val.encode('utf-8').strip())
     else:
-        formatted_item += "%-25s%-25s\n" % ('%s:' % key, val)
+        formatter = ' ' * indent + '%-' + str(25 - indent) + 's%-25s\n'
+        formatted_item += formatter % ('%s:' % key, val)
     return formatted_item
 
 
-def pd(title='', msg='', header=False, color=False, indent=0):
+def pd(title='', msg='', header=False):
     # get the calling file, module and line number
     call_file = os.path.basename(inspect.stack()[1][0].f_code.co_filename)
     # call_module = inspect.stack()[1][0].f_globals['__name__'].lstrip('Functions.')
@@ -46,24 +55,28 @@ def pd(title='', msg='', header=False, color=False, indent=0):
 
         print('\n%s %s %s\n' % (l_wrapper, title, r_wrapper))
     else:
-        pd_format_msg(title, msg, module_data, indent)
+        pd_format_msg(title, msg, module_data)
 
 
-def pd_format_msg(title, msg, module_data='', indent=0):
+def pd_format_msg(title, msg, module_data=''):
     formatted_item = ''
     if isinstance(msg, list):
         first_run = True
         for item in msg:
             if first_run:
-                formatted_item += '%-25s%-75s' % ('%s:' % title, item)
+                formatted_item += '%-25s%-75s\n' % ('%s:' % title, item)
             else:
-                formatted_item += '%-25s%-75s' % ('', item)
+                formatted_item += '%-25s%-75s\n' % ('', item)
             first_run = False
+    elif isinstance(msg, dict):
+        formatted_item += '%-25s:\n' % title
+        for k, v in msg.items():
+            formatted_item += '%-25s%-75s\n' % ('%s:' % k, v)
     elif isinstance(msg, str):
-        formatted_item += "%-25s%-75s" % ('%s:' % title, msg)
+        formatted_item += "%-25s%-75s\n" % ('%s:' % title, msg)
     else:
-        formatted_item += "%-25s%-75s" % ('%s:' % title, msg)
-    print(formatted_item)
+        formatted_item += "%-25s%-75s\n" % ('%s:' % title, msg)
+    print(formatted_item.rstrip('\n'))
     # print('\t%s' % module_data)
 
     # if title is not None:

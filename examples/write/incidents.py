@@ -1,5 +1,4 @@
 """ standard """
-import sys
 
 """ custom """
 from examples.working_init import *
@@ -11,25 +10,25 @@ enable_del = True
 
 def main():
     """ """
-    resources = tc.adversaries()
+    resources = tc.incidents()
     resource_id = None
 
     if enable_add:
         """ """
-        resources.add_resource('bcs bad guy')
-        resources.send()
+        resource = resources.add('bcs did it')
+        resource.set_event_date('2015-03-26T00:00:00Z ')
+        resources.commit()
 
         for res in resources:
             print(res)
             resource_id = res.get_id()
 
     if enable_upd:
+        """ """
         resource = resources.update(resource_id)
-        resource.set_name('bcs really bad guy')
-        resources.send()
-
-        for res in resources:
-            print(res)
+        resource.set_name('bcs did it again')
+        resource.set_event_date('2015-03-26T12:00:00Z ')
+        resources.commit()
 
     if enable_del:
         resources.delete(resource_id)

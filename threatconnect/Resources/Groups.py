@@ -2,10 +2,13 @@
 import types
 
 """ custom modules """
-from threatconnect import FilterMethods, ResourceMethods
-from threatconnect.Properties.GroupsProperties import GroupsProperties
-from threatconnect.Resource import Resource, ResourceObject
+from threatconnect import FilterMethods
+from threatconnect.Config.ResourceProperties import ResourceProperties
+from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.FilterObject import FilterObject
+from threatconnect.Properties.GroupsProperties import GroupsProperties
+from threatconnect.RequestObject import RequestObject
+from threatconnect.Resource import Resource
 
 """ Note: PEP 8 intentionally ignored for variable/methods to match API standard. """
 
@@ -27,41 +30,6 @@ class Groups(Resource):
         self._resource_type = properties.resource_type
 
 
-# class GroupObject(ResourceObject):
-#     """ """
-#     def __init__(self, data_methods):
-#         """ """
-#         super(GroupObject, self).__init__()
-#
-#         #
-#         # build data to method mapping
-#         #
-#         self._data_methods = {}
-#         for data_name, methods in data_methods.items():
-#             # create variables for object
-#             attribute = methods['var']
-#             if attribute is not None:
-#                 setattr(self, attribute, None)
-#
-#             # create add methods for object
-#             method_name = methods['set']
-#             method = getattr(ResourceMethods, method_name)
-#             setattr(self, method_name, types.MethodType(method, self))
-#
-#             # build api data name to method mapping
-#             if method_name not in self._data_methods:
-#                 self._data_methods[data_name] = getattr(self, method_name)
-#
-#             # create add methods for object
-#             method_name = methods['get']
-#             if method_name is not None:
-#                 method = getattr(ResourceMethods, method_name)
-#                 setattr(self, method_name, types.MethodType(method, self))
-#                 self.add_method({
-#                     'name': attribute,
-#                     'method_name': method_name})
-
-
 class GroupFilterObject(FilterObject):
     """ """
     def __init__(self):
@@ -77,8 +45,47 @@ class GroupFilterObject(FilterObject):
         self._resource_type = self._properties.resource_type
 
         #
-        # add filter methods
+        # add_obj filter methods
         #
         for method_name in self._properties.filters:
             method = getattr(FilterMethods, method_name)
             setattr(self, method_name, types.MethodType(method, self))
+
+    # special case for indicator associations
+    def filter_associations(self, base_resource_type, identifier, group_type):
+        """Get groups associated with base resource object
+        GET /v2/groups/adversaries/747266/groups
+        GET /v2/groups/adversaries/747266/groups/adversaries
+
+        GET /v2/indicators/addresses/4.3.2.1/groups
+        GET /v2/indicators/addresses/4.3.2.1/groups/adversaries
+
+        GET /v2/victims/628/groups
+        GET /v2/victims/628/groups/adversaries
+        """
+        base_properties = ResourceProperties[base_resource_type.name].value()
+
+        request_uri = base_properties.base_path + '/'
+        request_uri += str(identifier)
+        if group_type is not None:
+            group_properties = ResourceProperties[group_type.name].value()
+            irt = group_properties.resource_type
+
+            # update the request uri
+            request_uri += '/' + group_properties.resource_uri_attribute
+        else:
+            request_uri += '/groups'
+            irt = ResourceType.GROUPS
+
+        description = 'Get group associations for %s resource (%s).' % (
+            base_resource_type.name.lower(), str(identifier))
+
+        filter_type = 'group association'
+        ro = RequestObject(
+            filter_type, '%s|%s' % (base_resource_type.name.lower(), identifier))
+        ro.set_description(description)
+        ro.set_owner_allowed(False)
+        ro.set_resource_pagination(True)
+        ro.set_request_uri(request_uri)
+        ro.set_resource_type(irt)
+        self._add_request_objects(ro)

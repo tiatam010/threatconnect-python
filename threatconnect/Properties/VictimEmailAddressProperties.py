@@ -1,4 +1,5 @@
 """ custom """
+from threatconnect import ResourceMethods
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.VictimEmailAddressesProperties import VictimEmailAddressesProperties
 
@@ -26,3 +27,6 @@ class VictimEmailAddressProperties(VictimEmailAddressesProperties):
         self._resource_pagination = False
         self._resource_type = ResourceType.VICTIM_EMAIL_ADDRESS
         self._resource_uri_attribute += '/%s'
+
+        # update object attributes
+        self._object_attributes.remove(ResourceMethods.name_attr)

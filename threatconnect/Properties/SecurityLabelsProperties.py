@@ -38,6 +38,7 @@ class SecurityLabelsProperties(Properties):
         self._object_attributes = [
             ResourceMethods.date_added_attr,
             ResourceMethods.description_attr,
+            ResourceMethods.matched_filters_attr,
             ResourceMethods.name_attr]
 
         # fileter methods

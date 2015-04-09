@@ -44,7 +44,6 @@ class UrlProperties(IndicatorProperties):
         self._object_attributes.remove(ResourceMethods.summary_attr)
         self._object_attributes.append(ResourceMethods.text_attr)
 
-
     @property
     def indicator_owner_allowed(self):
         """ """

@@ -43,6 +43,7 @@ class FileOccurrencesProperties(Properties):
             ResourceMethods.date_attr,
             ResourceMethods.file_name_attr,
             ResourceMethods.id_attr,
+            ResourceMethods.matched_filters_attr,
             ResourceMethods.path_attr]
 
         self._filter_methods = [
@@ -53,6 +54,11 @@ class FileOccurrencesProperties(Properties):
             'get_resource_pagination',
             'get_request_uri',
             'get_resource_type']
+
+    @property
+    def delete_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/files/%s/' + self._resource_uri_attribute
 
     @property
     def filters(self):
@@ -66,6 +72,16 @@ class FileOccurrencesProperties(Properties):
 
     @property
     def hash_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/files/%s/' + self._resource_uri_attribute
+
+    @property
+    def post_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/files/%s/' + self._resource_uri_attribute
+
+    @property
+    def put_path(self):
         """ """
         return ResourceUri.INDICATORS.value + '/files/%s/' + self._resource_uri_attribute
 

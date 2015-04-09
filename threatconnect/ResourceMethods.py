@@ -1,12 +1,11 @@
 """ standard """
-from collections import namedtuple
 import types
-import urllib
-from threatconnect.ErrorCodes import ErrorCodes
-from threatconnect.ResourceObject import AttributeDef
+from threatconnect.Validate import get_resource_type, get_resource_group_type
 
 """ custom """
+from threatconnect.ErrorCodes import ErrorCodes
 from threatconnect.Config.ResourceType import ResourceType
+from threatconnect.AttributeDef import AttributeDef
 
 
 #
@@ -14,7 +13,8 @@ from threatconnect.Config.ResourceType import ResourceType
 #
 def add_matched_filter(self, data):
     """ """
-    self._matched_filters.append(data)
+    if data is not None:
+        self._matched_filters.append(data)
 
 
 def get_matched_filters(self):
@@ -59,6 +59,9 @@ def get_confidence(self):
 
 def set_confidence(self, data):
     """ """
+    if self._stage is 'new':
+        self._api_action = 'update'
+
     if isinstance(data, int):
         if 0 <= data <= 100:
             self._confidence = data
@@ -71,8 +74,6 @@ def set_confidence(self, data):
 
 attr = AttributeDef('_confidence')
 attr.add_api_name('confidence')
-# TODO: fix this
-# attr.add_api_name('threatAssessConfidence')
 attr.set_required(False)
 attr.set_writable(True)
 attr.set_type(types.NoneType)
@@ -95,7 +96,8 @@ def set_date(self, data):
 
 attr = AttributeDef('_date')
 attr.add_api_name('date')
-attr.set_writable(False)
+attr.set_required(True)
+attr.set_writable(True)
 attr.set_type(types.NoneType)
 attr.set_method_get('get_date')
 attr.set_method_set('set_date')
@@ -133,7 +135,6 @@ def get_description(self):
 
 def set_description(self, data):
     """ """
-    # self._description = data.encode('ascii', 'replace')
     self._description = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_description')
@@ -143,6 +144,7 @@ attr.set_writable(False)
 attr.set_method_get('get_description')
 attr.set_method_set('set_description')
 description_attr = attr
+
 
 #
 # displayed
@@ -194,16 +196,21 @@ def get_download(self):
     return self._download
 
 
-def set_download(self, data):
+def download(self):
     """ """
-    self._download = data
+    # request_uri = '/v2/groups/signatures/%s/download' % self._id
+    # # api_response = ThreatConnect._api_request(request_uri, request_payload={}, http_method='GET')
+    #
+    # if api_response.status_code == 200:
+    #     self._download = api_response.content
+    pass
 
 attr = AttributeDef('_download')
 attr.add_api_name('download')
 attr.set_required(False)
 attr.set_writable(False)
 attr.set_method_get('get_download')
-attr.set_method_set('set_download')
+attr.set_method_set('download')
 download_attr = attr
 
 
@@ -239,6 +246,8 @@ def get_file_name(self):
 def set_file_name(self, data):
     """ """
     self._file_name = data
+    if self._stage is 'new':
+        self._api_action = 'update'
 
 attr = AttributeDef('_file_name')
 attr.add_api_name('fileName')
@@ -428,6 +437,8 @@ def get_name(self):
 def set_name(self, data):
     """ """
     self._name = data
+    if self._stage is 'new':
+        self._api_action = 'update'
 
 attr = AttributeDef('_name')
 attr.add_api_name('name')
@@ -516,7 +527,7 @@ def set_path(self, data):
 attr = AttributeDef('_path')
 attr.add_api_name('path')
 attr.set_required(False)
-attr.set_writable(False)
+attr.set_writable(True)
 attr.set_method_get('get_path')
 attr.set_method_set('set_path')
 path_attr = attr
@@ -532,6 +543,9 @@ def get_rating(self):
 
 def set_rating(self, data):
     """ """
+    if self._stage is 'new':
+        self._api_action = 'update'
+
     self._rating = data
 
 attr = AttributeDef('_rating')
@@ -662,6 +676,10 @@ def set_type(self, data):
     """ """
     self._type = data
 
+    if 100 <= self._resource_type.value <= 299:
+        self._resource_type = get_resource_group_type(self._type)
+
+
 attr = AttributeDef('_type')
 attr.add_api_name('type')
 attr.set_required(False)
@@ -763,6 +781,9 @@ def set_address(self, data):
     self._indicator = data
     self._type = ResourceType.EMAIL_ADDRESSES
 
+    # update the resource type
+    self._resource_type = get_resource_type(self._indicator)
+
 attr = AttributeDef('_indicator')
 attr.add_api_name('address')
 attr.set_required(True)
@@ -779,6 +800,9 @@ def set_hash(self, data):
     """ """
     self._indicator = data
     self._type = ResourceType.FILES
+
+    # update the resource type
+    self._resource_type = get_resource_type(self._indicator)
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('md5')
@@ -799,6 +823,9 @@ def set_hostname(self, data):
     self._indicator = data
     self._type = ResourceType.HOSTS
 
+    # update the resource type
+    self._resource_type = get_resource_type(self._indicator)
+
 attr = AttributeDef('_indicator')
 attr.add_api_name('hostName')
 attr.set_required(True)
@@ -815,6 +842,9 @@ def set_ip(self, data):
     """ """
     self._indicator = data
     self._type = ResourceType.ADDRESSES
+
+    # update the resource type
+    self._resource_type = get_resource_type(self._indicator)
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('ip')
@@ -849,6 +879,9 @@ def set_summary(self, data):
     """ """
     self._indicator = data
 
+    # update the resource type
+    self._resource_type = get_resource_type(self._indicator)
+
 attr = AttributeDef('_indicator')
 attr.add_api_name('summary')
 attr.set_required(True)
@@ -864,6 +897,9 @@ summary_attr = attr
 def set_text(self, data):
     """ """
     self._indicator = data
+
+    # update the resource type
+    self._resource_type = get_resource_type(self._indicator)
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('text')
@@ -881,6 +917,9 @@ def set_url(self, data):
     """ """
     self._indicator = data
     self._type = ResourceType.URLS
+
+    # update the resource type
+    self._resource_type = get_resource_type(self._indicator)
 
 attr = AttributeDef('_url')
 attr.add_api_name('url')

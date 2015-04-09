@@ -9,5 +9,5 @@ setup(
     author='ThreatConnect',
     author_email='support@threatconnect.com',
     description='Python wrapper for ThreatConnect API',
-    requires=['requests', 'enum34']
+    requires=['requests', 'enum34', 'python-dateutil']
 )

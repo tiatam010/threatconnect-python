@@ -29,9 +29,54 @@ class IndicatorProperties(Properties):
         ]
 
     @property
+    def association_add_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/%s/%s/%s'
+
+    @property
+    def association_group_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/groups'
+
+    @property
+    def association_indicator_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/indicators'
+
+    @property
+    def association_victim_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/victims'
+
+    @property
+    def attribute_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/attributes'
+
+    @property
+    def attribute_add_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/attributes'
+
+    @property
+    def attribute_update_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/attributes/%s'
+
+    @property
+    def attribute_delete_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/attributes/%s'
+
+    @property
+    def base_path(self):
+        """ """
+        return '/v2/indicators/' + self._resource_uri_attribute
+
+    @property
     def delete_path(self):
         """ """
-        return ResourceUri.INDICATORS.value + '/%s/%s'
+        return ResourceUri.INDICATORS.value + '/' + self._resource_uri_attribute + '/%s'
 
     @property
     def post_path(self):
@@ -47,3 +92,24 @@ class IndicatorProperties(Properties):
     def resource_object(self):
         # return self._resource_class()
         return resource_class(self._object_attributes, self._http_method)()
+
+    @property
+    def tag_add_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/tags/%s'
+
+    @property
+    def tag_mod_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/tags/%s'
+
+    @property
+    def tag_delete_path(self):
+        """ """
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/tags/%s'
+
+    @property
+    def tag_path(self):
+        """ """
+        # /v2/indicators/<indicator type>/<value>/tags
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/tags'

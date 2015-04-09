@@ -39,6 +39,13 @@ class EmailsProperties(GroupsProperties):
         # update object attributes
         self._object_attributes.remove(ResourceMethods.type_attr)
         self._object_attributes.append(ResourceMethods.score_attr)
+        # added for write functionality
+        self._object_attributes.append(ResourceMethods.body_attr)
+        self._object_attributes.append(ResourceMethods.from_attr)
+        self._object_attributes.append(ResourceMethods.header_attr)
+        self._object_attributes.append(ResourceMethods.score_attr)
+        self._object_attributes.append(ResourceMethods.subject_attr)
+        self._object_attributes.append(ResourceMethods.to_attr)
 
         # update filter methods
         self._filter_methods.remove('add_email_id')

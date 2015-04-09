@@ -1,11 +1,18 @@
-""" custom """
+""" standard """
+import time
 import urllib
 
-from threatconnect.Config.IndicatorType import IndicatorType
-from threatconnect.Config.ResourceProperties import ResourceProperties
-from threatconnect.Config.ResourceRegexes import indicators_regex
+""" third-party """
+import dateutil.parser
+
+""" custom """
+from Config.FilterOperator import FilterOperator
+from Config.IndicatorType import IndicatorType
+from Config.ResourceProperties import ResourceProperties
+from Config.ResourceRegexes import indicators_regex
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.ErrorCodes import ErrorCodes
+from threatconnect.PostFilterObject import PostFilterObject
 from threatconnect.RequestObject import RequestObject
 from threatconnect.Validate import validate_indicator
 
@@ -109,7 +116,11 @@ def add_id(self, data_int, asset_id=None):
         self._error = True
     else:
         filter_type = 'id'
-        ro = RequestObject(filter_type, data_int)
+        if asset_id is not None:
+            filter_values = '%s-%s' % (data_int, asset_id)
+        else:
+            filter_values = data_int
+        ro = RequestObject(filter_type, filter_values)
         ro.set_owner_allowed(properties.id_owner_allowed)
         ro.set_resource_pagination(properties.resource_pagination)
         ro.set_request_uri(properties.id_path, uri_data)
@@ -135,7 +146,7 @@ def add_id_signature(self, data_int, download=False):
         ro.set_request_uri(properties.id_path, uri_data)
         ro.set_resource_type(properties.resource_type)
 
-        # add download
+        # add_obj download
         if download:
             ro.set_download(True)
 
@@ -342,6 +353,33 @@ def add_victim_id(self, data_int):
         ro.set_request_uri(properties.victim_path, [data_int])
         ro.set_resource_type(properties.resource_type)
         self._add_request_objects(ro)
+
+
+def add_date_added(self, data_date, operator=FilterOperator.EQ):
+    """ """
+    method = 'filter_date_added'
+    date_added = data_date
+    date_added = dateutil.parser.parse(date_added)
+    date_added_seconds = int(time.mktime(date_added.timetuple()))
+
+    filter_name = '%s|%s (%s)' % ('date_added', data_date, date_added_seconds)
+    post_filter = PostFilterObject(filter_name)
+    post_filter.set_method(method)
+    post_filter.set_filter(date_added_seconds)
+    post_filter.set_operator(operator)
+    self.add_post_filter(post_filter)
+
+
+def add_file_type(self, data, operator=FilterOperator.EQ):
+    """ """
+    method = 'filter_file_type'
+    filter_name = '%s|%s' % ('file_type', data)
+
+    post_filter = PostFilterObject(filter_name)
+    post_filter.set_method(method)
+    post_filter.set_filter(data)
+    post_filter.set_operator(operator)
+    self.add_post_filter(post_filter)
 
 
 def get_owners(self):

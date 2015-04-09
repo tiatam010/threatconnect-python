@@ -1,4 +1,5 @@
 """ custom """
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.VictimsProperties import VictimsProperties
@@ -25,10 +26,9 @@ class VictimProperties(VictimsProperties):
      "workLocation" : "Arlington VA",
      "webLink" : "https://app.threatconnect.com/tc/auth/victim/victim.xhtml?victim=490"}
     """
-
-    def __init__(self):
+    def __init__(self, http_method=PropertiesAction.GET):
         """ """
-        super(VictimProperties, self).__init__()
+        super(VictimProperties, self).__init__(http_method)
 
         # resource properties
         self._resource_key = 'victim'

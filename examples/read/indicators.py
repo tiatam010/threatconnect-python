@@ -101,6 +101,7 @@ def main():
         # filter1 = indicators.add_filter(IndicatorType.EMAIL_ADDRESSES)
         # filter1 = indicators.add_filter(IndicatorType.FILES)
         filter1 = indicators.add_filter(IndicatorType.HOSTS)
+        # filter1.add_tag('China')
         # filter1 = indicators.add_filter(IndicatorType.URLS)
         owners = ['Acme Corp']
         filter1.add_owner(owners)
@@ -182,7 +183,7 @@ def main():
 
         filter3 = indicators.add_filter()
         # filter3 = indicators.add_filter(IndicatorType.ADDRESSES)
-        filter3.add_filter_operator(FilterSetOperator.AND)
+        filter3.add_filter_operator(FilterSetOperator.OR)
         filter3.add_tag('China')
 
         # check for any error on filter creation

@@ -37,4 +37,4 @@ class SecurityLabelProperties(SecurityLabelsProperties):
 
     @property
     def name_path(self):
-        return ResourceUri.VICTIMS.value + '/%s'
+        return ResourceUri.SECURITY_LABELS.value + '/%s'

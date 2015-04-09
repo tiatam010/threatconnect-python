@@ -43,4 +43,5 @@ class SignaturesProperties(GroupsProperties):
         # update filter methods
         self._filter_methods.remove('add_signature_id')
         self._filter_methods.append('add_id')
+        self._filter_methods.append('add_file_type')
 

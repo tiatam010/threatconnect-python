@@ -50,3 +50,8 @@ class DocumentProperties(GroupProperties):
     def id_path(self):
         """ """
         return ResourceUri.DOCUMENTS.value + '/%s'
+
+    @property
+    def upload_path(self):
+        """ """
+        return ResourceUri.DOCUMENTS.value + '/%s/upload'

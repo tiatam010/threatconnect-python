@@ -1,5 +1,10 @@
+""" standard """
 import ConfigParser
+import sys
+
+""" custom """
 from threatconnect import *
+from threatconnect.Config.IndicatorType import IndicatorType
 
 # configuration file
 config_file = "../tc_test.conf"
