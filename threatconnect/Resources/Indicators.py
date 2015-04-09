@@ -29,11 +29,20 @@ class Indicators(Resource):
 
         # set properties
         properties = IndicatorsProperties()
-        self._http_method = properties.http_method
-        self._owner_allowed = properties.base_owner_allowed
-        self._resource_pagination = properties.resource_pagination
-        self._request_uri = properties.base_path
         self._resource_type = properties.resource_type
+
+        # create default request object for non-filtered requests
+        self._request_object = RequestObject('indicators', 'default')
+        self._request_object.set_http_method(properties.http_method)
+        self._request_object.set_owner_allowed(properties.base_owner_allowed)
+        self._request_object.set_request_uri(properties.base_path)
+        self._request_object.set_resource_pagination(properties.resource_pagination)
+        self._request_object.set_resource_type(properties.resource_type)
+        # self._http_method = properties.http_method
+        # self._owner_allowed = properties.base_owner_allowed
+        # self._resource_pagination = properties.resource_pagination
+        # self._request_uri = properties.base_path
+        # self._resource_type = properties.resource_type
 
     def get_indicators(self):
         """ """
@@ -130,13 +139,23 @@ class IndicatorFilterObject(FilterObject):
         else:
             self._properties = ResourceProperties['INDICATORS'].value()
 
+        self._resource_type = self._properties.resource_type
+
+        # create default request object for filtered request with only owners
+        self._request_object = RequestObject('adversaries', 'default')
+        self._request_object.set_http_method(self._properties.http_method)
+        self._request_object.set_owner_allowed(self._properties.base_owner_allowed)
+        self._request_object.set_request_uri(self._properties.base_path)
+        self._request_object.set_resource_pagination(self._properties.resource_pagination)
+        self._request_object.set_resource_type(self._properties.resource_type)
+
         # add_obj properties for filter objects with no request object
         # happens when a indicator type is specified, but no other
         # filters are provided
-        self._owner_allowed = self._properties.base_owner_allowed
-        self._request_uri = self._properties.base_path
-        self._resource_pagination = self._properties.resource_pagination
-        self._resource_type = self._properties.resource_type
+        # self._owner_allowed = self._properties.base_owner_allowed
+        # self._request_uri = self._properties.base_path
+        # self._resource_pagination = self._properties.resource_pagination
+        # self._resource_type = self._properties.resource_type
 
         # pd('owner_allowed', self._owner_allowed)
         # pd('resource_pagination', self._resource_pagination)

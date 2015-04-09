@@ -5,15 +5,13 @@ import re
 """ custom """
 from examples.working_init import *
 
-enable_add = True
-enable_upd = True
-enable_del = True
-
-
 def main():
     """ """
 
-    # (Required) Instantiate and Email Resource Object
+    # This is a random number generator used for testing.
+    randy = randint(1, 1000)
+
+    # (Required) Instantiate a Resource Object
     resources = tc.emails()
 
     # (Optional) Filters can be added here if required to narrow the result set.
@@ -22,10 +20,7 @@ def main():
     # (Optional) retrieve all results
     resources.retrieve()
 
-    # This is a random number generator used for testing.
-    randy = randint(1, 1000)
-
-    # (Optional) iterate through all results
+    # (Optional) iterate through all results if retrieve was used above
     for res in resources:
 
         # (Optional) match a particular resource by ID, Name or any other supported attribute.
@@ -33,7 +28,7 @@ def main():
             #
             # update resource if required
             #
-            res.set_name('Loop Update Email Example %s' % randy)
+            res.set_name('Loop Update Email Sample %s' % randy)
             res.set_body('This is an email body %s.' % randy)
             res.set_header('This is an email header %s.' % randy)
             res.set_subject('This is an email subject %s.' % randy)
@@ -74,12 +69,11 @@ def main():
             # (Optional) get all victim associations
             resources.get_victim_associations(res)
             for association in res.association_objects_victims:
-                print(association)
                 # add delete flag to all group association that match DELETE
-                # if re.findall('Loop', association.get_name()):
-                #     res.disassociate(association.resource_type, association.get_id())
+                if re.findall('BCS', association.get_name()):
+                    res.disassociate(association.resource_type, association.get_id())
 
-            # res.associate(ResourceType.VICTIMS, 747266)
+            res.associate(ResourceType.VICTIMS, 628)
 
             #
             # working with attributes
@@ -143,7 +137,7 @@ def main():
 
     # (Optional) a resource can be updated directly by using the resource id.
     resource = resources.update(752519)
-    resource.set_name('Manual Update Email Example %s' % randy)
+    resource.set_name('Manual Update Email Sample %s' % randy)
 
     #
     # delete resource
@@ -164,3 +158,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    sys.exit()

@@ -74,6 +74,7 @@ class ThreatConnect:
 
         # get resource object values
         body = request_object.body
+        content_type = request_object.content_type
         http_method = request_object.http_method
         resource_type = request_object.resource_type
 
@@ -89,6 +90,7 @@ class ThreatConnect:
 
         # DEBUG
         # pd('body', body)
+        # pd('content_type', content_type)
         # pd('http_method', http_method)
         # pd('modified_since', modified_since)
         # pd('resource_type', resource_type)
@@ -186,10 +188,17 @@ class ThreatConnect:
                             # pd('result_remaining', result_remaining)
                     else:
                         resource_obj.add_error_message(api_response.content)
+        elif content_type == 'application/octet-stream':
+            api_response = self._api_request(
+                request_uri, request_payload={}, http_method=http_method,
+                body=body, content_type=content_type)
+
+            return api_response.content
         else:
             # api call
             api_response = self._api_request(
-                request_uri, request_payload={}, http_method=http_method, body=body)
+                request_uri, request_payload={}, http_method=http_method,
+                body=body)
             api_response.encoding = 'utf-8'
 
             api_response_dict = api_response.json()
@@ -211,23 +220,6 @@ class ThreatConnect:
                 processed_data = self._api_process_response(
                     resource_obj, api_response, request_object)
 
-                #
-                # special case for signature downloads
-                #
-                # TODO: there is probably a better way to do this, but for now this is it.
-                if (resource_type == ResourceType.SIGNATURE and
-                        http_method == 'GET' and request_object.download):
-
-                    request_uri += '/download'
-
-                    # api call
-                    api_response = self._api_request(
-                        request_uri, request_payload={}, http_method=http_method, body=body)
-
-                    if api_response.status_code == 200:
-                        # processed_data[0].set_download(api_response['data']['signatureDownload'])
-                        processed_data[0].set_download(api_response.content)
-
                 obj_list.extend(processed_data)
 
         #
@@ -240,6 +232,8 @@ class ThreatConnect:
         report_entry.add_data({'Request Name': request_object.name})
         report_entry.add_data({'HTTP Method': http_method})
         report_entry.add_data({'Request URI': request_uri})
+        if api_response_dict['status'] != 'Success':
+            report_entry.add_data({'Failure Content': api_response_dict['message']})
         if request_payload:
             report_entry.add_data(request_payload)
         self.add_report_entry(report_entry)
@@ -469,186 +463,6 @@ class ThreatConnect:
         # add_obj data objects to group object
         for obj in data_set:
             resource_obj.add_obj(obj)
-
-    # def resource_get_attributes(self, resource_obj):
-    #     """ """
-    #     resource_type = resource_obj.request_object.resource_type
-    #
-    #     # get properties for the object
-    #     if resource_type.value % 10:
-    #         resource_type = ResourceType(resource_type.value - 5)
-    #     properties = ResourceProperties[resource_type.name].value()
-    #
-    #     # build request object
-    #     request_object = RequestObject(resource_type.name, resource_obj.get_id())
-    #     request_object.set_http_method(properties.http_method)
-    #     request_object.set_request_uri(properties.attribute_path % resource_obj.get_id())
-    #     request_object.set_owner_allowed(False)
-    #     request_object.set_resource_pagination(True)
-    #     request_object.set_resource_type(ResourceType.ATTRIBUTES)
-    #
-    #     attributes = self.attributes()
-    #     data_set = self.api_build_request(attributes, request_object)
-    #
-    #     for obj in data_set:
-    #         resource_obj.add_attribute_object(obj)
-
-    # def resource_add_attribute(self, resource_obj, r_type, value, displayed=True):
-    #     """
-    #     POST /v2/groups/incidents/119842/attributes
-    #     Host: api.threatconnect.com
-    #     Content-Type:  application/json
-    #     {
-    #         "type" : "Source",
-    #         "value" : "Proprietary TC-IRT Reporting",
-    #         "displayed" : true
-    #     }
-    #     """
-    #
-    #     body_json = json.dumps({
-    #         'type': r_type,
-    #         'value': value,
-    #         'displayed': displayed})
-    #
-    #     resource_type = resource_obj.request_object.resource_type
-    #
-    #     # get properties for the object
-    #     if resource_type.value % 10:
-    #         resource_type = ResourceType(resource_type.value - 5)
-    #     properties = ResourceProperties[resource_type.name].value(PropertiesAction.POST)
-    #
-    #     # build request object
-    #     request_object = RequestObject(resource_type.name, resource_obj.get_id())
-    #     request_object.set_description(
-    #         'Add attribute type (%s) with value of (%s) to %s resource.' % (r_type, value, resource_type.name.lower()))
-    #     request_object.set_body(body_json)
-    #     request_object.set_http_method(properties.http_method)
-    #     request_object.set_request_uri(properties.attribute_add_path % resource_obj.get_id())
-    #     request_object.set_owner_allowed(False)
-    #     request_object.set_resource_pagination(False)
-    #     request_object.set_resource_type(ResourceType.ATTRIBUTES)
-    #
-    #     resource_obj.add_attribute_request(request_object)
-    #
-    #     # # get attribute object for returned data
-    #     # attributes = self.attributes()
-    #     # data_set = self.api_build_request(attributes, request_object)
-    #
-    #     # # add returned attribute to resource object
-    #     # for obj in data_set:
-    #     #     resource_obj.add_attribute_object(obj)
-    #     #
-    #     # # clean up temporary attribute resource object
-    #     # del attributes
-
-    # def resource_delete_attribute(self, resource_obj, attribute):
-    #     """
-    #     DELETE /v2/groups/threats/666/attributes/12345
-    #     Host: api.threatconnect.com
-    #     """
-    #
-    #     resource_type = resource_obj.request_object.resource_type
-    #
-    #     # get properties for the object
-    #     if resource_type.value % 10:
-    #         resource_type = ResourceType(resource_type.value - 5)
-    #     properties = ResourceProperties[resource_type.name].value(PropertiesAction.DELETE)
-    #
-    #     # build request object
-    #     request_object = RequestObject(resource_type.name, resource_obj.get_id())
-    #     request_object.set_description(
-    #         'Delete attribute id (%s) from resource id (%s).' % (attribute.get_id(), resource_obj.get_id()))
-    #     request_object.set_http_method(properties.http_method)
-    #     request_object.set_request_uri(
-    #         properties.attribute_delete_path % (resource_obj.get_id(), attribute.get_id()))
-    #     request_object.set_owner_allowed(False)
-    #     request_object.set_resource_pagination(False)
-    #     request_object.set_resource_type(ResourceType.ATTRIBUTES)
-    #
-    #     # add request to resource object to process on commit
-    #     resource_obj.add_attribute_request(request_object)
-
-    # def resource_get_tags(self, resource_obj):
-    #     """ """
-    #     resource_type = resource_obj.request_object.resource_type
-    #
-    #     # get properties for the object
-    #     if resource_type.value % 10:
-    #         resource_type = ResourceType(resource_type.value - 5)
-    #     properties = ResourceProperties[resource_type.name].value()
-    #
-    #     # build request object
-    #     request_object = RequestObject(resource_type.name, resource_obj.get_id())
-    #     request_object.set_http_method(properties.http_method)
-    #     request_object.set_request_uri(properties.tag_path % resource_obj.get_id())
-    #     request_object.set_owner_allowed(False)
-    #     request_object.set_resource_pagination(True)
-    #     request_object.set_resource_type(ResourceType.TAGS)
-    #
-    #     tags = self.tags()
-    #     data_set = self.api_build_request(tags, request_object)
-    #
-    #     for obj in data_set:
-    #         resource_obj.add_tag_object(obj)
-
-    # def resource_add_tags(self, resource_obj, tag):
-    #     """
-    #     DELETE /v2/indicators/emailAddresses/oldhat@irrelevant.net/tags/APT
-    #     DELETE /v2/indicators/emailAddresses/oldhat@irrelevant.net/tags/APT
-    #     POST /v2/indicators/addresses/192.168.0.1/tags/Tracked
-    #     POST /v2/groups/incidents/119842/attributes
-    #     Host: api.threatconnect.com
-    #     Content-Type:  application/json
-    #     {
-    #         "type" : "Source",
-    #         "value" : "Proprietary TC-IRT Reporting",
-    #         "displayed" : true
-    #     }
-    #     """
-    #
-    #     resource_type = resource_obj.request_object.resource_type
-    #
-    #     # get properties for the object
-    #     if resource_type.value % 10:
-    #         resource_type = ResourceType(resource_type.value - 5)
-    #     properties = ResourceProperties[resource_type.name].value(PropertiesAction.POST)
-    #
-    #     # build request object
-    #     http_method = properties.http_method
-    #     request_uri = properties.tag_add_path % (resource_obj.get_id(), tag)
-    #
-    #     api_response = self._api_request(request_uri, {}, http_method)
-    #     api_response.encoding = 'utf-8'
-    #     api_response_dict = api_response.json()
-    #
-    #     # TODO: status code of 201 might indicate that the tag alread existed.
-    #     if api_response_dict['status'] == 'Success':
-    #         print('yay')
-    #     else:
-    #         print('no')
-
-    # def resource_remove_tags(self, resource_obj, tag):
-    #     """ """
-    #     resource_type = resource_obj.request_object.resource_type
-    #
-    #     # get properties for the object
-    #     if resource_type.value % 10:
-    #         resource_type = ResourceType(resource_type.value - 5)
-    #     properties = ResourceProperties[resource_type.name].value(PropertiesAction.DELETE)
-    #
-    #     # build request object
-    #     http_method = properties.http_method
-    #     request_uri = properties.tag_add_path % (resource_obj.get_id(), tag)
-    #
-    #     api_response = self._api_request(request_uri, {}, http_method)
-    #     api_response.encoding = 'utf-8'
-    #     api_response_dict = api_response.json()
-    #
-    #     # TODO: status code of 201 might indicate that nothing was deleted.
-    #     if api_response_dict['status'] == 'Success':
-    #         print('yay')
-    #     else:
-    #         print('no')
 
     def adversaries(self):
         """ """

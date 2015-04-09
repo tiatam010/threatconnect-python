@@ -30,7 +30,7 @@ class GroupProperties(Properties):
     @property
     def association_add_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/%s/%s/%s'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/%s'
 
     @property
     def association_group_path(self):

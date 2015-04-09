@@ -17,7 +17,7 @@ def format_item(key, val, indent=0):
     formatter = ' ' * indent + '%-' + str(25 - indent) + 's%-25s\n'
     if isinstance(val, list):
         first_run = True
-        for item in val:
+        for item in sorted(val):
             if isinstance(item, (str, unicode, int, bool)):
                 if first_run:
                     formatted_item += formatter % ('%s:' % key, item.encode('utf-8').strip())
@@ -26,7 +26,6 @@ def format_item(key, val, indent=0):
             elif isinstance(item, type(item)):
                 formatted_item += '%s\n' % str(item)
             else:
-                pd('Else')
                 if first_run:
                     formatted_item += formatter % ('%s:' % key, item.encode('utf-8').strip())
                 else:

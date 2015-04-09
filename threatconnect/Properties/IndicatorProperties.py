@@ -31,7 +31,7 @@ class IndicatorProperties(Properties):
     @property
     def association_add_path(self):
         """ """
-        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/%s/%s/%s'
+        return ResourceUri.INDICATORS.value + '/' + self.resource_uri_attribute + '/%s/%s'
 
     @property
     def association_group_path(self):
@@ -90,8 +90,7 @@ class IndicatorProperties(Properties):
 
     @property
     def resource_object(self):
-        # return self._resource_class()
-        return resource_class(self._object_attributes, self._http_method)()
+        return resource_class(self._object_attributes, self._resource_type, self._http_method)()
 
     @property
     def tag_add_path(self):

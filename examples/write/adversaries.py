@@ -1,7 +1,6 @@
 """ standard """
 from random import randint
 import re
-import sys
 
 """ custom """
 from examples.working_init import *
@@ -9,72 +8,145 @@ from examples.working_init import *
 
 def main():
     """ """
-    resources = tc.adversaries()
-    resources.retrieve()
-
-    # random number
+    # This is a random number generator used for testing.
     randy = randint(1, 1000)
 
+    # (Required) Instantiate and Email Resource Object
+    resources = tc.adversaries()
+
+    # (Optional) Filters can be added here if required to narrow the result set.
+    # filter1 = resources.add_filter()
+
+    # (Optional) retrieve all results
+    resources.retrieve()
+
+    # (Optional) iterate through all results if retrieve was used above
     for res in resources:
+
+        # (Optional) match a particular resource by ID, Name or any other supported attribute.
         if res.get_id() == 747266:
             #
-            # update resource
+            # update resource if required
             #
             res.set_name('Loop Update Adversary Example %s' % randy)
 
             #
-            # attributes
+            # working with indicator associations
             #
+
+            # (Optional) get all indicator associations
+            # resources.get_indicator_associations(res)
+            resources.get_indicator_associations(res, IndicatorType.EMAIL_ADDRESSES)
+            for association in res.association_objects_indicators:
+                # add delete flag to all indicator association that have a confidence under 10
+                if association.get_confidence() < 10:
+                    res.disassociate(association.resource_type, association.get_indicator())
+
+            res.associate(ResourceType.EMAIL_ADDRESSES, 'bcs_bad_guy@badguysareus.com')
+
+            #
+            # working with group associations
+            #
+
+            # (Optional) get all group associations
+            resources.get_group_associations(res)
+            for association in res.association_objects_groups:
+                # add delete flag to all group association that match DELETE
+                if re.findall('Loop', association.get_name()):
+                    res.disassociate(association.resource_type, association.get_id())
+
+            res.associate(ResourceType.EMAILS, 747227)
+
+            #
+            # working with victim associations
+            #
+
+            # (Optional) get all victim associations
+            resources.get_victim_associations(res)
+            for association in res.association_objects_victims:
+                print(association)
+                # add delete flag to all group association that match DELETE
+                # if re.findall('Loop', association.get_name()):
+                #     res.disassociate(association.resource_type, association.get_id())
+
+            # res.associate(ResourceType.VICTIMS, 747266)
+
+            #
+            # working with attributes
+            #
+
+            # (Optional) get all attributes associated with this resource
             resources.get_attributes(res)
             for attribute in res.attribute_objects:
-                # delete attribute
+                # add delete flag to all attributes that have 'test' in the value.
                 if re.findall('test', attribute.get_value()):
-                    resources.attribute_delete(res, attribute)
-                # update attribute
+                    res.delete_attribute(attribute.get_id())
+                # add update flag to all attributes that have 'update' in the value.
                 if re.findall('update', attribute.get_value()):
-                    resources.attribute_update(res, attribute, 'updated attribute %s' % randy)
-            # add attribute
-            resources.attribute_add(res, 'Description', 'test attribute %s' % randy)
+                    res.update_attribute(attribute.get_id(), 'updated attribute %s' % randy)
+            # (Optional) add attribute to resource with type and value
+            res.add_attribute('Description', 'test attribute %s' % randy)
 
             #
-            # tags
+            # working with tags
             #
+
+            # (Optional) get all tags associated with this resource
             resources.get_tags(res)
             for tag in res.tag_objects:
-                # delete tag
+                # add delete flag to all tags that have 'DELETE' in the name.
                 if re.findall('DELETE', tag.get_name()):
-                    resources.delete_tag(res, tag.get_name())
-            # add tag
-            resources.add_tag(res, 'DELETE_%s' % randy)
+                    res.delete_tag(tag.get_name())
+            # (Optional) add tag to resource
+            res.add_tag('DELETE_%s' % randy)
+        #
+        # delete resource if required
+        #
 
-        #
-        # delete resource
-        #
+        # (Optional) add delete flag to any resource that has 'DELETE' in the name.
         if re.findall('DELETE', res.get_name()):
             res.delete()
 
     #
-    # add resource
+    # add resource if required
     #
     resource = resources.add('DELETE %s' % randy)
-    resources.add_tag(resource, 'TAG %s' % randy)
+
+    # (Optional) add attribute to newly created resource
+    resource.add_attribute('Description', 'test attribute %s' % randy)
+
+    # (Optional) add tag to newly created resource
+    resource.add_tag('TAG %s' % randy)
 
     #
-    # update resource
+    # update resource if required
     #
+
+    # (Optional) a resource can be updated directly by using the resource id.
     resource = resources.update(749422)
     resource.set_name('Manual Update Adversary Example %s' % randy)
+
+    # (Optional) add attribute to newly created resource
+    resource.add_attribute('Description', 'test attribute %s' % randy)
+
+    # (Optional) add tag to newly created resource
+    resource.add_tag('TAG %s' % randy)
 
     #
     # delete resource
     #
-    resources.delete(752422)
 
+    # (Optional) a resource can be deleted directly by using the resource id.
+    # resources.delete(752422)
+
+    # (Required) commit all changes above.  No changes are made until the commit phase.
     resources.commit()
 
+    # (Optional) iterate through the result sets after changes.
     for res in resources:
         print(res)
 
+    # (Optional) display a commit report of all API actions performed
     tc.display_report()
 
 

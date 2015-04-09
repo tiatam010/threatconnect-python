@@ -29,8 +29,6 @@ class ResourceType(Enum):
     TAGS = 195
     THREAT = 200
     THREATS = 205
-    VICTIM = 210
-    VICTIMS = 215
 
     # indicators
     INDICATOR = 500
@@ -45,6 +43,10 @@ class ResourceType(Enum):
     HOSTS = 545
     URL = 550
     URLS = 555
+
+    # victims
+    VICTIM = 900
+    VICTIMS = 905
 
     # victims
     VICTIM_ASSET = 1000

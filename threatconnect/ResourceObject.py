@@ -5,7 +5,6 @@ import json
 import threatconnect.ResourceMethods
 from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.DataFormatter import format_item, format_header
-from threatconnect.RequestObject import RequestObject
 from threatconnect.ResourceMethods import *
 
 
@@ -27,6 +26,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
         '_attribute_objects',  # list of attributes objects for this resource
         '_attribute_requests',  # list of request object to add attributes
         '_data_methods',  # dictionary of resource attribute to processing method
+        '_document',  # dictionary of resource attribute to processing method
         '_error_msgs',  # list of error messages
         '_json_data',  # the json data that forms the body
         '_methods',
@@ -59,6 +59,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             self._attribute_objects = []
             self._attribute_requests = []
             self._data_methods = {}
+            self._document = None
             self._error_msgs = []
             self._json_data = {}
             self._methods = []
@@ -120,6 +121,115 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
                 # add_obj attribute name to a_names list for __str__ method
                 self.a_names(a_obj.name)
 
+        def _associate(self, r_type, r_id, http_method, action):
+            """
+            # group to group
+            POST /v2/groups/emails/747227/groups/adversaries/747266
+
+            # group to indicator
+            POST /v2/groups/incidents/119842/indicators/addresses/10.0.2.5
+            POST /v2/groups/emails/747227/indicators/emailAddresses/bcs150@badguys.com
+
+            # indicator to group
+            POST /v2/indicators/addresses/10.0.2.5/groups/incidents/119842
+
+            # group to victim
+            POST /v2/groups/emails/747227/victims/628
+
+            """
+
+            #
+            # get indicator type and properties
+            #
+
+            # get indicator properties for the object
+            if r_type.value % 10:
+                r_type = ResourceType(r_type.value - 5)
+            rt_prop = threatconnect.Config.ResourceProperties.ResourceProperties[r_type.name].value()
+            rt_uri = rt_prop.resource_uri_attribute
+
+            # the pass in resource determines part of the url
+            if 500 <= r_type.value <= 599:
+                uri = 'indicators/' + rt_uri + '/' + str(r_id)
+            elif 900 <= r_type.value <= 999:
+                uri = 'victims' + '/' + str(r_id)
+            else:
+                uri = 'groups/' + rt_uri + '/' + str(r_id)
+
+            # the identifier depend on the type of resource
+            if 500 <= self.resource_type.value <= 599:
+                identifier_method = self.get_indicator
+            else:
+                identifier_method = self.get_id
+
+            #
+            # prepare the request
+            #
+
+            # get properties for the object
+            if self._resource_type.value % 10:
+                self._resource_type = ResourceType(self._resource_type.value - 5)
+            properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
+                http_method)
+
+            description = action + ' association of ' + r_type.name.lower() + ' ('
+            description += str(r_id) + ') with ' + self._resource_type.name.lower()
+            description += ' resource id (%s).'
+
+            # build request object dict so that the identifier can be
+            # pulled at the very end.  This is important due to using
+            # temp ids when creating a resource.
+            request_object_dict = {
+                'name1': 'attribute',
+                'name2_method': self.get_id,
+                'description': description,
+                'http_method': properties.http_method,
+                'request_uri_path': properties.association_add_path,
+                'uri_attribute_1_method': identifier_method,
+                'uri_attribute_2': uri,
+                'owner_allowed': False,
+                'resource_pagination': False,
+                # TODO: what does this need to be?
+                'resource_type': ResourceType.ATTRIBUTES}
+
+            self.add_association_request(request_object_dict)
+
+        def _tag_mod(self, tag, http_method, action):
+            """ """
+            # get properties for the object
+            if self._resource_type.value % 10:
+                self._resource_type = ResourceType(self._resource_type.value - 5)
+            properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
+                http_method)
+
+            # for indicators
+            if 500 <= self._resource_type.value <= 599:
+                # identifier = self.get_indicator()
+                identifier_method = self.get_indicator
+            else:
+                # identifier = self.get_id()
+                identifier_method = self.get_id
+
+            description = action + ' the tag (' + tag + ') on '
+            description += self._resource_type.name.lower() + ' resource (%s).'
+
+            # build request object dict so that the identifier can be
+            # pulled at the very end.  This is important due to using
+            # temp ids when creating a resource.
+            request_object_dict = {
+                'name1': self._resource_type.name,
+                'name2': tag,
+                'description': description,
+                'http_method': properties.http_method,
+                'request_uri_path': properties.tag_mod_path,
+                'identifier_method': identifier_method,
+                'tag': tag,
+                'owner_allowed': False,
+                'resource_pagination': False,
+                'resource_type': ResourceType.TAGS}
+
+            self.add_tag_request(request_object_dict)
+
         def a_names(self, data):
             """ """
             self._a_names.append(data)
@@ -148,6 +258,45 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             """ """
             self._association_requests.append(data_obj)
 
+        def add_attribute(self, attribute_type, value, displayed=True):
+            """ """
+            body_json = json.dumps({
+                'type': attribute_type,
+                'value': value,
+                'displayed': displayed})
+
+            # get properties for the object
+            if self._resource_type.value % 10:
+                self._resource_type = ResourceType(self._resource_type.value - 5)
+            properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
+                PropertiesAction.POST)
+
+            # special case for indicators
+            if 500 <= self._resource_type.value <= 599:
+                identifier_method = self.get_indicator
+            else:
+                identifier_method = self.get_id
+
+            description = 'Adding attribute type (' + attribute_type + ') with value of ('
+            description += value + ') on ' + self._resource_type.name.lower() + ' resource (%s).'
+
+            # build request object dict so that the identifier can be
+            # pulled at the very end.  This is important due to using
+            # temp ids when creating a resource.
+            request_object_dict = {
+                'name1': 'attribute',
+                'name2': '%s|%s' % (attribute_type, value),
+                'body': body_json,
+                'description': description,
+                'http_method': properties.http_method,
+                'request_uri_path': properties.attribute_add_path,
+                'identifier_method': identifier_method,
+                'owner_allowed': True,
+                'resource_pagination': False,
+                'resource_type': ResourceType.ATTRIBUTES}
+
+            self.add_attribute_request(request_object_dict)
+
         def add_attribute_object(self, data_obj):
             """ """
             self._attribute_objects.append(data_obj)
@@ -172,6 +321,10 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             """ """
             self._required_attrs.append(data)
 
+        def add_tag(self, tag):
+            """ """
+            self._tag_mod(tag, PropertiesAction.POST, 'Adding')
+
         def add_tag_object(self, data_obj):
             """ """
             self._tag_objects.append(data_obj)
@@ -184,9 +337,57 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             """ """
             self._writable_attrs[data_key] = data_val
 
+        def associate(self, r_type, r_id):
+            """ """
+            self._associate(r_type, r_id, PropertiesAction.POST, 'Adding')
+
         def delete(self):
             """ """
             self._api_action = 'delete'
+
+        def delete_attribute(self, attribute_id):
+            """ """
+            # get properties for the object
+            if self._resource_type.value % 10:
+                self._resource_type = ResourceType(self._resource_type.value - 5)
+            properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
+                PropertiesAction.DELETE)
+
+            # special case for indicators
+            if 500 <= resource_type.value <= 599:
+                identifier_method = self.get_indicator
+                owner_allowed = True
+            else:
+                identifier_method = self.get_id
+                owner_allowed = False
+
+            description = 'Deleting attribute id (' + str(attribute_id) + ') from '
+            description += self._resource_type.name.lower() + ' resource (%s).'
+
+            # build request object dict so that the identifier can be
+            # pulled at the very end.  This is important due to using
+            # temp ids when creating a resource.
+            request_object_dict = {
+                'name1': 'attribute',
+                'name2': attribute_id,
+                'description': description,
+                'http_method': properties.http_method,
+                'request_uri_path': properties.attribute_delete_path,
+                'identifier_method': identifier_method,
+                'attribute_id': attribute_id,
+                'owner_allowed': owner_allowed,
+                'resource_pagination': False,
+                'resource_type': ResourceType.ATTRIBUTES}
+
+            self.add_attribute_request(request_object_dict)
+
+        def delete_tag(self, tag):
+            """ """
+            self._tag_mod(tag, PropertiesAction.DELETE, 'Deleting')
+
+        def disassociate(self, r_type, r_id):
+            """ """
+            self._associate(r_type, r_id, PropertiesAction.DELETE, 'Deleting')
 
         def get_data_methods(self):
             """ """
@@ -232,6 +433,10 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             """ """
             self._api_action = data
 
+        def set_document(self, data):
+            """ """
+            self._document = data
+
         def set_request_object(self, data_obj):
             """ """
             self._request_object = data_obj
@@ -239,89 +444,6 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
         def set_stage(self, data):
             """ """
             self._stage = data
-
-        def add_tag(self, tag):
-            """ """
-            self._tag_mod(tag, PropertiesAction.POST, 'Adding')
-
-        def delete_tag(self, tag):
-            """ """
-            self._tag_mod(tag, PropertiesAction.DELETE, 'Deleting')
-
-        def _tag_mod(self, tag, http_method, action):
-            """ """
-            # get properties for the object
-            if self._resource_type.value % 10:
-                self._resource_type = ResourceType(self._resource_type.value - 5)
-            properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
-                http_method)
-
-            # for indicators
-            if 500 <= self._resource_type.value <= 599:
-                # identifier = self.get_indicator()
-                identifier_method = self.get_indicator
-            else:
-                # identifier = self.get_id()
-                identifier_method = self.get_id
-
-            description = action + ' the tag (' + tag + ') on '
-            description += self._resource_type.name.lower() + ' resource (%s).'
-
-            # build request object dict so that the identifier can be
-            # pulled at the very end.  This is important due to using
-            # temp ids when creating a resource.
-            request_object_dict = {
-                'name1': self._resource_type.name,
-                'name2': tag,
-                'description': description,
-                'http_method': properties.http_method,
-                'request_uri_path': properties.tag_mod_path,
-                'identifier_method': identifier_method,
-                'tag': tag,
-                'owner_allowed': False,
-                'resource_pagination': False,
-                'resource_type': ResourceType.TAGS}
-
-            self.add_tag_request(request_object_dict)
-
-        def add_attribute(self, attribute_type, value, displayed=True):
-            """ """
-            body_json = json.dumps({
-                'type': attribute_type,
-                'value': value,
-                'displayed': displayed})
-
-            # get properties for the object
-            if self._resource_type.value % 10:
-                self._resource_type = ResourceType(self._resource_type.value - 5)
-            properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
-                PropertiesAction.POST)
-
-            # special case for indicators
-            if 500 <= self._resource_type.value <= 599:
-                identifier_method = self.get_indicator
-            else:
-                identifier_method = self.get_id
-
-            description = 'Adding attribute type (' + attribute_type + ') with value of ('
-            description += value + ') on ' + self._resource_type.name.lower() + ' resource (%s).'
-
-            # build request object dict so that the identifier can be
-            # pulled at the very end.  This is important due to using
-            # temp ids when creating a resource.
-            request_object_dict = {
-                'name1': 'attribute',
-                'name2': '%s|%s' % (attribute_type, value),
-                'body': body_json,
-                'description': description,
-                'http_method': properties.http_method,
-                'request_uri_path': properties.attribute_add_path,
-                'identifier_method': identifier_method,
-                'owner_allowed': True,
-                'resource_pagination': False,
-                'resource_type': ResourceType.ATTRIBUTES}
-
-            self.add_attribute_request(request_object_dict)
 
         def update_attribute(self, attribute_id, value):
             """ """
@@ -363,174 +485,6 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
 
             self.add_attribute_request(request_object_dict)
 
-        def delete_attribute(self, attribute_id):
-            """ """
-            # get properties for the object
-            if self._resource_type.value % 10:
-                self._resource_type = ResourceType(self._resource_type.value - 5)
-            properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
-                PropertiesAction.DELETE)
-
-            # special case for indicators
-            if 500 <= resource_type.value <= 599:
-                identifier_method = self.get_indicator
-                owner_allowed = True
-            else:
-                identifier_method = self.get_id
-                owner_allowed = False
-
-            description = 'Deleting attribute id (' + str(attribute_id) + ') from '
-            description += self._resource_type.name.lower() + ' resource (%s).'
-
-            # build request object dict so that the identifier can be
-            # pulled at the very end.  This is important due to using
-            # temp ids when creating a resource.
-            request_object_dict = {
-                'name1': 'attribute',
-                'name2': attribute_id,
-                'description': description,
-                'http_method': properties.http_method,
-                'request_uri_path': properties.attribute_delete_path,
-                'identifier_method': identifier_method,
-                'attribute_id': attribute_id,
-                'owner_allowed': owner_allowed,
-                'resource_pagination': False,
-                'resource_type': ResourceType.ATTRIBUTES}
-
-            self.add_attribute_request(request_object_dict)
-
-        def associate(self, r_type, r_id):
-            """ """
-            self._associate(r_type, r_id, PropertiesAction.POST, 'Adding')
-
-        def disassociate(self, r_type, r_id):
-            """ """
-            self._associate(r_type, r_id, PropertiesAction.DELETE, 'Deleting')
-
-        def _associate(self, r_type, r_id, http_method, action):
-            """
-            # group to group
-            POST /v2/groups/emails/747227/groups/adversaries/747266
-
-            # group to indicator
-            POST /v2/groups/incidents/119842/indicators/addresses/10.0.2.5
-            POST /v2/groups/emails/747227/indicators/emailAddresses/bcs150@badguys.com
-
-            # indicator to group
-            POST /v2/indicators/addresses/10.0.2.5/groups/incidents/119842
-
-            # group to victim
-            POST /v2/groups/emails/747227/victims/628
-
-            """
-
-            #
-            # get indicator type and properties
-            #
-
-            # get indicator properties for the object
-            if r_type.value % 10:
-                r_type = ResourceType(r_type.value - 5)
-            rt_prop = threatconnect.Config.ResourceProperties.ResourceProperties[r_type.name].value()
-            rt_uri = rt_prop.resource_uri_attribute
-
-            # the pass in resource determines part of the url
-            if 500 <= r_type.value <= 599:
-                uri = 'indicators'
-            else:
-                uri = 'groups'
-
-            # the identifier depend on the type of resource
-            if 500 <= self.resource_type.value <= 599:
-                identifier_method = self.get_indicator
-            else:
-                identifier_method = self.get_id
-
-            #
-            # prepare the request
-            #
-
-            # get properties for the object
-            if self._resource_type.value % 10:
-                self._resource_type = ResourceType(self._resource_type.value - 5)
-            properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
-                http_method)
-
-            description = action + ' association of ' + r_type.name.lower() + ' ('
-            description += str(r_id) + ') with ' + self._resource_type.name.lower()
-            description += ' resource id (%s).'
-
-            # build request object dict so that the identifier can be
-            # pulled at the very end.  This is important due to using
-            # temp ids when creating a resource.
-            request_object_dict = {
-                'name1': 'attribute',
-                'name2_method': self.get_id,
-                'description': description,
-                'http_method': properties.http_method,
-                'request_uri_path': properties.association_add_path,
-                'uri_attribute_1_method': identifier_method,
-                'uri_attribute_2': uri,
-                'uri_attribute_3': rt_uri,
-                'uri_attribute_4': r_id,
-                'owner_allowed': False,
-                'resource_pagination': False,
-                # TODO: what does this need to be?
-                'resource_type': ResourceType.ATTRIBUTES}
-
-            self.add_association_request(request_object_dict)
-
-        # def _associate(self, indicator, http_method, action):
-        # """
-        #     POST /v2/groups/incidents/119842/indicators/addresses/10.0.2.5
-        #     POST /v2/groups/emails/747227/indicators/emailAddresses/bcs150@badguys.com
-        #
-        #     POST /v2/indicators/addresses/10.0.2.5/groups/incidents/119842
-        #     POST /v2/groups/emails/747227/groups/adversaries/747266
-        #     """
-        #
-        #     #
-        #     # get indicator type and properties
-        #     #
-        #     irt = get_resource_type(indicator)
-        #     # get indicator properties for the object
-        #     if irt.value % 10:
-        #         irt = ResourceType(irt.value - 5)
-        #     i_prop = threatconnect.Config.ResourceProperties.ResourceProperties[irt.name].value()
-        #     indicator_uri = i_prop.resource_uri_attribute
-        #
-        #     #
-        #     # prepare the request
-        #     #
-        #
-        #     # get properties for the object
-        #     if self._resource_type.value % 10:
-        #         self._resource_type = ResourceType(self._resource_type.value - 5)
-        #     properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
-        #         http_method)
-        #
-        #     description = action + ' association of indicator (' + indicator + ') with '
-        #     description += self._resource_type.name.lower() + ' resource id (%s).'
-        #
-        #     # build request object dict so that the identifier can be
-        #     # pulled at the very end.  This is important due to using
-        #     # temp ids when creating a resource.
-        #     request_object_dict = {
-        #         'name1': 'attribute',
-        #         'name2_method': self.get_id,
-        #         'description': description,
-        #         'http_method': properties.http_method,
-        #         'request_uri_path': properties.association_add_path,
-        #         'uri_attribute_1_method': self.get_id,
-        #         'uri_attribute_2': indicator_uri,
-        #         'uri_attribute_3': indicator,
-        #         'owner_allowed': False,
-        #         'resource_pagination': False,
-        #         # TODO: what does this need to be?
-        #         'resource_type': ResourceType.ATTRIBUTES}
-        #
-        #     self.add_association_request(request_object_dict)
-
         @property
         def api_action(self):
             """ """
@@ -567,9 +521,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
                 request_object.set_request_uri(
                     rod['request_uri_path'] % (
                         rod['uri_attribute_1_method'](),
-                        rod['uri_attribute_2'],
-                        rod['uri_attribute_3'],
-                        rod['uri_attribute_4']))
+                        rod['uri_attribute_2']))
                 request_object.set_owner_allowed(rod['owner_allowed'])
                 request_object.set_resource_pagination(rod['resource_pagination'])
                 request_object.set_resource_type(rod['resource_type'])
@@ -607,6 +559,11 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
                 yield request_object
 
                 # return self._attribute_requests
+
+        @property
+        def document(self):
+            """ """
+            return self._document
 
         @property
         def request_object(self):

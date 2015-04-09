@@ -4,6 +4,7 @@ import types
 """ custom """
 from threatconnect import FilterMethods
 from threatconnect.Properties.ThreatsProperties import ThreatsProperties
+from threatconnect.RequestObject import RequestObject
 from threatconnect.Resource import Resource
 from threatconnect.FilterObject import FilterObject
 
@@ -20,11 +21,15 @@ class Threats(Resource):
 
         # set properties
         properties = ThreatsProperties()
-        self._http_method = properties.http_method
-        self._owner_allowed = properties.base_owner_allowed
-        self._resource_pagination = properties.resource_pagination
-        self._request_uri = properties.base_path
         self._resource_type = properties.resource_type
+
+        # create default request object for non-filtered requests
+        self._request_object = RequestObject('threats', 'default')
+        self._request_object.set_http_method(properties.http_method)
+        self._request_object.set_owner_allowed(properties.base_owner_allowed)
+        self._request_object.set_request_uri(properties.base_path)
+        self._request_object.set_resource_pagination(properties.resource_pagination)
+        self._request_object.set_resource_type(properties.resource_type)
 
 
 class ThreatFilterObject(FilterObject):
@@ -36,10 +41,15 @@ class ThreatFilterObject(FilterObject):
 
         # define properties for resource type
         self._properties = ThreatsProperties()
-        self._owner_allowed = self._properties.base_owner_allowed
-        self._resource_pagination = self._properties.resource_pagination
-        self._request_uri = self._properties.base_path
         self._resource_type = self._properties.resource_type
+
+        # create default request object for filtered request with only owners
+        self._request_object = RequestObject('threats', 'default')
+        self._request_object.set_http_method(self._properties.http_method)
+        self._request_object.set_owner_allowed(self._properties.base_owner_allowed)
+        self._request_object.set_request_uri(self._properties.base_path)
+        self._request_object.set_resource_pagination(self._properties.resource_pagination)
+        self._request_object.set_resource_type(self._properties.resource_type)
 
         #
         # add_obj filter methods

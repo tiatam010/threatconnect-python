@@ -31,18 +31,6 @@ class Documents(Resource):
         self._request_object.set_resource_pagination(properties.resource_pagination)
         self._request_object.set_resource_type(properties.resource_type)
 
-    # def upload(self, data_id, data):
-    #     # set properties
-    #     if self._resource_type.value % 10:
-    #         self._resource_type = ResourceType(self._resource_type.value - 5)
-    #     properties = ResourceProperties[self._resource_type.name].value(PropertiesAction.POST)
-    #
-    #     http_method = properties.http_method
-    #     request_uri = properties.upload_path % data_id
-    #
-    #     api_response = self._tc._api_request(request_uri, request_payload={}, http_method=http_method, body=data,
-    #         content_type='application/octet-stream')
-
 
 class DocumentFilterObject(FilterObject):
     """ """

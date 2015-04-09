@@ -38,6 +38,9 @@ class SignaturesProperties(GroupsProperties):
 
         # update object attributes
         self._object_attributes.remove(ResourceMethods.type_attr)
+        self._object_attributes.append(ResourceMethods.download_attr)
+        self._object_attributes.append(ResourceMethods.file_name_attr)
+        self._object_attributes.append(ResourceMethods.file_text_attr)
         self._object_attributes.append(ResourceMethods.file_type_attr)
 
         # update filter methods

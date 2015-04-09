@@ -7,6 +7,7 @@ class RequestObject(object):
     def __init__(self, filter_type, filter_value):
         """ """
         self._body = None
+        self._content_type = None
         self._description = None
         self._download = False
         self._http_method = 'GET'
@@ -26,6 +27,10 @@ class RequestObject(object):
     def set_body(self, data):
         """ """
         self._body = data
+
+    def set_content_type(self, data):
+        """ """
+        self._content_type = data
 
     def set_description(self, data):
         """ """
@@ -49,8 +54,6 @@ class RequestObject(object):
 
     def set_request_uri(self, uri_template, values=None):
         """ """
-        # pd('uri_template', uri_template)
-        # pd('values', values)
         if values is None:
             self._request_uri = uri_template
         else:
@@ -72,6 +75,11 @@ class RequestObject(object):
     def body(self):
         """ """
         return self._body
+
+    @property
+    def content_type(self):
+        """ """
+        return self._content_type
 
     @property
     def description(self):
@@ -130,7 +138,7 @@ class RequestObject(object):
 
     def __str__(self):
         """ """
-        obj_str = format_header('%s Requets Object' % self._name)
+        obj_str = format_header('%s Request Object' % self._name)
         printable_items = dict(self.__dict__)
         for key, val in sorted(printable_items.items()):
             obj_str += format_item(key, val)

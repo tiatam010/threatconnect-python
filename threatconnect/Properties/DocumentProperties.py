@@ -40,6 +40,7 @@ class DocumentProperties(GroupProperties):
         self._object_attributes.remove(ResourceMethods.type_attr)
         self._object_attributes.append(ResourceMethods.file_name_attr)
         self._object_attributes.append(ResourceMethods.file_size_attr)
+        self._object_attributes.append(ResourceMethods.upload_attr)
 
     @property
     def id_owner_allowed(self):

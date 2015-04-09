@@ -39,6 +39,7 @@ class IncidentsProperties(GroupsProperties):
 
         # update object attributes
         self._object_attributes.remove(ResourceMethods.type_attr)
+        self._object_attributes.append(ResourceMethods.event_data_attr)
 
         # update filter methods
         self._filter_methods.remove('add_adversary_id')
