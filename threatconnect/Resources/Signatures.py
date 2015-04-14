@@ -19,7 +19,7 @@ class Signatures(Resource):
         self._filter_class = SignatureFilterObject
 
         # set properties
-        properties = SignaturesProperties()
+        properties = SignaturesProperties(base_uri=self.base_uri)
         self._resource_type = properties.resource_type
 
         # create default request object for non-filtered requests
@@ -33,13 +33,13 @@ class Signatures(Resource):
 
 class SignatureFilterObject(FilterObject):
     """ """
-    def __init__(self):
+    def __init__(self, base_uri):
         """ """
-        super(SignatureFilterObject, self).__init__()
+        super(SignatureFilterObject, self).__init__(base_uri)
         self._owners = []
 
         # define properties for resource type
-        self._properties = SignaturesProperties()
+        self._properties = SignaturesProperties(base_uri=self.base_uri)
         self._resource_type = self._properties.resource_type
 
         # create default request object for filtered request with only owners

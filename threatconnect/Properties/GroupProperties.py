@@ -8,9 +8,9 @@ from threatconnect.ResourceObject import resource_class
 
 class GroupProperties(Properties):
     """ """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(GroupProperties, self).__init__(http_method)
+        super(GroupProperties, self).__init__(base_uri, http_method)
         self._http_method = http_method
 
         self._object_attributes = [
@@ -70,7 +70,7 @@ class GroupProperties(Properties):
     @property
     def base_path(self):
         """ """
-        return '/v2/groups/' + self._resource_uri_attribute
+        return '/' + self._base_uri + '/groups/' + self._resource_uri_attribute
 
     @property
     def delete_path(self):

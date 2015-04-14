@@ -20,7 +20,7 @@ class Incidents(Resource):
         self._filter_class = IncidentFilterObject
 
         # set properties
-        properties = IncidentsProperties()
+        properties = IncidentsProperties(base_uri=self.base_uri)
         self._resource_type = properties.resource_type
 
         # create default request object for non-filtered requests
@@ -34,13 +34,13 @@ class Incidents(Resource):
 
 class IncidentFilterObject(FilterObject):
     """ """
-    def __init__(self):
+    def __init__(self, base_uri):
         """ """
-        super(IncidentFilterObject, self).__init__()
+        super(IncidentFilterObject, self).__init__(base_uri)
         self._owners = []
 
         # define properties for resource type
-        self._properties = IncidentsProperties()
+        self._properties = IncidentsProperties(base_uri=self.base_uri)
         self._resource_type = self._properties.resource_type
 
         # create default request object for filtered request with only owners

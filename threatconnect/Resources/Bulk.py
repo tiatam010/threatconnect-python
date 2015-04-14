@@ -1,30 +1,32 @@
-""" standard """
+""" std modules """
 import types
 
-""" custom """
+""" custom modules """
 from threatconnect import FilterMethods
-from threatconnect.Properties.DocumentsProperties import DocumentsProperties
+from threatconnect.Config.ResourceProperties import ResourceProperties
+from threatconnect.Config.ResourceType import ResourceType
+from threatconnect.FilterObject import FilterObject
+from threatconnect.Properties.BulkIndicators import BulkProperties
 from threatconnect.RequestObject import RequestObject
 from threatconnect.Resource import Resource
-from threatconnect.FilterObject import FilterObject
 
 """ Note: PEP 8 intentionally ignored for variable/methods to match API standard. """
 
 
-class Documents(Resource):
+class Bulk(Resource):
     """ """
 
     def __init__(self, tc_obj):
         """ """
-        super(Documents, self).__init__(tc_obj)
-        self._filter_class = DocumentFilterObject
+        super(Bulk, self).__init__(tc_obj)
+        self._filter_class = BulkFilterObject
 
-        # set properties for non filtered request
-        properties = DocumentsProperties(base_uri=self.base_uri)
+        # set properties
+        properties = BulkProperties(base_uri=self.base_uri)
         self._resource_type = properties.resource_type
 
         # create default request object for non-filtered requests
-        self._request_object = RequestObject('documents', 'default')
+        self._request_object = RequestObject('bulk', 'default')
         self._request_object.set_http_method(properties.http_method)
         self._request_object.set_owner_allowed(properties.base_owner_allowed)
         self._request_object.set_request_uri(properties.base_path)
@@ -32,20 +34,19 @@ class Documents(Resource):
         self._request_object.set_resource_type(properties.resource_type)
 
 
-class DocumentFilterObject(FilterObject):
+class BulkFilterObject(FilterObject):
     """ """
-
     def __init__(self, base_uri):
         """ """
-        super(DocumentFilterObject, self).__init__(base_uri)
+        super(BulkFilterObject, self).__init__(base_uri)
         self._owners = []
 
         # define properties for resource type
-        self._properties = DocumentsProperties(base_uri=self.base_uri)
+        self._properties = BulkProperties(base_uri=self.base_uri)
         self._resource_type = self._properties.resource_type
 
         # create default request object for filtered request with only owners
-        self._request_object = RequestObject('documents', 'default')
+        self._request_object = RequestObject('groups', 'default')
         self._request_object.set_http_method(self._properties.http_method)
         self._request_object.set_owner_allowed(self._properties.base_owner_allowed)
         self._request_object.set_request_uri(self._properties.base_path)

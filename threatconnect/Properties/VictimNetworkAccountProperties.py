@@ -1,4 +1,5 @@
 """ custom """
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Properties.VictimNetworkAccountsProperties import VictimNetworkAccountsProperties
 
@@ -17,9 +18,9 @@ class VictimNetworkAccountProperties(VictimNetworkAccountsProperties):
     JSON Data:
     """
 
-    def __init__(self):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(VictimNetworkAccountProperties, self).__init__()
+        super(VictimNetworkAccountProperties, self).__init__(base_uri, http_method)
 
         # resource properties
         self._resource_key = 'victimNetworkAccount'

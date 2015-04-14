@@ -254,8 +254,11 @@ def add_owner(self, data):
     """ """
     if isinstance(data, list):
         self._owners.extend(data)
+        for o in data:
+            self._request_object.add_owner(o)
     else:
         self._owners.append(data)
+        self._request_object.add_owner(data)
 
 
 def add_security_label(self, data):
@@ -355,6 +358,35 @@ def add_victim_id(self, data_int):
         self._add_request_objects(ro)
 
 
+#
+# Post Filters
+#
+
+
+def add_attribute(self, data, operator=FilterOperator.EQ):
+    """ """
+    method = 'filter_attribute'
+    filter_name = '%s|%s' % ('attribute', data)
+
+    post_filter = PostFilterObject(filter_name)
+    post_filter.set_method(method)
+    post_filter.set_filter(data)
+    post_filter.set_operator(operator)
+    self.add_post_filter(post_filter)
+
+
+def add_confidence(self, data, operator=FilterOperator.EQ):
+    """ """
+    method = 'filter_confidence'
+    filter_name = '%s|%s' % ('confidence', data)
+
+    post_filter = PostFilterObject(filter_name)
+    post_filter.set_method(method)
+    post_filter.set_filter(data)
+    post_filter.set_operator(operator)
+    self.add_post_filter(post_filter)
+
+
 def add_date_added(self, data_date, operator=FilterOperator.EQ):
     """ """
     method = 'filter_date_added'
@@ -382,6 +414,84 @@ def add_file_type(self, data, operator=FilterOperator.EQ):
     self.add_post_filter(post_filter)
 
 
+def add_last_modified(self, data_date, operator=FilterOperator.EQ):
+    """ """
+    method = 'filter_last_modified'
+    last_modified = data_date
+    last_modified = dateutil.parser.parse(last_modified)
+    last_modified_seconds = int(time.mktime(last_modified.timetuple()))
+
+    filter_name = '%s|%s (%s)' % ('last_modified', data_date, last_modified_seconds)
+    post_filter = PostFilterObject(filter_name)
+    post_filter.set_method(method)
+    post_filter.set_filter(last_modified_seconds)
+    post_filter.set_operator(operator)
+    self.add_post_filter(post_filter)
+
+
+def add_rating(self, data, operator=FilterOperator.EQ):
+    """ """
+    method = 'filter_rating'
+    filter_name = '%s|%s' % ('rating', data)
+
+    post_filter = PostFilterObject(filter_name)
+    post_filter.set_method(method)
+    post_filter.set_filter(data)
+    post_filter.set_operator(operator)
+    self.add_post_filter(post_filter)
+
+
+def add_threat_assess_confidence(self, data, operator=FilterOperator.EQ):
+    """ """
+    method = 'filter_threat_assess_confidence'
+    filter_name = '%s|%s' % ('threat assess confidence', data)
+
+    post_filter = PostFilterObject(filter_name)
+    post_filter.set_method(method)
+    post_filter.set_filter(data)
+    post_filter.set_operator(operator)
+    self.add_post_filter(post_filter)
+
+
+def add_threat_assess_rating(self, data, operator=FilterOperator.EQ):
+    """ """
+    method = 'filter_threat_assess_rating'
+    filter_name = '%s|%s' % ('threat assess rating', data)
+
+    post_filter = PostFilterObject(filter_name)
+    post_filter.set_method(method)
+    post_filter.set_filter(data)
+    post_filter.set_operator(operator)
+    self.add_post_filter(post_filter)
+
+
+def add_tag(self, data, operator=FilterOperator.EQ):
+    """ """
+    method = 'filter_tag'
+    filter_name = '%s|%s' % ('tag', data)
+
+    post_filter = PostFilterObject(filter_name)
+    post_filter.set_method(method)
+    post_filter.set_filter(data)
+    post_filter.set_operator(operator)
+    self.add_post_filter(post_filter)
+
+
+def add_type(self, data, operator=FilterOperator.EQ):
+    """ """
+    method = 'filter_type'
+    filter_name = '%s|%s' % ('type', data)
+
+    post_filter = PostFilterObject(filter_name)
+    post_filter.set_method(method)
+    post_filter.set_filter(data)
+    post_filter.set_operator(operator)
+    self.add_post_filter(post_filter)
+
+#
+# Other Methods
+#
+
 def get_owners(self):
     """ """
     return self._owners
@@ -405,3 +515,21 @@ def get_request_uri(self):
 def get_resource_type(self):
     """ """
     return self._resource_type
+
+
+def set_format(self, data):
+    """ """
+    properties = self._properties
+
+    # if invalid format specified return json
+    if data in ['json', 'csv']:
+        d_format = data
+    else:
+        d_format = 'json'
+
+    ro = RequestObject('bulk download', d_format)
+    ro.set_owner_allowed(properties.base_owner_allowed)
+    ro.set_resource_pagination(properties.resource_pagination)
+    ro.set_request_uri(properties.base_path, [d_format])
+    ro.set_resource_type(properties.resource_type)
+    self._add_request_objects(ro)

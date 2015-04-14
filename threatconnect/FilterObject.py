@@ -10,15 +10,17 @@ from threatconnect.ErrorCodes import ErrorCodes
 
 class FilterObject(object):
     """ """
-    def __init__(self):
+    def __init__(self, base_uri):
         """ """
-        self._base_uri = None
+        self.base_uri = base_uri
+
         self._error = False
         self._errors = []
         self._filter_operator = FilterSetOperator.AND
         self._filter_object_type = None
         self._post_filters = []
         self._resource_type = None
+        self._request_object = None
         self._request_objects = []
 
     @property
@@ -45,9 +47,9 @@ class FilterObject(object):
         """ """
         self._post_filters.append(data_obj)
 
-    def get_base_uri(self):
-        """ """
-        return self._base_uri
+    # def get_base_uri(self):
+    #     """ """
+    #     return self._base_uri
 
     def get_errors(self):
         """ """
@@ -65,6 +67,11 @@ class FilterObject(object):
     def get_post_filters_len(self):
         """ """
         return len(self._post_filters)
+
+    @property
+    def request_object(self):
+        """ """
+        return self._request_object
 
     @property
     def resource_type(self):

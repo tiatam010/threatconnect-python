@@ -23,9 +23,9 @@ class EmailAddressProperties(IndicatorProperties):
      "description" : "Indicators from arachnophobia",
      "address" : "naseer@digitallinx.com"}
     """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(EmailAddressProperties, self).__init__(http_method)
+        super(EmailAddressProperties, self).__init__(base_uri, http_method)
 
         # resource properties
         self._resource_key = 'emailAddress'

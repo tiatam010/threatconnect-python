@@ -1,4 +1,5 @@
 """ custom """
+from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceUri import ResourceUri
 from threatconnect.Properties.Properties import Properties
@@ -20,9 +21,9 @@ class DnsResolutionProperties(Properties):
          'ip' : '62.76.47.24'}
     """
 
-    def __init__(self):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(DnsResolutionProperties, self).__init__()
+        super(DnsResolutionProperties, self).__init__(base_uri, http_method)
 
         # resource properties
         self._resource_key = 'dnsResolution'

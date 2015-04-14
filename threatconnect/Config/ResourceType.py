@@ -8,6 +8,7 @@ class ResourceType(Enum):
     ATTRIBUTES = 10
     DNS_RESOLUTIONS = 20
     OWNERS = 30
+    BULK = 40
 
     # groups
     ADVERSARY = 110

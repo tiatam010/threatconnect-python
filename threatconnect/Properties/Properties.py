@@ -3,15 +3,22 @@ from threatconnect.Config.PropertiesAction import PropertiesAction
 
 class Properties(object):
     """ """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
         self._base_owner_allowed = False
-        self._base_path = '/v2/'
+        self._base_path = '/' + base_uri + '/'
+        self._base_uri = base_uri
+        self._filter_methods = []
         self._http_method = http_method
         self._resource_pagination = False
         self._resource_type = None
         self._resource_uri_attribute = None
         self._resource_key = None
+
+    @property
+    def filters(self):
+        """ """
+        return self._filter_methods
 
     @property
     def http_method(self):

@@ -24,9 +24,9 @@ class AttributesProperties(Properties):
      'displayed' : false,
      'value' : 'Actions on Objectives'}
     """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(AttributesProperties, self).__init__()
+        super(AttributesProperties, self).__init__(base_uri, http_method)
         self._http_method = http_method
 
         # resource properties

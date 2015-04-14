@@ -11,7 +11,7 @@ def main():
     # This is a random number generator used for testing.
     randy = randint(1, 1000)
 
-    # (Required) Instantiate and Email Resource Object
+    # (Required) Instantiate a Resource Object
     resources = tc.adversaries()
 
     # (Optional) Filters can be added here if required to narrow the result set.
@@ -28,7 +28,7 @@ def main():
             #
             # update resource if required
             #
-            res.set_name('Loop Update Adversary Example %s' % randy)
+            res.set_name('Loop Update Adversary Sample %s' % randy)
 
             #
             # working with indicator associations
@@ -124,7 +124,7 @@ def main():
 
     # (Optional) a resource can be updated directly by using the resource id.
     resource = resources.update(749422)
-    resource.set_name('Manual Update Adversary Example %s' % randy)
+    resource.set_name('Manual Update Adversary Sample %s' % randy)
 
     # (Optional) add attribute to newly created resource
     resource.add_attribute('Description', 'test attribute %s' % randy)

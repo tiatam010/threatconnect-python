@@ -23,9 +23,9 @@ class SecurityLabelsProperties(Properties):
      "description" : "This data is ACME CONFIDENTIAL and is not approved for external release.",
      "dateAdded" : "2014-03-17T15:29:53Z"}
     """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(SecurityLabelsProperties, self).__init__(http_method)
+        super(SecurityLabelsProperties, self).__init__(base_uri, http_method)
         self._http_method = http_method
 
         # resource properties
@@ -75,7 +75,7 @@ class SecurityLabelsProperties(Properties):
     @property
     def base_path(self):
         """ """
-        return '/v2/' + self._resource_uri_attribute
+        return '/' + self._base_uri + '/' + self._resource_uri_attribute
 
     @property
     def email_owner_allowed(self):

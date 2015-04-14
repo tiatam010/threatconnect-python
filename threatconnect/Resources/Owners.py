@@ -19,7 +19,7 @@ class Owners(Resource):
         self._filter_class = OwnerFilterObject
 
         # set properties
-        properties = OwnersProperties()
+        properties = OwnersProperties(base_uri=self.base_uri)
         self._resource_type = properties.resource_type
 
         # create default request object for non-filtered requests
@@ -52,14 +52,14 @@ class Owners(Resource):
 class OwnerFilterObject(FilterObject):
     """ """
 
-    def __init__(self):
+    def __init__(self, base_uri):
         """ """
-        super(OwnerFilterObject, self).__init__()
+        super(OwnerFilterObject, self).__init__(base_uri)
         self._property_class = OwnersProperties
         self._properties_class = OwnersProperties
 
         # define properties for resource type
-        self._properties = self._properties_class()
+        self._properties = self._properties_class(base_uri=self.base_uri)
         self._resource_type = self._properties.resource_type
 
         # create default request object for filtered request with only owners

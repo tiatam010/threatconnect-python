@@ -19,7 +19,7 @@ class Attributes(Resource):
         # self._object_class = AttributeObject
 
         # set properties for non filtered request
-        properties = AttributesProperties()
+        properties = AttributesProperties(base_uri=self.base_uri)
         self._http_method = properties.http_method
         self._owner_allowed = properties.base_owner_allowed
         self._resource_pagination = properties.resource_pagination
@@ -64,13 +64,13 @@ class Attributes(Resource):
 
 class AttributeFilterObject(FilterObject):
     """ """
-    def __init__(self):
+    def __init__(self, base_uri):
         """ """
-        super(AttributeFilterObject, self).__init__()
+        super(AttributeFilterObject, self).__init__(base_uri)
         self._owners = []
 
         # define properties for resource type
-        self._properties = AttributesProperties()
+        self._properties = AttributesProperties(base_uri=self.base_uri)
         self._owner_allowed = self._properties.base_owner_allowed
         self._resource_pagination = self._properties.resource_pagination
         self._request_uri = self._properties.base_path

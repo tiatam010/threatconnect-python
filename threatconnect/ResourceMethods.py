@@ -6,7 +6,7 @@ from threatconnect.AttributeDef import AttributeDef
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.ErrorCodes import ErrorCodes
 from threatconnect.RequestObject import RequestObject
-from threatconnect.Validate import get_resource_type, get_resource_group_type
+from threatconnect.Validate import get_resource_type, get_resource_group_type, get_resource_indicator_type
 
 
 #
@@ -68,10 +68,8 @@ def set_confidence(self, data):
             self._confidence = data
         else:
             self.add_error_msg(ErrorCodes.e10010.value % data)
-            # self._confidence = None
     else:
         self.add_error_msg(ErrorCodes.e10011.value % data)
-        # self._confidence = None
 
 attr = AttributeDef('_confidence')
 attr.add_api_name('confidence')
@@ -81,6 +79,25 @@ attr.set_type(types.NoneType)
 attr.set_method_get('get_confidence')
 attr.set_method_set('set_confidence')
 confidence_attr = attr
+
+
+#
+# csv_enabled
+#
+def get_csv_enabled(self):
+    """ """
+    return self._csv_enabled
+
+
+def set_csv_enabled(self, data_bool):
+    """ """
+    self._csv_enabled = data_bool
+
+attr = AttributeDef('_csv_enabled')
+attr.add_api_name('csvEnabled')
+attr.set_method_get('get_csv_enabled')
+attr.set_method_set('set_csv_enabled')
+csv_enabled_attr = attr
 
 
 #
@@ -399,11 +416,30 @@ def set_indicator(self, data):
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('indicator')
-attr.set_required(True)
+attr.set_required(False)
 attr.set_writable(False)
 attr.set_method_get('get_indicator')
 attr.set_method_set('set_indicator')
 indicator_attr = attr
+
+
+#
+# json_enabled
+#
+def get_json_enabled(self):
+    """ """
+    return self._json_enabled
+
+
+def set_json_enabled(self, data_bool):
+    """ """
+    self._json_enabled = data_bool
+
+attr = AttributeDef('_json_enabled')
+attr.add_api_name('jsonEnabled')
+attr.set_method_get('get_json_enabled')
+attr.set_method_set('set_json_enabled')
+json_enabled_attr = attr
 
 
 #
@@ -425,6 +461,25 @@ attr.set_writable(False)
 attr.set_method_get('get_last_modified')
 attr.set_method_set('set_last_modified')
 last_modified_attr = attr
+
+
+#
+# last_run
+#
+def get_last_run(self):
+    """ """
+    return self._last_run
+
+
+def set_last_run(self, data):
+    """ """
+    self._last_run = data
+
+attr = AttributeDef('_last_run')
+attr.add_api_name('lastRun')
+attr.set_method_get('get_last_run')
+attr.set_method_set('set_last_run')
+last_run_attr = attr
 
 
 #
@@ -472,7 +527,26 @@ nationality_attr = attr
 
 
 #
-# get_org
+# next_run
+#
+def get_next_run(self):
+    """ """
+    return self._next_run
+
+
+def set_next_run(self, data):
+    """ """
+    self._next_run = data
+
+attr = AttributeDef('_next_run')
+attr.add_api_name('nextRun')
+attr.set_method_get('get_next_run')
+attr.set_method_set('set_next_run')
+next_run_attr = attr
+
+
+#
+# org
 #
 def get_org(self):
     """ """
@@ -551,8 +625,6 @@ def set_rating(self, data):
 
 attr = AttributeDef('_rating')
 attr.add_api_name('rating')
-# TODO: fix this
-# attr.add_api_name('threatAssessRating')
 attr.set_required(False)
 attr.set_writable(True)
 attr.set_method_get('get_rating')
@@ -603,6 +675,25 @@ source_attr = attr
 
 
 #
+# status
+#
+def get_status(self):
+    """ """
+    return self._status
+
+
+def set_status(self, data):
+    """ """
+    self._status = data
+
+attr = AttributeDef('_status')
+attr.add_api_name('status')
+attr.set_method_get('get_status')
+attr.set_method_set('set_status')
+status_attr = attr
+
+
+#
 # subject
 #
 def get_subject(self):
@@ -645,6 +736,48 @@ suborg_attr = attr
 
 
 #
+# threat assesses confidence
+#
+def get_threat_assess_confidence(self):
+    """ """
+    return self._threat_assess_confidence
+
+
+def set_threat_assess_confidence(self, data):
+    """ """
+    self._threat_assess_confidence = data
+
+attr = AttributeDef('_threat_assess_confidence')
+attr.add_api_name('threatAssessConfidence')
+attr.set_required(False)
+attr.set_writable(False)
+attr.set_method_get('get_threat_assess_confidence')
+attr.set_method_set('set_threat_assess_confidence')
+threat_assess_confidence_attr = attr
+
+
+#
+# threat assesses rating
+#
+def get_threat_assess_rating(self):
+    """ """
+    return self._threat_assess_rating
+
+
+def set_threat_assess_rating(self, data):
+    """ """
+    self._threat_assess_rating = data
+
+attr = AttributeDef('_threat_assess_rating')
+attr.add_api_name('threatAssessRating')
+attr.set_required(False)
+attr.set_writable(False)
+attr.set_method_get('get_threat_assess_rating')
+attr.set_method_set('set_threat_assess_rating')
+threat_assess_rating_attr = attr
+
+
+#
 # to
 #
 def get_to(self):
@@ -679,6 +812,8 @@ def set_type(self, data):
 
     if 100 <= self._resource_type.value <= 299:
         self._resource_type = get_resource_group_type(self._type)
+    elif 500 <= self._resource_type.value <= 599:
+        self._resource_type = get_resource_indicator_type(self._type)
 
 
 attr = AttributeDef('_type')
@@ -880,8 +1015,9 @@ def set_summary(self, data):
     """ """
     self._indicator = data
 
+    # THIS IS NOT NEEDED SINCE WE SET RESOURCE TYPE ON set_type???
     # update the resource type
-    self._resource_type = get_resource_type(self._indicator)
+    # self._resource_type = get_resource_type(self._indicator)
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('summary')

@@ -27,9 +27,9 @@ class VictimsProperties(Properties):
      "workLocation" : "Arlington VA",
      "webLink" : "https://app.threatconnect.com/tc/auth/victim/victim.xhtml?victim=386"}
     """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(VictimsProperties, self).__init__(http_method)
+        super(VictimsProperties, self).__init__(base_uri, http_method)
         self._http_method = http_method
 
         # resource properties
@@ -82,7 +82,7 @@ class VictimsProperties(Properties):
     @property
     def base_path(self):
         """ """
-        return '/v2/' + self._resource_uri_attribute
+        return '/' + self._base_uri + '/' + self._resource_uri_attribute
 
     @property
     def delete_path(self):

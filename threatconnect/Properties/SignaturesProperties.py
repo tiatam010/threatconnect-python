@@ -26,9 +26,9 @@ class SignaturesProperties(GroupsProperties):
      "webLink" : "https://app.threatconnect.com/tc/auth/signature/signature.xhtml?signature=132117",
      "fileType" : "Snort"}
     """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(SignaturesProperties, self).__init__(http_method)
+        super(SignaturesProperties, self).__init__(base_uri, http_method)
 
         # resource properties
         self._resource_key = 'signature'
@@ -46,5 +46,5 @@ class SignaturesProperties(GroupsProperties):
         # update filter methods
         self._filter_methods.remove('add_signature_id')
         self._filter_methods.append('add_id')
-        self._filter_methods.append('add_file_type')
+        self._filter_methods.append('add_file_type')  # post filter
 

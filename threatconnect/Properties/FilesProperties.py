@@ -34,9 +34,9 @@ class FilesProperties(IndicatorsProperties):
     }
 
     """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(FilesProperties, self).__init__(http_method)
+        super(FilesProperties, self).__init__(base_uri, http_method)
 
         # resource properties
         self._resource_key = 'file'

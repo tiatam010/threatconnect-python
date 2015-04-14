@@ -87,8 +87,6 @@ def main():
         # get filter
         filter1 = signatures.add_filter()
         filter1.add_owner(owners)
-        # TODO: separate download
-        # filter1.add_id(747239, download=True)
         filter1.add_id(747239)
 
         # check for any error on filter creation

@@ -7,6 +7,7 @@ from threatconnect import *
 from threatconnect.Config.IndicatorType import IndicatorType
 
 # configuration file
+# config_file = "../tc.conf"
 config_file = "../tc_test.conf"
 
 # read configuration file

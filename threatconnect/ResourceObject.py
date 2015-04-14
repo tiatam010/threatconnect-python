@@ -170,7 +170,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             if self._resource_type.value % 10:
                 self._resource_type = ResourceType(self._resource_type.value - 5)
             properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
-                http_method)
+                http_method=http_method)
 
             description = action + ' association of ' + r_type.name.lower() + ' ('
             description += str(r_id) + ') with ' + self._resource_type.name.lower()
@@ -200,7 +200,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             if self._resource_type.value % 10:
                 self._resource_type = ResourceType(self._resource_type.value - 5)
             properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
-                http_method)
+                http_method=http_method)
 
             # for indicators
             if 500 <= self._resource_type.value <= 599:
@@ -269,7 +269,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             if self._resource_type.value % 10:
                 self._resource_type = ResourceType(self._resource_type.value - 5)
             properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
-                PropertiesAction.POST)
+                http_method=PropertiesAction.POST)
 
             # special case for indicators
             if 500 <= self._resource_type.value <= 599:
@@ -624,13 +624,16 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             """allow object to be displayed with print"""
             printable_items = dict(self.__dict__)
             if hasattr(self, 'get_indicator'):
-                obj_str = format_header(self.get_indicator())
+                obj_str = format_header(
+                    '%s (%s)' % (self.get_indicator(), self.resource_type.name.lower()))
                 printable_items.pop('_indicator')
             elif hasattr(self, 'get_name'):
-                obj_str = format_header(self.get_name())
+                obj_str = format_header(
+                    '%s (%s)' % (self.get_name(), self.resource_type.name.lower()))
                 printable_items.pop('_name')
             elif hasattr(self, 'get_id'):
-                obj_str = format_header(self.get_id())
+                obj_str = format_header(
+                    '%s (%s)' % (self.get_id(), self.resource_type.name.lower()))
                 printable_items.pop('_id')
             else:
                 obj_str = format_header('ResourceObject')

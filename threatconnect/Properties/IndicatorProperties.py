@@ -9,9 +9,9 @@ from threatconnect.ResourceObject import resource_class
 class IndicatorProperties(Properties):
     """ """
 
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(IndicatorProperties, self).__init__(http_method)
+        super(IndicatorProperties, self).__init__(base_uri, http_method)
         self._http_method = http_method
 
         self._object_attributes = [
@@ -71,7 +71,7 @@ class IndicatorProperties(Properties):
     @property
     def base_path(self):
         """ """
-        return '/v2/indicators/' + self._resource_uri_attribute
+        return '/' + self._base_uri + '/indicators/' + self._resource_uri_attribute
 
     @property
     def delete_path(self):

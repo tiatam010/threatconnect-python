@@ -22,7 +22,9 @@ class Resource(object):
 
     def __init__(self, tc_obj):
         """ """
+        # instance of the ThreatConnect object
         self._tc = tc_obj
+        self.base_uri = self._tc.base_uri
 
         # filtered resource object list
         self._objects = []
@@ -38,9 +40,17 @@ class Resource(object):
         self._master_res_id_idx = {}
         self._master_object_id_idx = {}
 
-        # master resource indexes for post filtering
+        # Post Filter Indexes
+        self._attribute_idx = {}
+        self._confidence_idx = {}
         self._date_added_idx = {}
         self._file_type_idx = {}
+        self._last_modified_idx = {}
+        self._rating_idx = {}
+        self._threat_assess_confidence_idx = {}
+        self._threat_assess_rating_idx = {}
+        self._tag_idx = {}
+        self._type_idx = {}
 
         # defaults
         self._api_response = []
@@ -71,7 +81,8 @@ class Resource(object):
         if self._resource_type.value % 10:
             self._resource_type = ResourceType(self._resource_type.value - 5)
         # get properties for the object
-        properties = ResourceProperties[self._resource_type.name].value(PropertiesAction.POST)
+        properties = ResourceProperties[self._resource_type.name].value(
+            base_uri=self._tc.base_uri, http_method=PropertiesAction.POST)
 
         # generate unique temporary id
         resource_id = uuid.uuid4().int
@@ -108,53 +119,51 @@ class Resource(object):
         # return object for modification
         return res
 
-    @staticmethod
-    # TODO: this is the same for add and delete
-    def _associate_group(resource_obj, indicator, http_method, action):
-        """
-        POST /v2/indicators/addresses/10.0.2.5/groups/incidents/119842
-        POST /v2/groups/emails/747227/groups/adversaries/747266
-
-        DELETE /v2/indicators/addresses/10.0.2.5/groups/incidents/119842
-        DELETE /v2/groups/emails/747227/groups/adversaries/747266
-        """
-
-        #
-        # get indicator type and properties
-        #
-        indicator_resource_type = get_resource_type(indicator)
-        # switch any multiple resource request to single result request
-        if indicator_resource_type.value % 10:
-            indicator_resource_type = ResourceType(indicator_resource_type.value - 5)
-        # get indicator properties for the object
-        indicator_properties = ResourceProperties[indicator_resource_type.name].value()
-        indicator_uri = indicator_properties.resource_uri_attribute
-
-        #
-        # prepare the request
-        #
-        resource_type = resource_obj.request_object.resource_type
-
-        # switch any multiple resource request to single result request
-        if resource_type.value % 10:
-            resource_type = ResourceType(resource_type.value - 5)
-        # get properties for the object
-        properties = ResourceProperties[resource_type.name].value(http_method)
-
-        request_object = RequestObject(resource_type.name, resource_obj.get_id())
-        request_object.set_description(
-            '%s association of indicator (%s) with resource id (%s).' % (
-                action, indicator, resource_obj.get_id()))
-        request_object.set_http_method(properties.http_method)
-        request_object.set_request_uri(
-            properties.association_add_path % (
-                resource_obj.get_id(), indicator_uri, indicator))
-        request_object.set_owner_allowed(False)
-        request_object.set_resource_pagination(False)
-        # TODO: what does this need to be?
-        request_object.set_resource_type(ResourceType.ATTRIBUTES)
-
-        resource_obj.add_association_request(request_object)
+    # @staticmethod
+    # def _associate_group(resource_obj, indicator, http_method, action):
+    #     """
+    #     POST /v2/indicators/addresses/10.0.2.5/groups/incidents/119842
+    #     POST /v2/groups/emails/747227/groups/adversaries/747266
+    #
+    #     DELETE /v2/indicators/addresses/10.0.2.5/groups/incidents/119842
+    #     DELETE /v2/groups/emails/747227/groups/adversaries/747266
+    #     """
+    #
+    #     #
+    #     # get indicator type and properties
+    #     #
+    #     indicator_resource_type = get_resource_type(indicator)
+    #     # switch any multiple resource request to single result request
+    #     if indicator_resource_type.value % 10:
+    #         indicator_resource_type = ResourceType(indicator_resource_type.value - 5)
+    #     # get indicator properties for the object
+    #     indicator_properties = ResourceProperties[indicator_resource_type.name].value()
+    #     indicator_uri = indicator_properties.resource_uri_attribute
+    #
+    #     #
+    #     # prepare the request
+    #     #
+    #     resource_type = resource_obj.request_object.resource_type
+    #
+    #     # switch any multiple resource request to single result request
+    #     if resource_type.value % 10:
+    #         resource_type = ResourceType(resource_type.value - 5)
+    #     # get properties for the object
+    #     properties = ResourceProperties[resource_type.name].value(http_method)
+    #
+    #     request_object = RequestObject(resource_type.name, resource_obj.get_id())
+    #     request_object.set_description(
+    #         '%s association of indicator (%s) with resource id (%s).' % (
+    #             action, indicator, resource_obj.get_id()))
+    #     request_object.set_http_method(properties.http_method)
+    #     request_object.set_request_uri(
+    #         properties.association_add_path % (
+    #             resource_obj.get_id(), indicator_uri, indicator))
+    #     request_object.set_owner_allowed(False)
+    #     request_object.set_resource_pagination(False)
+    #     request_object.set_resource_type(ResourceType.ATTRIBUTES)
+    #
+    #     resource_obj.add_association_request(request_object)
 
     def add_obj(self, data_obj):
         """add object to resource instance"""
@@ -191,9 +200,9 @@ class Resource(object):
 
     def add_filter(self, resource_type=None):
         if resource_type is not None:
-            filter_obj = self._filter_class(resource_type)
+            filter_obj = self._filter_class(self.base_uri, resource_type)
         else:
-            filter_obj = self._filter_class()
+            filter_obj = self._filter_class(base_uri=self.base_uri)
 
         # append filter object
         self._filter_objects.append(filter_obj)
@@ -334,8 +343,21 @@ class Resource(object):
         else:
             resource_object_id = id(self._master_res_id_idx[index])
 
+        #
+        # post filters indexes
+        #
         if not duplicate:
+            #
+            # confidence index
+            #
+            if hasattr(data_obj, 'get_confidence'):
+                if data_obj.get_confidence() is not None:
+                    self._confidence_idx.setdefault(
+                        data_obj.get_confidence(), []).append(data_obj)
+
+            #
             # date added index
+            #
             if hasattr(data_obj, 'get_date_added'):
                 if data_obj.get_date_added() is not None:
                     date_added = data_obj.get_date_added()
@@ -343,10 +365,69 @@ class Resource(object):
                     date_added_seconds = int(time.mktime(date_added.timetuple()))
                     self._date_added_idx.setdefault(date_added_seconds, []).append(data_obj)
 
+            #
             # file type index
+            #
             if hasattr(data_obj, 'get_file_type'):
                 if data_obj.get_file_type() is not None:
                     self._file_type_idx.setdefault(data_obj.get_file_type(), []).append(data_obj)
+
+            #
+            # last modified index
+            #
+            if hasattr(data_obj, 'get_last_modified'):
+                if data_obj.get_last_modified() is not None:
+                    last_modified = data_obj.get_last_modified()
+                    last_modified = dateutil.parser.parse(last_modified)
+                    last_modified_seconds = int(time.mktime(last_modified.timetuple()))
+                    self._last_modified_idx.setdefault(last_modified_seconds, []).append(data_obj)
+
+            #
+            # rating index
+            #
+            if hasattr(data_obj, 'get_rating'):
+                if data_obj.get_rating() is not None:
+                    self._rating_idx.setdefault(
+                        data_obj.get_rating(), []).append(data_obj)
+
+            #
+            # threat assess confidence index
+            #
+            if hasattr(data_obj, 'get_threat_assess_confidence'):
+                if data_obj.get_threat_assess_confidence() is not None:
+                    self._threat_assess_confidence_idx.setdefault(
+                        data_obj.get_threat_assess_confidence(), []).append(data_obj)
+
+            #
+            # threat assess rating index
+            #
+            if hasattr(data_obj, 'get_threat_assess_rating'):
+                if data_obj.get_threat_assess_rating() is not None:
+                    self._threat_assess_rating_idx.setdefault(
+                        data_obj.get_threat_assess_rating(), []).append(data_obj)
+
+            #
+            # type index
+            #
+            if hasattr(data_obj, 'get_type'):
+                if data_obj.get_type() is not None:
+                    self._type_idx.setdefault(data_obj.get_type(), []).append(data_obj)
+
+            #
+            # attributes (nested object)
+            #
+            if len(data_obj.attribute_objects) > 0:
+                for attribute_obj in data_obj.attribute_objects:
+                    self._attribute_idx.setdefault(
+                        attribute_obj.get_type(), []).append(data_obj)
+
+            #
+            # tags (nested object)
+            #
+            if len(data_obj.tag_objects) > 0:
+                for tag_obj in data_obj.tag_objects:
+                    self._tag_idx.setdefault(
+                        tag_obj.get_name(), []).append(data_obj)
 
         return resource_object_id
 
@@ -504,7 +585,7 @@ class Resource(object):
 
                 if request_object.http_method in ['DELETE', 'POST', 'PUT']:
                     # instantiate association resource object
-                    # TODO: using tags here because there is no dummy object
+                    # TODO: using tags here because there is no dummy object use resource directly ???
                     associations = self._tc.tags()
                     self._tc.api_build_request(associations, request_object)
 
@@ -521,7 +602,7 @@ class Resource(object):
 
                 if request_object.http_method in ['DELETE', 'POST', 'PUT']:
                     # instantiate association resource object
-                    # TODO: using tags here because there is no dummy object
+                    # TODO: using tags here because there is no dummy object use resource directly ???
                     documents = self._tc.documents()
                     self._tc.api_build_request(documents, request_object)
 
@@ -633,8 +714,44 @@ class Resource(object):
         for obj in data_set:
             resource_obj.add_tag_object(obj)
 
+    #
+    # Post Filter Methods
+    #
+
+    def filter_attribute(self, data, operator):
+        """Post Filter"""
+        if operator == FilterOperator.EQ:
+            if data in self._attribute_idx:
+                for data_obj in self._attribute_idx[data]:
+                    data_obj.add_matched_filter(
+                        'attribute|%s (%s)' % (data, operator.name.lower()))
+                    yield data_obj
+        else:
+            for key, data_obj_list in self._attribute_idx.items():
+                if operator.value(key, data):
+                    for data_obj in data_obj_list:
+                        data_obj.add_matched_filter(
+                            'attribute|%s (%s)' % (data, operator.name.lower()))
+                        yield data_obj
+
+    def filter_confidence(self, data, operator):
+        """Post Filter"""
+        if operator == FilterOperator.EQ:
+            if data in self._confidence_idx:
+                for data_obj in self._confidence_idx[data]:
+                    data_obj.add_matched_filter(
+                        'confidence|%s (%s)' % (data, operator.name.lower()))
+                    yield data_obj
+        else:
+            for key, data_obj_list in self._confidence_idx.items():
+                if operator.value(key, data):
+                    for data_obj in data_obj_list:
+                        data_obj.add_matched_filter(
+                            'confidence|%s (%s)' % (data, operator.name.lower()))
+                        yield data_obj
+
     def filter_date_added(self, data, operator):
-        """ """
+        """Post Filter"""
         if operator == FilterOperator.EQ:
             if data in self._date_added_idx:
                 for data_obj in self._date_added_idx[data]:
@@ -650,7 +767,7 @@ class Resource(object):
                         yield data_obj
 
     def filter_file_type(self, data, operator):
-        """ """
+        """Post Filter"""
         if operator == FilterOperator.EQ:
             if data in self._file_type_idx:
                 for data_obj in self._file_type_idx[data]:
@@ -663,6 +780,102 @@ class Resource(object):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
                             'file_type|%s (%s)' % (data, operator.name.lower()))
+                        yield data_obj
+
+    def filter_last_modified(self, data, operator):
+        """Post Filter"""
+        if operator == FilterOperator.EQ:
+            if data in self._last_modified_idx:
+                for data_obj in self._last_modified_idx[data]:
+                    data_obj.add_matched_filter(
+                        'last_modified|%s (%s)' % (data, operator.name.lower()))
+                    yield data_obj
+        else:
+            for key, data_obj_list in self._last_modified_idx.items():
+                if operator.value(key, data):
+                    for data_obj in data_obj_list:
+                        data_obj.add_matched_filter(
+                            'last_modified|%s (%s)' % (data, operator.name.lower()))
+                        yield data_obj
+
+    def filter_rating(self, data, operator):
+        """Post Filter"""
+        if operator == FilterOperator.EQ:
+            if data in self._rating_idx:
+                for data_obj in self._rating_idx[data]:
+                    data_obj.add_matched_filter(
+                        'rating|%s (%s)' % (data, operator.name.lower()))
+                    yield data_obj
+        else:
+            for key, data_obj_list in self._rating_idx.items():
+                if operator.value(float(key), float(data)):
+                    for data_obj in data_obj_list:
+                        data_obj.add_matched_filter(
+                            'rating|%s (%s)' % (data, operator.name.lower()))
+                        yield data_obj
+
+    def filter_threat_assess_confidence(self, data, operator):
+        """Post Filter"""
+        if operator == FilterOperator.EQ:
+            if data in self._threat_assess_confidence_idx:
+                for data_obj in self._threat_assess_confidence_idx[data]:
+                    data_obj.add_matched_filter(
+                        'threat assess confidence|%s (%s)' % (data, operator.name.lower()))
+                    yield data_obj
+        else:
+            for key, data_obj_list in self._threat_assess_confidence_idx.items():
+                if operator.value(float(key), float(data)):
+                    for data_obj in data_obj_list:
+                        data_obj.add_matched_filter(
+                            'threat assess confidence|%s (%s)' % (data, operator.name.lower()))
+                        yield data_obj
+
+    def filter_threat_assess_rating(self, data, operator):
+        """Post Filter"""
+        if operator == FilterOperator.EQ:
+            if data in self._threat_assess_rating_idx:
+                for data_obj in self._threat_assess_rating_idx[data]:
+                    data_obj.add_matched_filter(
+                        'threat assess rating|%s (%s)' % (data, operator.name.lower()))
+                    yield data_obj
+        else:
+            for key, data_obj_list in self._threat_assess_rating_idx.items():
+                if operator.value(float(key), float(data)):
+                    for data_obj in data_obj_list:
+                        data_obj.add_matched_filter(
+                            'threat assess rating|%s (%s)' % (data, operator.name.lower()))
+                        yield data_obj
+
+    def filter_tag(self, data, operator):
+        """Post Filter"""
+        if operator == FilterOperator.EQ:
+            if data in self._tag_idx:
+                for data_obj in self._tag_idx[data]:
+                    data_obj.add_matched_filter(
+                        'tag|%s (%s)' % (data, operator.name.lower()))
+                    yield data_obj
+        else:
+            for key, data_obj_list in self._tag_idx.items():
+                if operator.value(key, data):
+                    for data_obj in data_obj_list:
+                        data_obj.add_matched_filter(
+                            'tag|%s (%s)' % (data, operator.name.lower()))
+                        yield data_obj
+
+    def filter_type(self, data, operator):
+        """Post Filter"""
+        if operator == FilterOperator.EQ:
+            if data in self._type_idx:
+                for data_obj in self._type_idx[data]:
+                    data_obj.add_matched_filter(
+                        'type|%s (%s)' % (data, operator.name.lower()))
+                    yield data_obj
+        else:
+            for key, data_obj_list in self._type_idx.items():
+                if operator.value(key, data):
+                    for data_obj in data_obj_list:
+                        data_obj.add_matched_filter(
+                            'type|%s (%s)' % (data, operator.name.lower()))
                         yield data_obj
 
     def get_http_method(self):

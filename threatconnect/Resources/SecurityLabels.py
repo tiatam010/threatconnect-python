@@ -19,7 +19,7 @@ class SecurityLabels(Resource):
         self._filter_class = SecurityLabelFilterObject
 
         # set properties
-        properties = SecurityLabelsProperties()
+        properties = SecurityLabelsProperties(base_uri=self.base_uri)
         self._resource_type = properties.resource_type
 
         # create default request object for non-filtered requests
@@ -33,13 +33,13 @@ class SecurityLabels(Resource):
 
 class SecurityLabelFilterObject(FilterObject):
     """ """
-    def __init__(self):
+    def __init__(self, base_uri):
         """ """
-        super(SecurityLabelFilterObject, self).__init__()
+        super(SecurityLabelFilterObject, self).__init__(base_uri)
         self._owners = []
 
         # define properties for resource type
-        self._properties = SecurityLabelsProperties()
+        self._properties = SecurityLabelsProperties(base_uri=self.base_uri)
         self._resource_type = self._properties.resource_type
 
         # create default request object for filtered request with only owners

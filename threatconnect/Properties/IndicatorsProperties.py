@@ -34,9 +34,9 @@ class IndicatorsProperties(Properties):
          credentials and used to extract card information.',
      'summary' : '60.1.2.243'}
     """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(IndicatorsProperties, self).__init__(http_method)
+        super(IndicatorsProperties, self).__init__(base_uri, http_method)
 
         # resource properties
         self._resource_key = 'indicator'
@@ -49,10 +49,13 @@ class IndicatorsProperties(Properties):
             ResourceMethods.date_added_attr,
             ResourceMethods.description_attr,
             ResourceMethods.id_attr,
+            ResourceMethods.indicator_attr,
             ResourceMethods.last_modified_attr,
             ResourceMethods.owner_name_attr,
             ResourceMethods.matched_filters_attr,
             ResourceMethods.rating_attr,
+            ResourceMethods.threat_assess_confidence_attr,
+            ResourceMethods.threat_assess_rating_attr,
             ResourceMethods.summary_attr,
             ResourceMethods.type_attr,
             ResourceMethods.web_link_attr]
@@ -65,7 +68,7 @@ class IndicatorsProperties(Properties):
     @property
     def base_path(self):
         """ """
-        return '/v2/' + self._resource_uri_attribute
+        return '/' + self._base_uri + '/' + self._resource_uri_attribute
 
     @property
     def adversary_owner_allowed(self):

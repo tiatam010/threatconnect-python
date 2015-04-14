@@ -20,12 +20,12 @@ class OwnersProperties(Properties):
     }
     """
 
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """
         /<api version>/owners
         /<api version>/indicators/<indicator type>/<value>/owners
         """
-        super(OwnersProperties, self).__init__(http_method)
+        super(OwnersProperties, self).__init__(base_uri, http_method)
         self._http_method = http_method
 
         # resource properties

@@ -12,6 +12,7 @@ class ReportEntry(object):
         """ """
         self._action = None
         self._data = []
+        self._request_urls = []
         self._resource_type = None
         self._status = None
         self._status_code = None
@@ -19,6 +20,10 @@ class ReportEntry(object):
     def add_data(self, data):
         """ """
         self._data.append(data)
+
+    def add_request_url(self, data):
+        """ """
+        self._request_urls.append(data)
 
     def set_action(self, data):
         """ """
@@ -47,6 +52,11 @@ class ReportEntry(object):
         return self._data
 
     @property
+    def request_urls(self):
+        """ """
+        return self._request_urls
+
+    @property
     def resource_type(self):
         """ """
         return self._resource_type
@@ -63,9 +73,10 @@ class ReportEntry(object):
 
     def __str__(self):
         """ """
-        obj_str = format_header('%s Entry:' % self._resource_type.name)
-        obj_str += format_item('Action', self._action)
-        obj_str += format_item('Status', self._status)
+        obj_str = format_header('%s' % self.action, '.', '.')
+        # obj_str += format_item('Action', self._action)
+        obj_str += format_item('Status Code', self._status_code)
+        obj_str += format_item('Request URLs', self.request_urls)
         obj_str += format_item('Data', '')
         for data in self._data:
             for k, v in data.items():

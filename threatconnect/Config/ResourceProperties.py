@@ -4,6 +4,7 @@ from threatconnect.Properties.AddressesProperties import AddressesProperties
 from threatconnect.Properties.AdversaryProperties import AdversaryProperties
 from threatconnect.Properties.AdversariesProperties import AdversariesProperties
 from threatconnect.Properties.AttributesProperties import AttributesProperties
+from threatconnect.Properties.BulkIndicators import BulkProperties
 from threatconnect.Properties.DocumentProperties import DocumentProperties
 from threatconnect.Properties.DocumentsProperties import DocumentsProperties
 from threatconnect.Properties.DnsResolutionProperties import DnsResolutionProperties
@@ -58,6 +59,7 @@ class ResourceProperties(Enum):
     ADVERSARY = AdversaryProperties
     ADVERSARIES = AdversariesProperties
     ATTRIBUTES = AttributesProperties
+    BULK = BulkProperties
     DOCUMENT = DocumentProperties
     DOCUMENTS = DocumentsProperties
     DNS_RESOLUTIONS = DnsResolutionProperties

@@ -21,7 +21,7 @@ class Victims(Resource):
         self._filter_class = VictimFilterObject
 
         # set properties
-        properties = VictimsProperties()
+        properties = VictimsProperties(base_uri=self.base_uri)
         self._resource_type = properties.resource_type
 
         # create default request object for non-filtered requests
@@ -35,13 +35,13 @@ class Victims(Resource):
 
 class VictimFilterObject(FilterObject):
     """ """
-    def __init__(self):
+    def __init__(self, base_uri):
         """ """
-        super(VictimFilterObject, self).__init__()
+        super(VictimFilterObject, self).__init__(base_uri)
         self._owners = []
 
         # define properties for resource type
-        self._properties = VictimsProperties()
+        self._properties = VictimsProperties(base_uri=self.base_uri)
         self._resource_type = self._properties.resource_type
 
         # create default request object for filtered request with only owners

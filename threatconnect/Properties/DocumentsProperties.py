@@ -25,8 +25,8 @@ class DocumentsProperties(GroupsProperties):
      "dateAdded" : "2015-01-26T14:14:37Z",
      "webLink" : "https://app.threatconnect.com/tc/auth/document/document.xhtml?document=675385"}
     """
-    def __init__(self, http_method=PropertiesAction.GET):
-        super(DocumentsProperties, self).__init__(http_method)
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
+        super(DocumentsProperties, self).__init__(base_uri, http_method)
 
         # resource properties
         self._resource_key = 'document'

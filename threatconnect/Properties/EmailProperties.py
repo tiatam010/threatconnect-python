@@ -28,9 +28,9 @@ class EmailProperties(GroupProperties):
      "header" : "Received: from mailer152.gate176.sl.smtp.com <truncted>'
      "body" : "INVOICE #765293\r\n\r\nSTATUS: Unpaid\r\n\r\n<truncated>'}
     """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(EmailProperties, self).__init__(http_method)
+        super(EmailProperties, self).__init__(base_uri, http_method)
 
         # resource properties
         self._resource_key = 'email'

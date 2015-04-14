@@ -31,9 +31,9 @@ class UrlsProperties(IndicatorsProperties):
          Associated with the phone number 1-888-996-0235",
      "text" : "http://warning4.media4.netdna-cdn.com/lpbrowser_1_6_mac/"}
     """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(UrlsProperties, self).__init__(http_method)
+        super(UrlsProperties, self).__init__(base_uri, http_method)
 
         # resource properties
         self._resource_key = 'url'

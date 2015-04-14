@@ -2,11 +2,11 @@ import inspect
 import os
 
 
-def format_header(header):
+def format_header(header, l_char='>', r_char='<'):
     """  """
     h_len = int((80 - len(str(header))) / 2)
-    l_wrapper = '>' * h_len
-    r_wrapper = '<' * h_len
+    l_wrapper = l_char * h_len
+    r_wrapper = r_char * h_len
 
     return "\n%s %s %s\n" % (l_wrapper, header, r_wrapper)
 
@@ -14,7 +14,7 @@ def format_header(header):
 def format_item(key, val, indent=0):
     """  """
     formatted_item = ''
-    formatter = ' ' * indent + '%-' + str(25 - indent) + 's%-25s\n'
+    formatter = ' ' * indent + '%-' + str(30 - indent) + 's%-25s\n'
     if isinstance(val, list):
         first_run = True
         for item in sorted(val):
@@ -32,10 +32,10 @@ def format_item(key, val, indent=0):
                     formatted_item += formatter % ('', item.encode('utf-8').strip())
             first_run = False
     elif isinstance(val, str):
-        formatter = ' ' * indent + '%-' + str(25 - indent) + 's%-25s\n'
+        formatter = ' ' * indent + '%-' + str(30 - indent) + 's%-25s\n'
         formatted_item += formatter % ('%s:' % key, val.encode('utf-8').strip())
     else:
-        formatter = ' ' * indent + '%-' + str(25 - indent) + 's%-25s\n'
+        formatter = ' ' * indent + '%-' + str(30 - indent) + 's%-25s\n'
         formatted_item += formatter % ('%s:' % key, val)
     return formatted_item
 

@@ -12,6 +12,14 @@ g_type_to_r_type = {
     'Signature': ResourceType.SIGNATURES,
     'Threat': ResourceType.THREATS}
 
+# indicator type to resource type mapping
+i_type_to_r_type = {
+    'Address': ResourceType.ADDRESSES,
+    'EmailAddress': ResourceType.EMAIL_ADDRESSES,
+    'File': ResourceType.FILES,
+    'Host': ResourceType.HOSTS,
+    'URL': ResourceType.URLS}
+
 
 def get_resource_type(indicator):
     """Get resource type enum from an indicator."""
@@ -25,6 +33,11 @@ def get_resource_type(indicator):
 def get_resource_group_type(group_type):
     """Get resource type enum from a group type."""
     return g_type_to_r_type[group_type]
+
+
+def get_resource_indicator_type(indicator_type):
+    """Get resource type enum from a indicator type."""
+    return i_type_to_r_type[indicator_type]
 
 
 def validate_indicator(indicator):

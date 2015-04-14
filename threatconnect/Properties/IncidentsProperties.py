@@ -27,9 +27,9 @@ class IncidentsProperties(GroupsProperties):
          incident.xhtml?incident=120133",
      "eventDate" : "2014-04-15T00:00:00Z"}
     """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(IncidentsProperties, self).__init__(http_method)
+        super(IncidentsProperties, self).__init__(base_uri, http_method)
 
         # resource properties
         self._resource_key = 'incident'

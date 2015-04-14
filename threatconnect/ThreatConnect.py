@@ -2,9 +2,13 @@
 import base64
 import hashlib
 import hmac
+import re
 import socket
 import time
 import sys
+import uuid
+from datetime import datetime
+from threatconnect.Report import Report
 
 """ third-party """
 from requests import (Request, Session, packages)
@@ -19,6 +23,8 @@ from threatconnect.Config.PropertiesEnums import (ApiStatus, FilterSetOperator)
 from threatconnect.ReportEntry import ReportEntry
 from threatconnect.Resources.Adversaries import Adversaries
 from threatconnect.Resources.Attributes import Attributes
+from threatconnect.Resources.Bulk import Bulk
+from threatconnect.Resources.BulkIndicators import BulkIndicators
 from threatconnect.Resources.Documents import Documents
 from threatconnect.Resources.Emails import Emails
 from threatconnect.Resources.FileOccurrences import FileOccurrences
@@ -39,7 +45,7 @@ from threatconnect.DataFormatter import pd
 class ThreatConnect:
     """ """
 
-    def __init__(self, api_aid, api_sec, api_org, api_url, api_max_results=200):
+    def __init__(self, api_aid, api_sec, api_org, api_url, api_max_results=200, base_uri='v2'):
         """ """
         # credentials
         self._api_aid = api_aid
@@ -49,6 +55,7 @@ class ThreatConnect:
         self._api_org = api_org
         self._api_url = api_url
         self._api_max_results = api_max_results
+        self.base_uri = base_uri
 
         # config items
         self.api_request_timeout = 10
@@ -58,71 +65,89 @@ class ThreatConnect:
         # initialize request session handle
         self._session = Session()
 
+        # instantiate report object
+        self.report = Report()
+
+        # TEMP
+        self.request_time = None
+
         # get all owner names
         # self._owners = self.get_owners().get_owner_names()
 
-    # def api_build_request(self, resource_obj, body=None):
-    def api_build_request(self, resource_obj, request_object):
+    def api_build_request(self, resource_obj, request_object, owners=None):
         """ """
         # pd('api_build_request', header=True)
+
+        #
+        # initialize vars
+        #
         obj_list = []
-        owners = [self._api_org]
+        if owners is None:
+            owners = [self._api_org]  # set owners to default org
         count = len(owners)
-        request_payload = None
+        # modified_since = None
+        request_payload = {}
         result_start = 0
         result_remaining = 0
 
-        # get resource object values
+        #
+        # resource object values
+        #
         body = request_object.body
         content_type = request_object.content_type
         http_method = request_object.http_method
+        modified_since = request_object.modified_since
+        owner_allowed = request_object.owner_allowed
+        resource_pagination = request_object.resource_pagination
         resource_type = request_object.resource_type
-
-        # special case for modified since
-        indicator_type_list = ['INDICATORS', 'ADDRESSES', 'EMAIL_ADDRESSES', 'FILES', 'HOSTS', 'URLS']
-        if resource_type.name in indicator_type_list:
-            modified_since = request_object.modified_since
-        else:
-            modified_since = None
-
-        # request uri
         request_uri = request_object.request_uri
 
-        # DEBUG
-        # pd('body', body)
-        # pd('content_type', content_type)
-        # pd('http_method', http_method)
-        # pd('modified_since', modified_since)
-        # pd('resource_type', resource_type)
-        # pd('request_uri', request_uri)
-        # pd('get_owner_allowed', request_object.owner_allowed)
-        # pd('get_resource_pagination', request_object.resource_pagination)
+        #
+        # ReportEntry (create a report entry for this request)
+        #
+        report_entry = ReportEntry()
+        report_entry.set_action(request_object.name)
+        report_entry.set_resource_type(resource_obj.resource_type)
+        report_entry.add_data({'HTTP Method': http_method})
+        report_entry.add_data({'Max Results': self._api_max_results})
+        report_entry.add_data({'Owners': str(owners)})
+        report_entry.add_data({'Owner Allowed': owner_allowed})
+        report_entry.add_data({'Request URI': request_uri})
+        report_entry.add_data({'Resource Pagination': resource_pagination})
+        report_entry.add_data({'Resource Type': resource_type})
+
+        # # special case for modified since
+        # # TODO: what would happen if this was always set to request object value?
+        # if resource_type.name in [
+        # 'INDICATORS', 'ADDRESSES', 'EMAIL_ADDRESSES', 'FILES', 'HOSTS', 'URLS']:
+        #     modified_since = request_object.modified_since
 
         # update resource object with max results
-        resource_obj.set_max_results(self._api_max_results)
+        # ???moved to report resource_obj.set_max_results(self._api_max_results)
 
         # append uri to resource object
-        resource_obj.add_uris(request_uri)
+        # ???moved to report resource_obj.add_uris(request_uri)
 
         # iterate through all owners and results
-        if request_object.owner_allowed or request_object.resource_pagination:
+        if owner_allowed or resource_pagination:
             # DEBUG
             # pd('owner or resource_pagination allowed')
-            request_payload = {}
 
             if modified_since is not None:
                 request_payload['modifiedSince'] = modified_since
+                # ReportEntry
+                report_entry.add_data({'Modified Since': modified_since})
 
-            if request_object.owner_allowed:
-                if len(list(request_object.owners)) > 0:
-                    owners = list(request_object.owners)
-                count = len(owners)
+            # if request_object.owner_allowed:
+            #     # if len(list(request_object.owners)) > 0:
+            #     # owners = list(request_object.owners)
+            #     count = len(owners)
 
             for x in xrange(count):
                 retrieve_data = True
 
                 # only add_obj owner parameter if owners is allowed
-                if request_object.owner_allowed:
+                if owner_allowed:
                     owner = owners.pop(0)
                     request_payload['owner'] = owner
 
@@ -131,7 +156,7 @@ class ThreatConnect:
                     # pd('request_payload', request_payload)
 
                 # only add_obj result parameters if resource_pagination is allowed
-                if request_object.resource_pagination:
+                if resource_pagination:
                     result_limit = int(self._api_max_results)
                     result_remaining = result_limit
                     result_start = 0
@@ -149,24 +174,80 @@ class ThreatConnect:
                         # pd('result_limit', result_limit)
                         # pd('result_start', result_start)
 
-                    # api call
+                    #
+                    # api request
+                    #
                     api_response = self._api_request(
                         request_uri, request_payload=request_payload, http_method=http_method, body=body)
                     api_response.encoding = 'utf-8'
+
+                    # ReportData
+                    report_entry.set_status_code(api_response.status_code)
+
+                    # break is status is not valid
+                    if api_response.status_code != 200:
+                        # ReportEntry
+                        report_entry.set_status_code(api_response.status_code)
+                        report_entry.add_data({'Failure Message': api_response.content})
+                        break
+
+                    #
+                    # CSV Special Case
+                    #
+                    if re.findall('bulk/csv$', request_object.request_uri):
+                        obj_list.extend(
+                            self._api_process_response_csv(resource_obj, api_response.content))
+                        break
+
+                    #
+                    # parse response
+                    #
                     api_response_dict = api_response.json()
-                    api_response_url = api_response.url
-                    resource_obj.current_url = api_response_url
+                    resource_obj.current_url = api_response.url
+
+                    # ReportEntry
+                    report_entry.add_request_url(api_response.url)
 
                     # update group object with api response data
                     resource_obj.add_api_response(api_response.content)
                     resource_obj.add_status_code(api_response.status_code)
-                    resource_obj.add_status(ApiStatus[api_response_dict['status'].upper()])
+                    resource_obj.add_error_message(api_response.content)
 
-                    # DEBUG
-                    # pd('api_response_url', api_response_url)
-                    # pd(api_response_dict['status'], header=True)
+                    #
+                    # bulk indicators
+                    #
 
-                    if api_response_dict['status'] == 'Success' and 'data' in api_response_dict:
+                    # indicator response has no status so it must come first
+                    if 'indicator' in api_response_dict:
+
+                        #
+                        # process response
+                        #
+                        obj_list.extend(self._api_process_response(
+                            resource_obj, api_response, request_object))
+
+                    #
+                    # non Success status
+                    #
+                    elif api_response_dict['status'] != 'Success':
+                        # ReportEntry
+                        report_entry.set_status(api_response_dict['status'])
+                        report_entry.add_data(
+                            {'Failure Message': api_response_dict['content']})
+
+                    #
+                    # normal response
+                    #
+                    elif 'data' in api_response_dict:
+                        # ReportEntry
+                        report_entry.set_status(api_response_dict['status'])
+
+                        # update resource object
+                        resource_obj.add_status(ApiStatus[api_response_dict['status'].upper()])
+
+                        #
+                        # process response
+                        #
                         obj_list.extend(self._api_process_response(
                             resource_obj, api_response, request_object))
 
@@ -178,70 +259,75 @@ class ThreatConnect:
 
                             result_remaining -= result_limit
 
+                            # flip retrieve data flag if there are more results to pull
                             if result_remaining > 0:
                                 retrieve_data = True
 
                             # increment the start position
                             result_start += result_limit
-
-                            # DEBUG
-                            # pd('result_remaining', result_remaining)
                     else:
                         resource_obj.add_error_message(api_response.content)
+
         elif content_type == 'application/octet-stream':
+            #
+            # api request
+            #
             api_response = self._api_request(
                 request_uri, request_payload={}, http_method=http_method,
                 body=body, content_type=content_type)
 
+            # ReportData
+            report_entry.set_status_code(api_response.status_code)
+
             return api_response.content
         else:
-            # api call
+            #
+            # api request
+            #
             api_response = self._api_request(
-                request_uri, request_payload={}, http_method=http_method,
-                body=body)
+                request_uri, request_payload={}, http_method=http_method, body=body)
             api_response.encoding = 'utf-8'
 
-            api_response_dict = api_response.json()
-            api_response_url = api_response.url
-            resource_obj.current_url = api_response_url
+            # ReportData
+            report_entry.set_status_code(api_response.status_code)
 
-            # DEBUG
-            # pd('api_response_url', api_response_url)
+            # break is status is not valid
+            if api_response.status_code != 200:
+                report_entry.add_data({'Failure Message': api_response.content})
+            else:
+                api_response_dict = api_response.json()
+                resource_obj.current_url = api_response.url
 
-            # update group object with api response data
-            resource_obj.add_api_response(api_response.content)
-            resource_obj.add_status_code(api_response.status_code)
-            resource_obj.add_status(ApiStatus[api_response_dict['status'].upper()])
+                # ReportEntry
+                report_entry.add_request_url(api_response.url)
 
-            # process the response data
-            if (api_response_dict['status'] == 'Success' and
-                    http_method != 'DELETE' and
-                    'data' in api_response_dict):
-                processed_data = self._api_process_response(
-                    resource_obj, api_response, request_object)
+                # update group object with api response data
+                resource_obj.add_api_response(api_response.content)
+                resource_obj.add_status_code(api_response.status_code)
+                resource_obj.add_status(ApiStatus[api_response_dict['status'].upper()])
 
-                obj_list.extend(processed_data)
+                # if (api_response_dict['status'] == 'Success' and
 
-        #
-        # add report entry
-        #
-        report_entry = ReportEntry()
-        report_entry.set_action(request_object.description)
-        report_entry.set_resource_type(resource_obj.resource_type)
-        report_entry.set_status(api_response_dict['status'])
-        report_entry.add_data({'Request Name': request_object.name})
-        report_entry.add_data({'HTTP Method': http_method})
-        report_entry.add_data({'Request URI': request_uri})
-        if api_response_dict['status'] != 'Success':
-            report_entry.add_data({'Failure Content': api_response_dict['message']})
-        if request_payload:
-            report_entry.add_data(request_payload)
-        self.add_report_entry(report_entry)
+                # no need to process data for deletes or if no data exists
+                if http_method != 'DELETE' and 'data' in api_response_dict:
+                    #
+                    # process response
+                    #
+                    processed_data = self._api_process_response(
+                        resource_obj, api_response, request_object)
+
+                    obj_list.extend(processed_data)
+
+        # ReportData
+        report_entry.add_data({'Result Count': len(obj_list)})
+
+        # Report
+        self.report.add_unfiltered_results(len(obj_list))
+        self.report.add(report_entry)
 
         return obj_list
 
-    @staticmethod
-    def _api_process_response(resource_obj, api_response, request_object):
+    def _api_process_response(self, resource_obj, api_response, request_object):
         """ """
         # DEBUG
         # pd('api_process_response', header=True)
@@ -257,10 +343,15 @@ class ThreatConnect:
 
         # use resource type from resource object to get the resource properties
         # resource_type = resource_obj.resource_type
-        properties = ResourceProperties[request_object.resource_type.name].value()
+        properties = ResourceProperties[request_object.resource_type.name].value(
+            base_uri=self.base_uri)
         resource_key = properties.resource_key
 
-        response_data = api_response_dict['data'][resource_key]
+        # bulk indicator
+        if 'indicator' in api_response_dict:
+            response_data = api_response_dict['indicator']
+        else:
+            response_data = api_response_dict['data'][resource_key]
 
         # DEBUG
         # pd('current_filter', current_filter)
@@ -280,8 +371,11 @@ class ThreatConnect:
         # update group object with result data
         for data in response_data:
             if resource_object_id is not None:
+                # if this is an existing resource pull it from Resource object
+                # so that it can be updated
                 data_obj = resource_obj.get_resource_by_identity(resource_object_id)
             else:
+                # create new resource object
                 data_obj = properties.resource_object
             data_methods = data_obj.get_data_methods()
 
@@ -289,11 +383,46 @@ class ThreatConnect:
                 # DEBUG
                 if attrib in data:
                     obj_method(data[attrib])
-                    # DEBUG
-                    # pd('data', data[attrib])
-                    # else:
-                    # DEBUG
-                    # pd('missing data object method', attrib)
+
+            #
+            # bulk
+            #
+            resource_type = data_obj.resource_type
+            if 500 <= resource_type.value <= 599:
+
+                #
+                # attributes
+                #
+
+                # check for attributes in bulk download
+                if 'attribute' in data:
+                    attribute_properties = ResourceProperties.ATTRIBUTES.value(
+                        base_uri=self.base_uri)
+                    for attribute in data['attribute']:
+                        attribute_data_obj = attribute_properties.resource_object
+                        attribute_data_methods = attribute_data_obj.get_data_methods()
+
+                        for attrib, obj_method in attribute_data_methods.items():
+                            if attrib in attribute:
+                                obj_method(attribute[attrib])
+
+                        data_obj.add_attribute_object(attribute_data_obj)
+
+                #
+                # tag
+                #
+                if 'tag' in data:
+                    tag_properties = ResourceProperties.TAGS.value(
+                        base_uri=self.base_uri)
+                    for tag in data['tag']:
+                        tag_data_obj = tag_properties.resource_object
+                        tag_data_methods = tag_data_obj.get_data_methods()
+
+                        for t, obj_method in tag_data_methods.items():
+                            if t in tag:
+                                obj_method(tag[t])
+
+                        data_obj.add_tag_object(tag_data_obj)
 
             data_obj.validate()
 
@@ -332,10 +461,52 @@ class ThreatConnect:
 
         return obj_list
 
+    def _api_process_response_csv(self, resource_obj, csv_data):
+        """ """
+        obj_list = []
+
+        properties = ResourceProperties.INDICATORS.value(
+            base_uri=self.base_uri)
+
+        headers = True
+        for line in csv_data.split('\n'):
+            if headers:
+                # Type,Value,Rating,Confidence
+                headers = False
+                continue
+            elif len(line) == 0:
+                continue
+
+            # temporary id
+            resource_id = uuid.uuid4().int
+
+            (indicator_type, indicator, rating, confidence) = line.split(',')
+            data_obj = properties.resource_object
+            data_obj.set_id(resource_id)
+            data_obj.set_type(indicator_type)
+            data_obj.set_indicator(indicator)
+            if confidence != 'null':
+                data_obj.set_confidence(int(confidence))
+            if rating != 'null':
+                data_obj.set_rating(rating)
+
+            # add the resource to the master resource object list to make intersections
+            # and joins simple when processing filters
+            roi = resource_obj.add_master_resource_obj(data_obj, resource_id)
+
+            # get stored object by the returned object id
+            stored_obj = resource_obj.get_resource_by_identity(roi)
+
+            # append the object to obj_list to be returned
+            obj_list.append(stored_obj)
+
+        return obj_list
+
     def _api_request(
             self, request_uri, request_payload, http_method='GET', body=None,
             activity_log='false', content_type='application/json'):
         """ """
+        start = datetime.now()
         # DEBUG
         # pd('_api_request', header=True)
         # pd('request_uri', request_uri)
@@ -343,7 +514,8 @@ class ThreatConnect:
         # pd('http_method', http_method)
         # pd('body', body)
 
-        request_uri = request_uri
+        # Report (count api calls)
+        self.report.add_api_call()
 
         # Decide whether or not to suppress all activity logs
         request_payload.setdefault('createActivityLog', activity_log)
@@ -386,6 +558,11 @@ class ThreatConnect:
         # pd('path_url', path_url)
 
         # pd('END _api_request', header=True)
+        pd('Request Time', datetime.now() - start)
+        if self.request_time is None:
+            self.request_time = datetime.now() - start
+        else:
+            self.request_time += datetime.now() - start
         return api_response
 
     def _api_request_headers(self, http_method, api_uri):
@@ -400,13 +577,17 @@ class ThreatConnect:
     def get_filtered_resource(self, resource_obj, filter_objs):
         """ """
         # DEBUG
-        # pd('_get_filterd_resource', header=True)
+        # pd('get_filterd_resource', header=True)
         data_set = None
 
         if not filter_objs:
-            owners = [self._api_org]
-            resource_obj.add_owners(owners)
-            data_set = self.api_build_request(resource_obj, resource_obj._request_object)
+            # owners = [self._api_org]
+            # resource_obj.add_owners(owners)
+
+            #
+            # build api call (no filters)
+            #
+            data_set = self.api_build_request(resource_obj, resource_obj.request_object)
         else:
             first_run = True
             for filter_obj in filter_objs:
@@ -428,27 +609,41 @@ class ThreatConnect:
                         resource_obj.set_resource_pagination(request_obj.resource_pagination)
                         resource_obj.set_request_uri(request_obj.request_uri)
                         resource_obj.set_resource_type(request_obj.resource_type)
-                        obj_list.extend(self.api_build_request(resource_obj, request_obj))
+                        obj_list.extend(self.api_build_request(
+                            resource_obj, request_obj, filter_obj.get_owners()))
                 else:
                     # resource_obj.set_owner_allowed(filter_obj.get_owner_allowed())
                     # resource_obj.set_resource_pagination(filter_obj.get_resource_pagination())
                     # resource_obj.set_request_uri(filter_obj.get_request_uri())
                     # resource_obj.set_resource_type(filter_obj.resource_type)
 
-                    obj_list.extend(self.api_build_request(resource_obj, filter_obj.request_object))
+                    obj_list.extend(self.api_build_request(
+                        resource_obj, filter_obj.request_object, filter_obj.get_owners()))
                     # obj_list.extend(self.api_build_request(resource_obj, resource_obj.request_obj))
 
-                # after all the api filtering is complete run through
+                #
                 # post filters
-                pf_obj_set = set()
+                #
+                # pf_obj_set = set()
+                # for pf_obj in filter_obj.get_post_filters():
+                # filter_method = getattr(resource_obj, pf_obj.method)
+                #     pf_obj_set.update(filter_method(pf_obj.filter, pf_obj.operator))
+
+                pf_obj_set = set(obj_list)
                 for pf_obj in filter_obj.get_post_filters():
+                    # current post filter method
                     filter_method = getattr(resource_obj, pf_obj.method)
-                    pf_obj_set.update(filter_method(pf_obj.filter, pf_obj.operator))
+
+                    # current post filter results
+                    post_filter_results = set(filter_method(pf_obj.filter, pf_obj.operator))
+                    pf_obj_set = pf_obj_set.intersection(post_filter_results)
+
+                obj_list = list(pf_obj_set)
 
                 # intersection pf_obj list with obj_list to apply filters
                 # to current result set
-                if filter_obj.get_post_filters_len() > 0:
-                    obj_list = pf_obj_set.intersection(obj_list)
+                # if filter_obj.get_post_filters_len() > 0:
+                #     obj_list = pf_obj_set.intersection(obj_list)
 
                 if first_run:
                     data_set = set(obj_list)
@@ -459,6 +654,9 @@ class ThreatConnect:
                     data_set = data_set.intersection(obj_list)
                 elif set_operator is FilterSetOperator.OR:
                     data_set.update(set(obj_list))
+
+        # Report
+        self.report.add_filtered_results(len(data_set))
 
         # add_obj data objects to group object
         for obj in data_set:
@@ -471,6 +669,14 @@ class ThreatConnect:
     def attributes(self):
         """ """
         return Attributes(self)
+
+    def bulk(self):
+        """ """
+        return Bulk(self)
+
+    def bulk_indicators(self):
+        """ """
+        return BulkIndicators(self)
 
     def documents(self):
         """ """
@@ -523,17 +729,6 @@ class ThreatConnect:
     def victim_assets(self):
         """ """
         return VictimAssets(self)
-
-    def add_report_entry(self, entry):
-        """ """
-        self._report.append(entry)
-
-    def display_report(self):
-        """ """
-        print('ThreatConnect API Report:')
-        for entry in self._report:
-            print(entry)
-        print('%s API calls not including pagination.' % len(self._report))
 
     def set_max_results(self, max_results):
         """ """

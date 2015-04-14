@@ -22,7 +22,7 @@ class Groups(Resource):
         self._filter_class = GroupFilterObject
 
         # set properties
-        properties = GroupsProperties()
+        properties = GroupsProperties(base_uri=self.base_uri)
         self._resource_type = properties.resource_type
 
         # create default request object for non-filtered requests
@@ -36,13 +36,13 @@ class Groups(Resource):
 
 class GroupFilterObject(FilterObject):
     """ """
-    def __init__(self):
+    def __init__(self, base_uri):
         """ """
-        super(GroupFilterObject, self).__init__()
+        super(GroupFilterObject, self).__init__(base_uri)
         self._owners = []
 
         # define properties for resource type
-        self._properties = GroupsProperties()
+        self._properties = GroupsProperties(base_uri=self.base_uri)
         self._resource_type = self._properties.resource_type
 
         # create default request object for filtered request with only owners

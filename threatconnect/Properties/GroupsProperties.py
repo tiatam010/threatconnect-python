@@ -29,9 +29,9 @@ class GroupsProperties(Properties):
      "webLink" : "https://app.threatconnect.com/tc/auth/adversary/
          adversary.xhtml?adversary=64571"}
     """
-    def __init__(self, http_method=PropertiesAction.GET):
+    def __init__(self, base_uri='v2', http_method=PropertiesAction.GET):
         """ """
-        super(GroupsProperties, self).__init__(http_method)
+        super(GroupsProperties, self).__init__(base_uri, http_method)
         self._http_method = http_method
 
         # resource properties
@@ -51,7 +51,7 @@ class GroupsProperties(Properties):
 
         self._filter_methods = [
             'add_adversary_id',
-            'add_date_added',
+            'add_date_added',  # post filter
             'add_email_id',
             'add_incident_id',
             'add_indicator',
@@ -75,7 +75,7 @@ class GroupsProperties(Properties):
     @property
     def base_path(self):
         """ """
-        return '/v2/' + self._resource_uri_attribute
+        return '/' + self._base_uri + '/' + self._resource_uri_attribute
 
     @property
     def adversary_owner_allowed(self):

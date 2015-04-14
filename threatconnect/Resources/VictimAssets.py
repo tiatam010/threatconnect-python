@@ -23,7 +23,7 @@ class VictimAssets(Resource):
         self._filter_class = VictimAssetFilterObject
 
         # set properties
-        properties = VictimAssetsProperties()
+        properties = VictimAssetsProperties(base_uri=self.base_uri)
         self._resource_type = properties.resource_type
 
         # create default request object for non-filtered requests
@@ -38,9 +38,9 @@ class VictimAssets(Resource):
 class VictimAssetFilterObject(FilterObject):
     """ """
 
-    def __init__(self, victim_asset_type_enum=None):
+    def __init__(self, base_uri, victim_asset_type_enum=None):
         """ """
-        super(VictimAssetFilterObject, self).__init__()
+        super(VictimAssetFilterObject, self).__init__(base_uri)
         self._owners = []
 
         # get resource type from indicator type
@@ -49,9 +49,9 @@ class VictimAssetFilterObject(FilterObject):
             resource_type = ResourceType(victim_asset_type_enum.value)
 
             # get resource properties from resource type name
-            self._properties = ResourceProperties[resource_type.name].value()
+            self._properties = ResourceProperties[resource_type.name].value(base_uri=self.base_uri)
         else:
-            self._properties = ResourceProperties['VICTIM_ASSETS'].value()
+            self._properties = ResourceProperties['VICTIM_ASSETS'].value(base_uri=self.base_uri)
 
         self._resource_type = self._properties.resource_type
 

@@ -3,9 +3,9 @@ from examples.working_init import *
 """ Working with Adversaries """
 
 """ Toggle the Boolean to enable specific examples """
-enable_example1 = False
+enable_example1 = True
 enable_example2 = False
-enable_example3 = True
+enable_example3 = False
 enable_example4 = False
 enable_example5 = False
 
@@ -21,20 +21,14 @@ def show_data(result_obj):
         for obj in result_obj:
             # tc.get_attributes(obj)
             print(obj)
-
-            print('-------- tags ---------')
-            tc.resource_get_tags(obj)
+            result_obj.get_tags(obj)
             for tag_obj in obj.tag_objects:
                 print(tag_obj)
-
-            print('-------- attrs ---------')
-            tc.resource_get_attributes(obj)
-            for attr_obj in obj.attribute_objects:
-                print(attr_obj)
-
     pd('Stats', header=True)
     pd('Result Count (Total)', result_obj.get_result_count())
     pd('Result Count (Filtered)', len(result_obj))
+
+    tc.display_report()
 
 
 def main():

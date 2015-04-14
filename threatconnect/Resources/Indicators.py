@@ -28,7 +28,7 @@ class Indicators(Resource):
         self._modified_since = None
 
         # set properties
-        properties = IndicatorsProperties()
+        properties = IndicatorsProperties(base_uri=self.base_uri)
         self._resource_type = properties.resource_type
 
         # create default request object for non-filtered requests
@@ -75,7 +75,7 @@ class Indicators(Resource):
             # get properties for the object
             if resource_type.value % 10:
                 resource_type = ResourceType(resource_type.value - 5)
-            properties = ResourceProperties[resource_type.name].value(PropertiesAction.POST)
+            properties = ResourceProperties[resource_type.name].value(http_method=PropertiesAction.POST)
 
             # generate unique temporary id
             resource_id = uuid.uuid4().int
@@ -121,9 +121,9 @@ class Indicators(Resource):
 class IndicatorFilterObject(FilterObject):
     """ """
 
-    def __init__(self, indicator_type_enum=None):
+    def __init__(self, base_uri, indicator_type_enum=None):
         """ """
-        super(IndicatorFilterObject, self).__init__()
+        super(IndicatorFilterObject, self).__init__(base_uri)
         self._owners = []
 
         # pd('IndicatorFilterObject', header=True)
@@ -135,9 +135,9 @@ class IndicatorFilterObject(FilterObject):
             resource_type = ResourceType(indicator_type_enum.value)
 
             # get resource properties from resource type name
-            self._properties = ResourceProperties[resource_type.name].value()
+            self._properties = ResourceProperties[resource_type.name].value(base_uri=self.base_uri)
         else:
-            self._properties = ResourceProperties['INDICATORS'].value()
+            self._properties = ResourceProperties['INDICATORS'].value(base_uri=self.base_uri)
 
         self._resource_type = self._properties.resource_type
 

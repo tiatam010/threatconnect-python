@@ -19,7 +19,7 @@ class FileOccurrences(Resource):
         self._filter_class = FileOccurrenceFilterObject
 
         # set properties
-        properties = FileOccurrencesProperties()
+        properties = FileOccurrencesProperties(base_uri=self.base_uri)
         self._http_method = properties.http_method
         self._owner_allowed = properties.base_owner_allowed
         self._resource_pagination = properties.resource_pagination
@@ -29,7 +29,7 @@ class FileOccurrences(Resource):
     def add(self, file_hash):
         """ """
         # set properties
-        properties = FileOccurrencesProperties(PropertiesAction.POST)
+        properties = FileOccurrencesProperties(base_uri=self.base_uri, http_method=PropertiesAction.POST)
         self._http_method = properties.http_method
         self._owner_allowed = False
         self._resource_pagination = False
@@ -44,13 +44,13 @@ class FileOccurrences(Resource):
 class FileOccurrenceFilterObject(FilterObject):
     """ """
 
-    def __init__(self):
+    def __init__(self, base_uri):
         """ """
-        super(FileOccurrenceFilterObject, self).__init__()
+        super(FileOccurrenceFilterObject, self).__init__(base_uri)
         self._owners = []
 
         # define properties for resource type
-        self._properties = FileOccurrencesProperties()
+        self._properties = FileOccurrencesProperties(base_uri=self.base_uri)
         self._owner_allowed = self._properties.base_owner_allowed
         self._resource_pagination = self._properties.resource_pagination
         self._request_uri = self._properties.base_path
