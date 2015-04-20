@@ -73,4 +73,4 @@ class BulkProperties(Properties):
 
     @property
     def resource_object(self):
-        return resource_class(self._object_attributes, self._resource_type, self._http_method)()
+        return resource_class(self._object_attributes, self._resource_type)()

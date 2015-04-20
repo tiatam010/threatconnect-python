@@ -102,13 +102,12 @@ class Resource(object):
             'Adding %s resource (%s)' % (self._resource_type.name.lower(), resource_name))
         request_object.set_http_method(properties.http_method)
         request_object.set_request_uri(properties.post_path)
-        request_object.set_owner_allowed(False)
+        request_object.set_owner_allowed(True)
         request_object.set_resource_pagination(False)
         request_object.set_resource_type(self._resource_type)
 
         # add to temporary object storage
         self.add_master_resource_obj(resource_object, resource_id)
-
         res = self.get_resource_by_id(resource_id)
         request_object.set_resource_object_id(id(res))
         res.set_request_object(request_object)
@@ -447,10 +446,11 @@ class Resource(object):
         """ """
         self._uris.append(data)
 
-    def commit(self):
+    def commit(self, owners=None):
         """ """
         # iterate through each object in resource objects
         for obj in self._objects:
+            # time.sleep(.01)
             temporary_id = None
             new_id = None
             resource_type = obj.request_object.resource_type
@@ -465,7 +465,7 @@ class Resource(object):
                     temporary_id = str(obj.get_id())
                     # add resource
                     obj.request_object.set_body(obj.get_json())
-                    self._tc.api_build_request(self, obj.request_object)
+                    self._tc.api_build_request(self, obj.request_object, owners)
                     new_id = str(obj.get_id())
                 else:
                     print('Failed validation.')
@@ -477,7 +477,8 @@ class Resource(object):
                     # switch any multiple resource request to single result request
                     if resource_type.value % 10:
                         resource_type = ResourceType(resource_type.value - 5)
-                    properties = ResourceProperties[resource_type.name].value(PropertiesAction.PUT)
+                    properties = ResourceProperties[resource_type.name].value(
+                        base_uri=self._tc.base_uri, http_method=PropertiesAction.PUT)
 
                     if isinstance(properties, IndicatorProperties):
                         # request object for groups
@@ -514,7 +515,8 @@ class Resource(object):
                     # switch any multiple resource request to single result request
                     if resource_type.value % 10:
                         resource_type = ResourceType(resource_type.value - 5)
-                    properties = ResourceProperties[resource_type.name].value(PropertiesAction.DELETE)
+                    properties = ResourceProperties[resource_type.name].value(
+                        base_uri=self._tc.base_uri, http_method=PropertiesAction.DELETE)
 
                     if isinstance(properties, IndicatorProperties):
                         request_object = RequestObject(resource_type.name, obj.get_indicator())
@@ -550,7 +552,7 @@ class Resource(object):
                 if request_object.http_method in ['DELETE', 'POST', 'PUT']:
                     # instantiate attribute resource object
                     attributes = self._tc.attributes()
-                    data_set = self._tc.api_build_request(attributes, request_object)
+                    data_set = self._tc.api_build_request(attributes, request_object, owners)
 
                     # add returned attribute to resource object
                     for attribute_object in data_set:
@@ -570,7 +572,7 @@ class Resource(object):
                 if request_object.http_method in ['DELETE', 'POST', 'PUT']:
                     # instantiate tag resource object
                     tags = self._tc.tags()
-                    self._tc.api_build_request(tags, request_object)
+                    self._tc.api_build_request(tags, request_object, owners)
 
                     del tags
 
@@ -587,7 +589,7 @@ class Resource(object):
                     # instantiate association resource object
                     # TODO: using tags here because there is no dummy object use resource directly ???
                     associations = self._tc.tags()
-                    self._tc.api_build_request(associations, request_object)
+                    self._tc.api_build_request(associations, request_object, owners)
 
                     del associations
             #
@@ -604,7 +606,7 @@ class Resource(object):
                     # instantiate association resource object
                     # TODO: using tags here because there is no dummy object use resource directly ???
                     documents = self._tc.documents()
-                    self._tc.api_build_request(documents, request_object)
+                    self._tc.api_build_request(documents, request_object, owners)
 
                     del documents
 
@@ -620,7 +622,7 @@ class Resource(object):
 
                 # instantiate association resource object
                 documents = self._tc.documents()
-                document_content = self._tc.api_build_request(documents, request_object)
+                document_content = self._tc.api_build_request(documents, request_object, owners)
                 obj.set_document(document_content)
 
                 del documents
@@ -631,7 +633,8 @@ class Resource(object):
         if self._resource_type.value % 10:
             self._resource_type = ResourceType(self._resource_type.value - 5)
         # set properties
-        properties = ResourceProperties[self._resource_type.name].value(PropertiesAction.DELETE)
+        properties = ResourceProperties[self._resource_type.name].value(
+            base_uri=self._tc.base_uri, http_method=PropertiesAction.DELETE)
 
         # resource object
         # if self.get_resource_by_id(resource_id) is not None:
@@ -1002,7 +1005,8 @@ class Resource(object):
         if self._resource_type.value % 10:
             self._resource_type = ResourceType(self._resource_type.value - 5)
         # set properties
-        properties = ResourceProperties[self._resource_type.name].value(PropertiesAction.PUT)
+        properties = ResourceProperties[self._resource_type.name].value(
+            base_uri=self._tc.base_uri, http_method=PropertiesAction.PUT)
 
         # resource object
         resource_object = properties.resource_object

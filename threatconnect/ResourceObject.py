@@ -1,5 +1,6 @@
 """ standard """
 import json
+import urllib
 
 """ custom """
 import threatconnect.ResourceMethods
@@ -8,7 +9,7 @@ from threatconnect.DataFormatter import format_item, format_header
 from threatconnect.ResourceMethods import *
 
 
-def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesAction.GET):
+def resource_class(dynamic_attribute_objs, resource_type):
     """
     This method will dynamically generate a ResourceObject class given
     an AttributeDef object. This method uses the passed object
@@ -44,6 +45,10 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
         attributes += tuple(dao.name)  # add_obj attr to tuple of attributes
         attributes += tuple(dao.method_get)
         attributes += tuple(dao.method_set)
+        for ea in dao.extra_attributes:
+            attributes += tuple(ea)
+        for em in dao.extra_methods:
+            attributes += tuple(em)
 
     class ResourceObject():
         __slots__ = attributes
@@ -89,6 +94,10 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
                 # create the attribute with the default value
                 setattr(self, a_obj.name, a_obj.type)
 
+                # set extra attributes
+                for aea in a_obj.extra_attributes:
+                    setattr(self, aea, None)
+
                 # add_obj required attribute to required list
                 # if a_obj.required and action == PropertiesAction.POST:
                 if a_obj.required:
@@ -99,6 +108,11 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
                 if a_obj.writable:
                     self.add_writable_attr(a_obj.api_names[0], a_obj.name)
                     self.add_method(a_obj.method_set)
+
+                # add extra methods
+                for aem in a_obj.extra_methods:
+                    extra_method = getattr(threatconnect.ResourceMethods, aem)
+                    setattr(self, aem, types.MethodType(extra_method, self))
 
                 # add_obj get method
                 get_method = getattr(threatconnect.ResourceMethods, a_obj.method_get)
@@ -182,7 +196,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             request_object_dict = {
                 'name1': 'attribute',
                 'name2_method': self.get_id,
-                'description': description,
+                'description': description.encode('utf-8').strip(),
                 'http_method': properties.http_method,
                 'request_uri_path': properties.association_add_path,
                 'uri_attribute_1_method': identifier_method,
@@ -219,12 +233,12 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             request_object_dict = {
                 'name1': self._resource_type.name,
                 'name2': tag,
-                'description': description,
+                'description': description.encode('utf-8').strip(),
                 'http_method': properties.http_method,
                 'request_uri_path': properties.tag_mod_path,
                 'identifier_method': identifier_method,
                 'tag': tag,
-                'owner_allowed': False,
+                'owner_allowed': True,
                 'resource_pagination': False,
                 'resource_type': ResourceType.TAGS}
 
@@ -287,7 +301,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
                 'name1': 'attribute',
                 'name2': '%s|%s' % (attribute_type, value),
                 'body': body_json,
-                'description': description,
+                'description': description.encode('utf-8').strip(),
                 'http_method': properties.http_method,
                 'request_uri_path': properties.attribute_add_path,
                 'identifier_method': identifier_method,
@@ -351,7 +365,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             if self._resource_type.value % 10:
                 self._resource_type = ResourceType(self._resource_type.value - 5)
             properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
-                PropertiesAction.DELETE)
+                http_method=PropertiesAction.DELETE)
 
             # special case for indicators
             if 500 <= resource_type.value <= 599:
@@ -370,7 +384,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             request_object_dict = {
                 'name1': 'attribute',
                 'name2': attribute_id,
-                'description': description,
+                'description': description.encode('utf-8').strip(),
                 'http_method': properties.http_method,
                 'request_uri_path': properties.attribute_delete_path,
                 'identifier_method': identifier_method,
@@ -408,7 +422,13 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             """ """
             json_data = {}
             for key, val in self._writable_attrs.items():
-                data_val = getattr(self, val)
+                key_attr = '_%s' % key
+                if hasattr(self, key_attr):
+                    # file hash
+                    data_val = getattr(self, key_attr)
+                else:
+                    data_val = getattr(self, val)
+                # add data to json output
                 if data_val is not None:
                     json_data[key] = data_val
             return json.dumps(json_data)
@@ -454,7 +474,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             if self._resource_type.value % 10:
                 self._resource_type = ResourceType(self._resource_type.value - 5)
             properties = threatconnect.Config.ResourceProperties.ResourceProperties[self._resource_type.name].value(
-                PropertiesAction.PUT)
+                http_method=PropertiesAction.PUT)
 
             # special case for indicators
             if 500 <= resource_type.value <= 599:
@@ -474,7 +494,7 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
                 'name1': 'attribute',
                 'name2': '%s|%s' % (attribute_id, value),
                 'body': body_json,
-                'description': description,
+                'description': description.encode('utf-8').strip(),
                 'http_method': properties.http_method,
                 'request_uri_path': properties.attribute_update_path,
                 'identifier_method': identifier_method,
@@ -539,26 +559,28 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
             for rod in self._attribute_requests:
                 # build request object
                 request_object = RequestObject(rod['name1'], rod['name2'])
-                request_object.set_description(rod['description'] % rod['identifier_method']())
+                # request_object.set_description(rod['description'] % rod['identifier_method']())
+                request_object.set_description('temp')
                 request_object.set_http_method(rod['http_method'])
+                identifier = rod['identifier_method']()
+                if self._resource_type in [ResourceType.URL, ResourceType.URLS]:
+                    identifier = urllib.quote(identifier, safe='~')
                 # body only exist on POST and PUT
                 if rod['http_method'] in ['POST', 'PUT']:
                     request_object.set_body(rod['body'])
                 # uri is different depending on the http method
                 if rod['http_method'] == 'POST':
                     request_object.set_request_uri(
-                        rod['request_uri_path'] % rod['identifier_method']())
+                        rod['request_uri_path'] % identifier)
                 elif rod['http_method'] in ['DELETE', 'PUT']:
                     request_object.set_request_uri(
                         rod['request_uri_path'] % (
-                            rod['identifier_method'](), rod['attribute_id']))
+                            identifier, rod['attribute_id']))
                 request_object.set_owner_allowed(rod['owner_allowed'])
                 request_object.set_resource_pagination(rod['resource_pagination'])
                 request_object.set_resource_type(rod['resource_type'])
 
                 yield request_object
-
-                # return self._attribute_requests
 
         @property
         def document(self):
@@ -593,8 +615,11 @@ def resource_class(dynamic_attribute_objs, resource_type, action=PropertiesActio
                 request_object = RequestObject(rod['name1'], rod['name2'])
                 request_object.set_description(rod['description'] % rod['identifier_method']())
                 request_object.set_http_method(rod['http_method'])
+                identifier = rod['identifier_method']()
+                if self._resource_type in [ResourceType.URL, ResourceType.URLS]:
+                    identifier = urllib.quote(identifier, safe='~')
                 request_object.set_request_uri(
-                    rod['request_uri_path'] % (rod['identifier_method'](), rod['tag']))
+                    rod['request_uri_path'] % (identifier, rod['tag']))
                 request_object.set_owner_allowed(rod['owner_allowed'])
                 request_object.set_resource_pagination(rod['resource_pagination'])
                 request_object.set_resource_type(rod['resource_type'])

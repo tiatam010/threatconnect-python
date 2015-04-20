@@ -42,5 +42,5 @@ class DocumentsProperties(GroupsProperties):
         self._object_attributes.append(ResourceMethods.download_attr)
 
         # update filter methods
-        self._filter_methods.remove('add_adversary_id')
+        # self._filter_methods.remove('add_document_id')
         self._filter_methods.append('add_id')

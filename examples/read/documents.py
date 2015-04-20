@@ -13,16 +13,18 @@ enable_example5 = False
 def show_data(result_obj):
     """  """
     pd('Documents', header=True)
-    pd('Status', result_obj.get_status())
-    pd('Status Code', result_obj.get_status_code())
-    pd('URIs', result_obj.get_uris())
+    # pd('Status', result_obj.get_status())
+    # pd('Status Code', result_obj.get_status_code())
+    # pd('URIs', result_obj.get_uris())
 
     if result_obj.get_status().name == "SUCCESS":
         for obj in result_obj:
             print(obj)
-    pd('Stats', header=True)
-    pd('Result Count (Total)', result_obj.get_result_count())
-    pd('Result Count (Filtered)', len(result_obj))
+    # pd('Stats', header=True)
+    # pd('Result Count (Total)', result_obj.get_result_count())
+    # pd('Result Count (Filtered)', len(result_obj))
+
+    print(tc.report)
 
 
 def main():
@@ -84,10 +86,9 @@ def main():
         # get filter
         filter1 = documents.add_filter()
         filter1.add_owner(owners)
-        filter1.add_id(747162)
-        # filter1.add_tag('Company X')
-        # filter1.add_tag('China')
-        # filter1.add_threat_id(125220)
+        filter1.add_id(752435)
+        filter1.add_tag('BCS')
+        filter1.add_adversary_id(747266)
 
         # check for any error on filter creation
         if filter1.error:
@@ -113,14 +114,14 @@ def main():
         # get filter
         filter1 = documents.add_filter()
         filter1.add_owner(owners)
-        filter1.add_incident_id(708917)
-        filter1.add_indicator('bigdocomojp.com')
+        filter1.add_incident_id(747246)
+        filter1.add_indicator('bcs_bad_guy@badguysareus.com')
         filter1.add_security_label('SUPER SECRET')
         filter1.add_tag('BCS')
-        filter1.add_threat_id(125220)
-        filter1.add_email_id(45621)
-        filter1.add_signature_id(130269)
-        filter1.add_victim_id(374)
+        filter1.add_threat_id(747243)
+        filter1.add_email_id(747227)
+        filter1.add_signature_id(747239)
+        filter1.add_victim_id(628)
 
         # check for any error on filter creation
         if filter1.error:

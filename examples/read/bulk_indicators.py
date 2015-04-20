@@ -10,7 +10,7 @@ from examples.working_init import *
 """ Toggle the Boolean to enable specific examples """
 enable_example1 = False
 enable_example2 = False
-enable_example3 = True
+enable_example3 = False
 
 
 def show_data(result_obj):
@@ -47,8 +47,8 @@ def main():
     # all owners
     # owners = owners_obj.get_owner_names()
 
-    owners = ['Test Community']
-    # owners = ['Common Community']
+    # owners = ['Test Community']
+    owners = ['Common Community']
 
     if enable_example1:
         """ get community/source status """
@@ -78,15 +78,15 @@ def main():
         filter1 = indicators.add_filter()
         filter1.add_owner(owners)
         filter1.set_format('json')
-        filter1.add_confidence(50, FilterOperator.GE)
-        filter1.add_date_added('2014-04-10T00:00:00Z', FilterOperator.GE)
-        filter1.add_rating('2.0', FilterOperator.GT)
-        filter1.add_type('Host')
-        filter1.add_last_modified('2015-01-21T00:31:44Z', FilterOperator.LE)
-        filter1.add_threat_assess_confidence('95', FilterOperator.GE)
-        filter1.add_threat_assess_rating('4.0', FilterOperator.GE)
-        filter1.add_tag('China', FilterOperator.EQ)
-        filter1.add_attribute('Description', FilterOperator.EQ)
+        filter1.add_pf_confidence(50, FilterOperator.GE)
+        filter1.add_pf_date_added('2014-04-10T00:00:00Z', FilterOperator.GE)
+        filter1.add_pf_rating('2.0', FilterOperator.GT)
+        filter1.add_pf_type('Host')
+        filter1.add_pf_last_modified('2015-01-21T00:31:44Z', FilterOperator.LE)
+        filter1.add_pf_threat_assess_confidence('95', FilterOperator.GE)
+        filter1.add_pf_threat_assess_rating('4.0', FilterOperator.GE)
+        filter1.add_pf_tag('China', FilterOperator.EQ)
+        filter1.add_pf_attribute('Description', FilterOperator.EQ)
 
         # retrieve indicators
         indicators.retrieve()
@@ -110,9 +110,9 @@ def main():
         filter1 = indicators.add_filter()
         filter1.add_owner(owners)
         filter1.set_format('csv')
-        filter1.add_confidence(50, FilterOperator.GE)
-        filter1.add_rating('2.0', FilterOperator.GT)
-        filter1.add_type('Host')
+        filter1.add_pf_confidence(50, FilterOperator.GE)
+        filter1.add_pf_rating('2.0', FilterOperator.GT)
+        filter1.add_pf_type('Host')
 
         # retrieve indicators
         indicators.retrieve()

@@ -2,16 +2,17 @@
 import base64
 import hashlib
 import hmac
+import logging
+from pprint import pformat
 import re
 import socket
 import time
 import sys
 import uuid
 from datetime import datetime
-from threatconnect.Report import Report
 
 """ third-party """
-from requests import (Request, Session, packages)
+from requests import (exceptions, packages, Request, Session)
 # disable ssl warning message
 packages.urllib3.disable_warnings()
 
@@ -21,6 +22,7 @@ from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceProperties import ResourceProperties
 from threatconnect.Config.PropertiesEnums import (ApiStatus, FilterSetOperator)
 from threatconnect.ReportEntry import ReportEntry
+from threatconnect.Report import Report
 from threatconnect.Resources.Adversaries import Adversaries
 from threatconnect.Resources.Attributes import Attributes
 from threatconnect.Resources.Bulk import Bulk
@@ -39,7 +41,14 @@ from threatconnect.Resources.Signatures import Signatures
 from threatconnect.Resources.Victims import Victims
 from threatconnect.Resources.VictimAssets import VictimAssets
 
-from threatconnect.DataFormatter import pd
+#
+# logging
+#
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s %(message)s',
+    filename='tc.log',
+    filemode='w')
 
 
 class ThreatConnect:
@@ -58,7 +67,7 @@ class ThreatConnect:
         self.base_uri = base_uri
 
         # config items
-        self.api_request_timeout = 10
+        self.api_request_timeout = 30
         self._report = []
         self._verify_ssl = False
 
@@ -67,9 +76,6 @@ class ThreatConnect:
 
         # instantiate report object
         self.report = Report()
-
-        # TEMP
-        self.request_time = None
 
         # get all owner names
         # self._owners = self.get_owners().get_owner_names()
@@ -82,8 +88,10 @@ class ThreatConnect:
         # initialize vars
         #
         obj_list = []
-        if owners is None:
+        if owners is None or not owners:
             owners = [self._api_org]  # set owners to default org
+        else:
+            owners = list(owners)  # get copy of owners list for pop
         count = len(owners)
         # modified_since = None
         request_payload = {}
@@ -181,14 +189,20 @@ class ThreatConnect:
                         request_uri, request_payload=request_payload, http_method=http_method, body=body)
                     api_response.encoding = 'utf-8'
 
-                    # ReportData
+                    # ReportEntry
                     report_entry.set_status_code(api_response.status_code)
+                    report_entry.add_request_url(api_response.url)
 
                     # break is status is not valid
-                    if api_response.status_code != 200:
+                    if api_response.status_code not in [200, 201, 202]:
                         # ReportEntry
+                        report_entry.set_status('Failure')
                         report_entry.set_status_code(api_response.status_code)
                         report_entry.add_data({'Failure Message': api_response.content})
+                        # Logging
+                        logging.error('status_code: %s' % api_response.status_code)
+                        logging.error('1 Failure Message: %s' % api_response.content)
+                        logging.error('1 Failure Text: %s' % api_response.text)
                         break
 
                     #
@@ -204,9 +218,6 @@ class ThreatConnect:
                     #
                     api_response_dict = api_response.json()
                     resource_obj.current_url = api_response.url
-
-                    # ReportEntry
-                    report_entry.add_request_url(api_response.url)
 
                     # update group object with api response data
                     resource_obj.add_api_response(api_response.content)
@@ -233,7 +244,7 @@ class ThreatConnect:
                         # ReportEntry
                         report_entry.set_status(api_response_dict['status'])
                         report_entry.add_data(
-                            {'Failure Message': api_response_dict['content']})
+                            {'Failure Message': api_response_dict['message']})
 
                     #
                     # normal response
@@ -276,8 +287,18 @@ class ThreatConnect:
                 request_uri, request_payload={}, http_method=http_method,
                 body=body, content_type=content_type)
 
-            # ReportData
+            # ReportEntry
             report_entry.set_status_code(api_response.status_code)
+            report_entry.add_request_url(api_response.url)
+
+            if api_response.status_code not in [200, 201, 202]:
+                # ReportEntry
+                report_entry.set_status('Failure')
+                report_entry.add_data({'Failure Message': api_response.content})
+                # Logging
+                logging.error('2 Failure Message: %s' % api_response.content)
+            else:
+                report_entry.set_status('Success')
 
             return api_response.content
         else:
@@ -290,23 +311,32 @@ class ThreatConnect:
 
             # ReportData
             report_entry.set_status_code(api_response.status_code)
+            report_entry.add_request_url(api_response.url)
 
             # break is status is not valid
-            if api_response.status_code != 200:
-                report_entry.add_data({'Failure Message': api_response.content})
+            if api_response.status_code not in [200, 201, 202]:
+                if api_response.status_code == 404:
+                    # failure_message = api_response.json()['message']
+                    failure_message = api_response.content
+                else:
+                    failure_message = api_response.content
+                # ReportEntry
+                report_entry.set_status('Failure')
+                report_entry.add_data({'Failure Message': failure_message})
+                # Logging
+                logging.error('3 Failure Message: %s' % failure_message)
             else:
                 api_response_dict = api_response.json()
                 resource_obj.current_url = api_response.url
 
                 # ReportEntry
+                report_entry.set_status(api_response_dict['status'])
                 report_entry.add_request_url(api_response.url)
 
                 # update group object with api response data
                 resource_obj.add_api_response(api_response.content)
                 resource_obj.add_status_code(api_response.status_code)
                 resource_obj.add_status(ApiStatus[api_response_dict['status'].upper()])
-
-                # if (api_response_dict['status'] == 'Success' and
 
                 # no need to process data for deletes or if no data exists
                 if http_method != 'DELETE' and 'data' in api_response_dict:
@@ -440,7 +470,7 @@ class ThreatConnect:
                 index = data_obj.get_name()
             else:
                 # all object should either support get_id or get_name.
-                print('This should never happen.')
+                logging.critical('Critical failure in someone\'s logic.')
                 sys.exit(1)
 
             # add the resource to the master resource object list to make intersections
@@ -508,11 +538,13 @@ class ThreatConnect:
         """ """
         start = datetime.now()
         # DEBUG
-        # pd('_api_request', header=True)
-        # pd('request_uri', request_uri)
-        # pd('request_payload', request_payload)
-        # pd('http_method', http_method)
-        # pd('body', body)
+        logging.debug('_api_request')
+        logging.debug('request_uri: %s' % request_uri)
+        logging.debug('request_payload: %s' % pformat(request_payload))
+        logging.debug('http_method: %s' % http_method)
+        logging.debug('body: %s' % body)
+        logging.debug('activity_log: %s' % activity_log)
+        logging.debug('content_type: %s' % content_type)
 
         # Report (count api calls)
         self.report.add_api_call()
@@ -539,14 +571,44 @@ class ThreatConnect:
             api_headers['Content-Length'] = len(body)
         request_prepped.prepare_headers(api_headers)
 
-        # commit api request
-        try:
-            api_response = self._session.send(
-                request_prepped, verify=self._verify_ssl, timeout=self.api_request_timeout)
-        except socket.error as e:
-            print('Error: %s' % e)
-            print('The server appears to be down at the moment. The script cannot continue.')
-            sys.exit(1)
+        #
+        # api request
+        #
+        retries = 3
+        sleep = 15
+        for i in range(0, retries, 1):
+            try:
+                api_response = self._session.send(
+                    request_prepped, verify=self._verify_ssl, timeout=self.api_request_timeout)
+                break
+            except exceptions.ReadTimeout as e:
+                logging.error('Error: %s' % e)
+                logging.error('The server may be experiencing delays at the moment.')
+                logging.info('Pausing for %s seconds to give server time to catch up.' % sleep)
+                time.sleep(sleep)
+                logging.info('Retry %s ....' % i)
+                if i == retries:
+                    logging.error('Exiting Application.')
+                    sys.exit(1)
+            except exceptions.ConnectionError as e:
+                logging.error('Error: %s' % e)
+                logging.error('Connection Error. The server may be down.')
+                logging.info('Pausing for %s seconds to give server time to catch up.' % sleep)
+                time.sleep(sleep)
+                logging.info('Retry %s ....' % i)
+                if i == retries:
+                    logging.error('Exiting Application.')
+                    sys.exit(1)
+            except socket.error as e:
+                logging.error('Error: %s' % e)
+                logging.error('Socket Error. The application could not get a network socket')
+                logging.error('Exiting Application.')
+                sys.exit(1)
+            # else:
+            #     logging.debug('%s' % api_response.content)
+            #     logging.error('Error: unhandled exception')
+            #     logging.error('Exiting Application.')
+            #     sys.exit(1)
 
         # DEBUG
         # pd('dir', dir(api_response))
@@ -557,12 +619,8 @@ class ThreatConnect:
 
         # pd('path_url', path_url)
 
-        # pd('END _api_request', header=True)
-        pd('Request Time', datetime.now() - start)
-        if self.request_time is None:
-            self.request_time = datetime.now() - start
-        else:
-            self.request_time += datetime.now() - start
+        # Report
+        self.report.add_request_time(datetime.now() - start)
         return api_response
 
     def _api_request_headers(self, http_method, api_uri):
@@ -638,7 +696,8 @@ class ThreatConnect:
                     post_filter_results = set(filter_method(pf_obj.filter, pf_obj.operator))
                     pf_obj_set = pf_obj_set.intersection(post_filter_results)
 
-                obj_list = list(pf_obj_set)
+                if filter_obj.get_post_filters_len() > 0:
+                    obj_list = list(pf_obj_set)
 
                 # intersection pf_obj list with obj_list to apply filters
                 # to current result set

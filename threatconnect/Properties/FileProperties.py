@@ -38,7 +38,9 @@ class FileProperties(IndicatorProperties):
 
         # update object attributes
         self._object_attributes.remove(ResourceMethods.summary_attr)
-        self._object_attributes.append(ResourceMethods.hash_attr)
+        self._object_attributes.append(ResourceMethods.md5_attr)
+        self._object_attributes.append(ResourceMethods.sha1_attr)
+        self._object_attributes.append(ResourceMethods.sha256_attr)
 
     @property
     def indicator_owner_allowed(self):

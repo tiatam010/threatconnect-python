@@ -3,9 +3,6 @@ import types
 
 """ custom """
 from threatconnect import FilterMethods
-from threatconnect.Config.IndicatorType import IndicatorType
-from threatconnect.Config.ResourceProperties import ResourceProperties
-from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.FilterObject import FilterObject
 from threatconnect.Properties.BulkIndicatorsProperties import BulkIndicatorsProperties
 from threatconnect.RequestObject import RequestObject

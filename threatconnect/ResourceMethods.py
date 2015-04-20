@@ -6,7 +6,8 @@ from threatconnect.AttributeDef import AttributeDef
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.ErrorCodes import ErrorCodes
 from threatconnect.RequestObject import RequestObject
-from threatconnect.Validate import get_resource_type, get_resource_group_type, get_resource_indicator_type
+from threatconnect.Validate import get_resource_type, get_resource_group_type, get_resource_indicator_type, \
+    get_hash_type
 
 
 #
@@ -307,7 +308,7 @@ def get_file_text(self):
 
 def set_file_text(self, data):
     """ """
-    self._file_text = data
+    self._file_text = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_file_text')
 attr.add_api_name('fileText')
@@ -349,7 +350,7 @@ def get_from(self):
 
 def set_from(self, data):
     """ """
-    self._from = data
+    self._from = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_from')
 attr.add_api_name('from')
@@ -370,7 +371,7 @@ def get_header(self):
 
 def set_header(self, data):
     """ """
-    self._header = data
+    self._header = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_header')
 attr.add_api_name('header')
@@ -412,7 +413,7 @@ def get_indicator(self):
 
 def set_indicator(self, data):
     """ """
-    self._indicator = data
+    self._indicator = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('indicator')
@@ -492,7 +493,7 @@ def get_name(self):
 
 def set_name(self, data):
     """ """
-    self._name = data
+    self._name = data.encode('ascii', 'ignore')
     if self._stage is 'new':
         self._api_action = 'update'
 
@@ -515,7 +516,7 @@ def get_nationality(self):
 
 def set_nationality(self, data):
     """ """
-    self._nationality = data
+    self._nationality = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_nationality')
 attr.add_api_name('nationality')
@@ -555,7 +556,7 @@ def get_org(self):
 
 def set_org(self, data):
     """ """
-    self._org = data
+    self._org = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_org')
 attr.add_api_name('org')
@@ -576,7 +577,7 @@ def get_owner_name(self):
 
 def set_owner_name(self, data):
     """ """
-    self._owner_name = data
+    self._owner_name = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_owner_name')
 attr.add_api_name('ownerName')
@@ -597,7 +598,7 @@ def get_path(self):
 
 def set_path(self, data):
     """ """
-    self._path = data
+    self._path = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_path')
 attr.add_api_name('path')
@@ -663,7 +664,7 @@ def get_source(self):
 
 def set_source(self, data):
     """ """
-    self._source = data
+    self._source = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_source')
 attr.add_api_name('source')
@@ -703,7 +704,7 @@ def get_subject(self):
 
 def set_subject(self, data):
     """ """
-    self._subject = data
+    self._subject = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_subject')
 attr.add_api_name('subject')
@@ -724,7 +725,7 @@ def get_suborg(self):
 
 def set_suborg(self, data):
     """ """
-    self._suborg = data
+    self._suborg = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_suborg')
 attr.add_api_name('suborg')
@@ -787,7 +788,7 @@ def get_to(self):
 
 def set_to(self, data):
     """ """
-    self._to = data
+    self._to = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_to')
 attr.add_api_name('to')
@@ -808,7 +809,7 @@ def get_type(self):
 
 def set_type(self, data):
     """ """
-    self._type = data
+    self._type = data.encode('ascii', 'ignore')
 
     if 100 <= self._resource_type.value <= 299:
         self._resource_type = get_resource_group_type(self._type)
@@ -835,7 +836,7 @@ def get_value(self):
 
 def set_value(self, data):
     """ """
-    self._value = data
+    self._value = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_value')
 attr.add_api_name('value')
@@ -856,7 +857,7 @@ def get_web_link(self):
 
 def set_web_link(self, data):
     """ """
-    self._web_link = data
+    self._web_link = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_web_link')
 attr.add_api_name('webLink')
@@ -898,7 +899,7 @@ def get_work_location(self):
 
 def set_work_location(self, data):
     """ """
-    self._work_location = data
+    self._work_location = data.encode('ascii', 'ignore')
 
 attr = AttributeDef('_work_location')
 attr.add_api_name('workLocation')
@@ -930,11 +931,12 @@ address_attr = attr
 
 
 #
-# hash (indicator)
+# md5 (indicator)
 #
-def set_hash(self, data):
+def set_md5(self, data):
     """ """
     self._indicator = data
+    self._md5 = data
     self._type = ResourceType.FILES
 
     # update the resource type
@@ -942,13 +944,94 @@ def set_hash(self, data):
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('md5')
-attr.add_api_name('sha1')
-attr.add_api_name('sha256')
-attr.set_required(True)
+attr.add_extra_attribute('_md5')
+attr.set_required(False)
 attr.set_writable(True)
 attr.set_method_get('get_indicator')
-attr.set_method_set('set_hash')
-hash_attr = attr
+attr.set_method_set('set_md5')
+md5_attr = attr
+
+
+#
+# sha1 (indicator)
+#
+def set_sha1(self, data):
+    """ """
+    self._indicator = data
+    self._sha1 = data
+    self._type = ResourceType.FILES
+
+    # update the resource type
+    self._resource_type = get_resource_type(self._indicator)
+
+attr = AttributeDef('_indicator')
+attr.add_api_name('sha1')
+attr.add_extra_attribute('_sha1')
+attr.set_required(False)
+attr.set_writable(True)
+attr.set_method_get('get_indicator')
+attr.set_method_set('set_sha1')
+sha1_attr = attr
+
+
+#
+# sha256 (indicator)
+#
+def set_sha256(self, data):
+    """ """
+    self._indicator = data
+    self._sha256 = data
+    self._type = ResourceType.FILES
+
+    # update the resource type
+    self._resource_type = get_resource_type(self._indicator)
+
+attr = AttributeDef('_indicator')
+attr.add_api_name('sha256')
+attr.add_extra_attribute('_sha256')
+attr.set_required(False)
+attr.set_writable(True)
+attr.set_method_get('get_indicator')
+attr.set_method_set('set_sha256')
+sha256_attr = attr
+
+
+# #
+# # hash (indicator)
+# #
+# def set_hash(self, data):
+#     """ """
+#     self._indicator = data
+#     self._type = ResourceType.FILES
+#
+#     # populate extra attributes
+#     hash_type = get_hash_type(data)
+#     if hash_type == 'md5':
+#         self._md5 = data
+#     elif hash_type == 'sha1':
+#         self._sha1 = data
+#     elif hash_type == 'sha256':
+#         self._sha256 = data
+#
+#     # update the resource type
+#     self._resource_type = get_resource_type(self._indicator)
+#
+#
+# attr = AttributeDef('_indicator')
+# attr.add_api_name('md5')
+# attr.add_api_name('sha1')
+# attr.add_api_name('sha256')
+# attr.add_extra_attribute('_md5')
+# attr.add_extra_attribute('_sha1')
+# attr.add_extra_attribute('_sha256')
+# attr.add_extra_method('get_md5')
+# attr.add_extra_method('get_sha1')
+# attr.add_extra_method('get_sha256')
+# attr.set_required(True)
+# attr.set_writable(True)
+# attr.set_method_get('get_indicator')
+# attr.set_method_set('set_hash')
+# hash_attr = attr
 
 
 #
@@ -956,7 +1039,7 @@ hash_attr = attr
 #
 def set_hostname(self, data):
     """ """
-    self._indicator = data
+    self._indicator = data.encode('ascii', 'ignore')
     self._type = ResourceType.HOSTS
 
     # update the resource type
@@ -997,7 +1080,7 @@ ip_attr = attr
 #
 def set_owner(self, data):
     """ """
-    self._owner_name = data['name']
+    self._owner_name = data['name'].encode('ascii', 'ignore')
 
 attr = AttributeDef('_owner')
 attr.add_api_name('owner')
@@ -1015,25 +1098,37 @@ def set_summary(self, data):
     """ """
     self._indicator = data
 
-    # THIS IS NOT NEEDED SINCE WE SET RESOURCE TYPE ON set_type???
-    # update the resource type
-    # self._resource_type = get_resource_type(self._indicator)
+    # populate extra attributes
+    if get_resource_type(data) == ResourceType.FILES:
+        hash_type = get_hash_type(data)
+        if hash_type == 'MD5':
+            self._md5 = data
+        elif hash_type == 'SHA1':
+            self._sha1 = data
+        elif hash_type == 'SHA256':
+            self._sha256 = data
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('summary')
+# TODO: find a better way ...
+attr.add_extra_attribute('_md5')
+attr.add_extra_attribute('_sha1')
+attr.add_extra_attribute('_sha256')
+# attr.add_extra_method('get_md5')
+# attr.add_extra_method('get_sha1')
+# attr.add_extra_method('get_sha256')
 attr.set_required(True)
 attr.set_writable(False)
 attr.set_method_get('get_indicator')
 attr.set_method_set('set_summary')
 summary_attr = attr
 
-
 #
 # text (indicator)
 #
 def set_text(self, data):
     """ """
-    self._indicator = data
+    self._indicator = data.encode('ascii', 'ignore')
 
     # update the resource type
     self._resource_type = get_resource_type(self._indicator)
@@ -1047,24 +1142,24 @@ attr.set_method_set('set_text')
 text_attr = attr
 
 
+# #
+# # url (indicator)
+# #
+# def set_url(self, data):
+#     """ """
+#     self._indicator = data.encode('ascii', 'ignore')
+#     self._type = ResourceType.URLS
 #
-# url (indicator)
+#     # update the resource type
+#     self._resource_type = get_resource_type(self._indicator)
 #
-def set_url(self, data):
-    """ """
-    self._indicator = data
-    self._type = ResourceType.URLS
-
-    # update the resource type
-    self._resource_type = get_resource_type(self._indicator)
-
-attr = AttributeDef('_url')
-attr.add_api_name('url')
-attr.set_required(True)
-attr.set_writable(True)
-attr.set_method_get('get_url')
-attr.set_method_set('set_url')
-url_attr = attr
+# attr = AttributeDef('_url')
+# attr.add_api_name('url')
+# attr.set_required(True)
+# attr.set_writable(True)
+# attr.set_method_get('get_url')
+# attr.set_method_set('set_url')
+# url_attr = attr
 
 
 #

@@ -70,22 +70,23 @@ class BulkIndicatorsProperties(Properties):
             ResourceMethods.web_link_attr]
 
         self._filter_methods = [
-            'add_attribute',  # Post Filter
-            'add_confidence',  # Post Filter
-            'add_date_added',  # Post Filter
-            'add_last_modified',  # Post Filter
             'add_owner',
-            'add_rating',  # Post Filter
-            'add_tag',  # Post Filter
-            'add_threat_assess_confidence',  # Post Filter
-            'add_threat_assess_rating',  # Post Filter
-            'add_type',  # Post Filter
             'get_owners',
             'get_owner_allowed',
             'get_resource_pagination',
             'get_request_uri',
             'get_resource_type',
-            'set_format']
+            'set_format',
+            # Post Filters
+            'add_pf_attribute',
+            'add_pf_confidence',
+            'add_pf_date_added',
+            'add_pf_last_modified',
+            'add_pf_rating',
+            'add_pf_tag',
+            'add_pf_threat_assess_confidence',
+            'add_pf_threat_assess_rating',
+            'add_pf_type']
 
     @property
     def base_owner_allowed(self):
@@ -104,4 +105,4 @@ class BulkIndicatorsProperties(Properties):
 
     @property
     def resource_object(self):
-        return resource_class(self._object_attributes, self._resource_type, self._http_method)()
+        return resource_class(self._object_attributes, self._resource_type)()

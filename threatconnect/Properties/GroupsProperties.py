@@ -51,7 +51,6 @@ class GroupsProperties(Properties):
 
         self._filter_methods = [
             'add_adversary_id',
-            'add_date_added',  # post filter
             'add_email_id',
             'add_incident_id',
             'add_indicator',
@@ -65,7 +64,9 @@ class GroupsProperties(Properties):
             'get_owner_allowed',
             'get_resource_pagination',
             'get_request_uri',
-            'get_resource_type']
+            'get_resource_type',
+            # post filter
+            'add_pf_date_added']
 
     @property
     def base_owner_allowed(self):
@@ -125,8 +126,7 @@ class GroupsProperties(Properties):
 
     @property
     def resource_object(self):
-        # return resource_class(self._object_attributes, self._http_method)()
-        return resource_class(self._object_attributes, self._resource_type, self._http_method)()
+        return resource_class(self._object_attributes, self._resource_type)()
 
     @property
     def signature_owner_allowed(self):

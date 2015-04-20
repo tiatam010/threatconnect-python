@@ -23,11 +23,11 @@ class ReportEntry(object):
 
     def add_request_url(self, data):
         """ """
-        self._request_urls.append(data)
+        self._request_urls.append(data.encode('utf-8', 'ignore'))
 
     def set_action(self, data):
         """ """
-        self._action = data
+        self._action = data.encode('utf-8', 'ignore')
 
     def set_resource_type(self, data_enum):
         """ """
@@ -35,7 +35,7 @@ class ReportEntry(object):
 
     def set_status(self, data):
         """ """
-        self._status = data
+        self._status = data.encode('utf-8', 'ignore')
 
     def set_status_code(self, data_int):
         """ """
@@ -74,7 +74,7 @@ class ReportEntry(object):
     def __str__(self):
         """ """
         obj_str = format_header('%s' % self.action, '.', '.')
-        # obj_str += format_item('Action', self._action)
+        obj_str += format_item('Status', self._status)
         obj_str += format_item('Status Code', self._status_code)
         obj_str += format_item('Request URLs', self.request_urls)
         obj_str += format_item('Data', '')
@@ -82,5 +82,5 @@ class ReportEntry(object):
             for k, v in data.items():
                 obj_str += format_item('%s' % k, v, 1)
 
-        return obj_str
+        return obj_str.encode('utf-8')
 

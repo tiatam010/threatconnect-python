@@ -18,10 +18,20 @@ class AttributeDef(object):
         self._attr_required = False
         self._attr_type = types.NoneType
         self._attr_writable = False
+        self._extra_attributes = []
+        self._extra_methods = []
 
     def add_api_name(self, data):
         """ """
         self._attr_api_names.append(data)
+
+    def add_extra_attribute(self, data):
+        """ """
+        self._extra_attributes.append(data)
+
+    def add_extra_method(self, data):
+        """ """
+        self._extra_methods.append(data)
 
     def set_method_get(self, data):
         """ """
@@ -47,6 +57,16 @@ class AttributeDef(object):
     def api_names(self):
         """ """
         return self._attr_api_names
+
+    @property
+    def extra_attributes(self):
+        """ """
+        return self._extra_attributes
+
+    @property
+    def extra_methods(self):
+        """ """
+        return self._extra_methods
 
     @property
     def name(self):

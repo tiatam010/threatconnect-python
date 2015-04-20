@@ -1,5 +1,6 @@
 """ standard """
 import types
+import urllib
 import uuid
 
 """ custom """
@@ -12,7 +13,7 @@ from threatconnect.FilterObject import FilterObject
 from threatconnect.Properties.IndicatorsProperties import IndicatorsProperties
 from threatconnect.RequestObject import RequestObject
 from threatconnect.Resource import Resource
-from threatconnect.Validate import validate_indicator, get_resource_type
+from threatconnect.Validate import validate_indicator, get_resource_type, get_hash_type
 
 """ Note: PEP 8 intentionally ignored for variable/methods to match API standard. """
 
@@ -63,7 +64,9 @@ class Indicators(Resource):
         indicator_set_methods = {
             'ADDRESS': 'set_ip',
             'EMAIL_ADDRESS': 'set_address',
-            'FILE': 'set_hash',
+            'MD5': 'set_md5',
+            'SHA1': 'set_sha1',
+            'SHA256': 'set_sha256',
             'HOST': 'set_hostname',
             'URL': 'set_text'}
 
@@ -85,7 +88,17 @@ class Indicators(Resource):
             # set resource id
             resource_object.set_id(resource_id)
             # set indicator
-            set_method = getattr(resource_object, indicator_set_methods[resource_type.name])
+            if resource_type == ResourceType.FILE:
+                set_method_name = indicator_set_methods[get_hash_type(indicator)]
+            else:
+                set_method_name = indicator_set_methods[resource_type.name]
+
+            # if resource_type == ResourceType.URL:
+            #     set_indicator = urllib.quote(indicator, safe='~')
+            # else:
+            #     set_indicator = indicator
+
+            set_method = getattr(resource_object, set_method_name)
             set_method(indicator)
             # set resource api action
             resource_object.set_api_action('add')
@@ -96,7 +109,7 @@ class Indicators(Resource):
                 'Adding indicator (%s).' % indicator)
             request_object.set_http_method(properties.http_method)
             request_object.set_request_uri(properties.post_path)
-            request_object.set_owner_allowed(False)
+            request_object.set_owner_allowed(True)
             request_object.set_resource_pagination(False)
             request_object.set_resource_type(resource_type)
 

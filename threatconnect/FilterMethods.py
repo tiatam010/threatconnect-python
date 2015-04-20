@@ -363,7 +363,7 @@ def add_victim_id(self, data_int):
 #
 
 
-def add_attribute(self, data, operator=FilterOperator.EQ):
+def add_pf_attribute(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_attribute'
     filter_name = '%s|%s' % ('attribute', data)
@@ -375,7 +375,7 @@ def add_attribute(self, data, operator=FilterOperator.EQ):
     self.add_post_filter(post_filter)
 
 
-def add_confidence(self, data, operator=FilterOperator.EQ):
+def add_pf_confidence(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_confidence'
     filter_name = '%s|%s' % ('confidence', data)
@@ -387,7 +387,7 @@ def add_confidence(self, data, operator=FilterOperator.EQ):
     self.add_post_filter(post_filter)
 
 
-def add_date_added(self, data_date, operator=FilterOperator.EQ):
+def add_pf_date_added(self, data_date, operator=FilterOperator.EQ):
     """ """
     method = 'filter_date_added'
     date_added = data_date
@@ -402,7 +402,7 @@ def add_date_added(self, data_date, operator=FilterOperator.EQ):
     self.add_post_filter(post_filter)
 
 
-def add_file_type(self, data, operator=FilterOperator.EQ):
+def add_pf_file_type(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_file_type'
     filter_name = '%s|%s' % ('file_type', data)
@@ -414,7 +414,7 @@ def add_file_type(self, data, operator=FilterOperator.EQ):
     self.add_post_filter(post_filter)
 
 
-def add_last_modified(self, data_date, operator=FilterOperator.EQ):
+def add_pf_last_modified(self, data_date, operator=FilterOperator.EQ):
     """ """
     method = 'filter_last_modified'
     last_modified = data_date
@@ -429,7 +429,7 @@ def add_last_modified(self, data_date, operator=FilterOperator.EQ):
     self.add_post_filter(post_filter)
 
 
-def add_rating(self, data, operator=FilterOperator.EQ):
+def add_pf_rating(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_rating'
     filter_name = '%s|%s' % ('rating', data)
@@ -441,7 +441,7 @@ def add_rating(self, data, operator=FilterOperator.EQ):
     self.add_post_filter(post_filter)
 
 
-def add_threat_assess_confidence(self, data, operator=FilterOperator.EQ):
+def add_pf_threat_assess_confidence(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_threat_assess_confidence'
     filter_name = '%s|%s' % ('threat assess confidence', data)
@@ -453,7 +453,7 @@ def add_threat_assess_confidence(self, data, operator=FilterOperator.EQ):
     self.add_post_filter(post_filter)
 
 
-def add_threat_assess_rating(self, data, operator=FilterOperator.EQ):
+def add_pf_threat_assess_rating(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_threat_assess_rating'
     filter_name = '%s|%s' % ('threat assess rating', data)
@@ -465,7 +465,7 @@ def add_threat_assess_rating(self, data, operator=FilterOperator.EQ):
     self.add_post_filter(post_filter)
 
 
-def add_tag(self, data, operator=FilterOperator.EQ):
+def add_pf_tag(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_tag'
     filter_name = '%s|%s' % ('tag', data)
@@ -477,7 +477,7 @@ def add_tag(self, data, operator=FilterOperator.EQ):
     self.add_post_filter(post_filter)
 
 
-def add_type(self, data, operator=FilterOperator.EQ):
+def add_pf_type(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_type'
     filter_name = '%s|%s' % ('type', data)
@@ -491,6 +491,7 @@ def add_type(self, data, operator=FilterOperator.EQ):
 #
 # Other Methods
 #
+
 
 def get_owners(self):
     """ """

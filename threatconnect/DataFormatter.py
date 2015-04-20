@@ -20,24 +20,24 @@ def format_item(key, val, indent=0):
         for item in sorted(val):
             if isinstance(item, (str, unicode, int, bool)):
                 if first_run:
-                    formatted_item += formatter % ('%s:' % key, item.encode('utf-8').strip())
+                    formatted_item += formatter % ('%s:' % key, item.encode('utf-8'))
                 else:
                     formatted_item += formatter % ('', item.encode('utf-8').strip())
             elif isinstance(item, type(item)):
                 formatted_item += '%s\n' % str(item)
             else:
                 if first_run:
-                    formatted_item += formatter % ('%s:' % key, item.encode('utf-8').strip())
+                    formatted_item += formatter % ('%s:' % key, item.encode('utf-8'))
                 else:
-                    formatted_item += formatter % ('', item.encode('utf-8').strip())
+                    formatted_item += formatter % ('', item.encode('utf-8'))
             first_run = False
     elif isinstance(val, str):
         formatter = ' ' * indent + '%-' + str(30 - indent) + 's%-25s\n'
-        formatted_item += formatter % ('%s:' % key, val.encode('utf-8').strip())
+        formatted_item += formatter % ('%s:' % key, val.encode('utf-8'))
     else:
         formatter = ' ' * indent + '%-' + str(30 - indent) + 's%-25s\n'
         formatted_item += formatter % ('%s:' % key, val)
-    return formatted_item
+    return formatted_item.encode('utf-8')
 
 
 def pd(title='', msg='', header=False):

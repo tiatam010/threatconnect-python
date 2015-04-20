@@ -95,7 +95,7 @@ class IndicatorsProperties(Properties):
         """ """
         return [
             'add_adversary_id',
-            'add_date_added',
+            'add_pf_date_added',
             'add_email_id',
             'add_incident_id',
             'add_indicator',
@@ -134,7 +134,7 @@ class IndicatorsProperties(Properties):
 
     @property
     def resource_object(self):
-        return resource_class(self._object_attributes, self._resource_type, self._http_method)()
+        return resource_class(self._object_attributes, self._resource_type)()
 
     @property
     def security_label_owner_allowed(self):

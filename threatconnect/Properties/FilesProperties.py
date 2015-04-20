@@ -46,4 +46,6 @@ class FilesProperties(IndicatorsProperties):
 
         # update object attributes
         self._object_attributes.remove(ResourceMethods.summary_attr)
-        self._object_attributes.append(ResourceMethods.ip_attr)
+        self._object_attributes.append(ResourceMethods.md5_attr)
+        self._object_attributes.append(ResourceMethods.sha1_attr)
+        self._object_attributes.append(ResourceMethods.sha256_attr)

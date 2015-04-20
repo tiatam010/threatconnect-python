@@ -1,5 +1,5 @@
 """ custom """
-from threatconnect.Config.ResourceRegexes import indicators_regex
+from threatconnect.Config.ResourceRegexes import indicators_regex, md5_re, sha1_re, sha256_re
 from threatconnect.Config.ResourceType import ResourceType
 
 # group type to resource type mapping
@@ -19,6 +19,16 @@ i_type_to_r_type = {
     'File': ResourceType.FILES,
     'Host': ResourceType.HOSTS,
     'URL': ResourceType.URLS}
+
+
+def get_hash_type(indicator):
+    """Get hash type from an indicator."""
+    if md5_re.match(indicator):
+        return 'MD5'
+    elif sha1_re.match(indicator):
+        return 'SHA1'
+    elif sha256_re.match(indicator):
+        return 'SHA256'
 
 
 def get_resource_type(indicator):
