@@ -101,7 +101,7 @@ class Indicators(Resource):
             set_method = getattr(resource_object, set_method_name)
             set_method(indicator)
             # set resource api action
-            resource_object.set_api_action('add')
+            resource_object.set_phase('add')
 
             # build request object
             request_object = RequestObject(self._resource_type.name, indicator)
