@@ -1,5 +1,6 @@
 """ standard """
 import types
+from threatconnect.RequestObject import RequestObject
 
 """ custom """
 from threatconnect import FilterMethods
@@ -20,46 +21,15 @@ class Attributes(Resource):
 
         # set properties for non filtered request
         properties = AttributesProperties(base_uri=self.base_uri)
-        self._http_method = properties.http_method
-        self._owner_allowed = properties.base_owner_allowed
-        self._resource_pagination = properties.resource_pagination
-        self._request_uri = properties.base_path
         self._resource_type = properties.resource_type
 
-
-# class AttributeObject(ResourceObject):
-#     """ """
-#     def __init__(self, data_methods):
-#         """ """
-#         super(AttributeObject, self).__init__()
-#
-#         #
-#         # build data to method mapping
-#         #
-#         self._data_methods = {}
-#         for data_name, methods in data_methods.items():
-#             # create variables for object
-#             attribute = methods['var']
-#             if attribute is not None:
-#                 setattr(self, attribute, None)
-#
-#             # create add_obj methods for object
-#             method_name = methods['set']
-#             method = getattr(ResourceMethods, method_name)
-#             setattr(self, method_name, types.MethodType(method, self))
-#
-#             # build api data name to method mapping
-#             if method_name not in self._data_methods:
-#                 self._data_methods[data_name] = getattr(self, method_name)
-#
-#             # create add_obj methods for object
-#             method_name = methods['get']
-#             if method_name is not None:
-#                 method = getattr(ResourceMethods, method_name)
-#                 setattr(self, method_name, types.MethodType(method, self))
-#                 self.add_method({
-#                     'name': attribute,
-#                     'method_name': method_name})
+        # create default request object for non-filtered requests
+        self._request_object = RequestObject('attribute', 'default')
+        self._request_object.set_http_method(properties.http_method)
+        self._request_object.set_owner_allowed(properties.base_owner_allowed)
+        self._request_object.set_request_uri(properties.base_path)
+        self._request_object.set_resource_pagination(properties.resource_pagination)
+        self._request_object.set_resource_type(properties.resource_type)
 
 
 class AttributeFilterObject(FilterObject):
@@ -71,10 +41,15 @@ class AttributeFilterObject(FilterObject):
 
         # define properties for resource type
         self._properties = AttributesProperties(base_uri=self.base_uri)
-        self._owner_allowed = self._properties.base_owner_allowed
-        self._resource_pagination = self._properties.resource_pagination
-        self._request_uri = self._properties.base_path
         self._resource_type = self._properties.resource_type
+
+        # create default request object for filtered request with only owners
+        self._request_object = RequestObject('attribute', 'default')
+        self._request_object.set_http_method(self._properties.http_method)
+        self._request_object.set_owner_allowed(self._properties.base_owner_allowed)
+        self._request_object.set_request_uri(self._properties.base_path)
+        self._request_object.set_resource_pagination(self._properties.resource_pagination)
+        self._request_object.set_resource_type(self._properties.resource_type)
 
         #
         # add_obj filter methods
