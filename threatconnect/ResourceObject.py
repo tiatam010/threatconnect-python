@@ -21,7 +21,7 @@ def resource_class(dynamic_attribute_objs, resource_type):
     # predefined attributes
     attributes = (
         '_a_names',  # list of attribute name to use on __str__ output
-        '_api_action',  # action taken when working with api (read, add, update)
+        '_phase',  # action taken when working with api (read, add, update)
         '_association_objects',  # list of association objects for this resource
         '_association_requests',  # list of request object to add association
         '_attribute_objects',  # list of attributes objects for this resource
@@ -35,7 +35,6 @@ def resource_class(dynamic_attribute_objs, resource_type):
         '_request_url',  # request_urls that matched for this resource
         '_required_attrs',  # attributes required for an adding this resource
         '_resource_type',  # type of resource for this object
-        '_stage',  # stage of the api process
         '_tag_objects',  # list of tag objects for this resource
         '_tag_requests',  # list of tag request for this resource
         '_validated',  # validation boolean for this resource
@@ -55,7 +54,7 @@ def resource_class(dynamic_attribute_objs, resource_type):
 
         def __init__(self):
             self._a_names = []
-            self._api_action = None
+            self._phase = None
             self._association_objects_groups = []
             self._association_objects_indicators = []
             self._association_objects_victim_assets = []
@@ -72,21 +71,19 @@ def resource_class(dynamic_attribute_objs, resource_type):
             self._request_url = []
             self._required_attrs = []
             self._resource_type = resource_type
-            self._stage = None  # new, updated, deleted
             self._tag_objects = []
             self._tag_requests = []
             self._validated = False
             self._writable_attrs = {}
 
             # add_obj name to 'a list' for __str__ method
-            self.a_names('_api_action')
+            self.a_names('_phase')
             self.a_names('_error_msgs')
             self.a_names('_methods')
             self.a_names('_request_url')
             self.a_names('_required_attrs')
             self.a_names('_resource_object')
             self.a_names('_resource_type')
-            self.a_names('_stage')
             self.a_names('_validated')
             self.a_names('_writable_attrs')
 
@@ -250,7 +247,7 @@ def resource_class(dynamic_attribute_objs, resource_type):
 
         def add(self):
             """ """
-            self._api_action = 'add'
+            self._phase = 'add'
 
         def add_association_group_object(self, data_obj):
             """ """
@@ -355,9 +352,25 @@ def resource_class(dynamic_attribute_objs, resource_type):
             """ """
             self._associate(r_type, r_id, PropertiesAction.POST, 'Adding')
 
+        def clear_association_objects_groups(self):
+            """ """
+            self._association_objects_groups = []
+
+        def clear_association_objects_indicators(self):
+            """ """
+            self._association_objects_indicators = []
+
+        def clear_attribute_objects(self):
+            """ """
+            self._attribute_objects = []
+
+        def clear_tag_objects(self):
+            """ """
+            self._tag_objects = []
+
         def delete(self):
             """ """
-            self._api_action = 'delete'
+            self._phase = 'delete'
 
         def delete_attribute(self, attribute_id):
             """ """
@@ -435,7 +448,7 @@ def resource_class(dynamic_attribute_objs, resource_type):
 
         def get_methods(self):
             """ """
-            return self._methods
+            return sorted(self._methods)
 
         def get_request_url(self):
             """ """
@@ -449,9 +462,9 @@ def resource_class(dynamic_attribute_objs, resource_type):
             """ """
             return self._writable_attrs
 
-        def set_api_action(self, data):
+        def set_phase(self, data):
             """ """
-            self._api_action = data
+            self._phase = data
 
         def set_document(self, data):
             """ """
@@ -460,10 +473,6 @@ def resource_class(dynamic_attribute_objs, resource_type):
         def set_request_object(self, data_obj):
             """ """
             self._request_object = data_obj
-
-        def set_stage(self, data):
-            """ """
-            self._stage = data
 
         def update_attribute(self, attribute_id, value):
             """ """
@@ -506,9 +515,9 @@ def resource_class(dynamic_attribute_objs, resource_type):
             self.add_attribute_request(request_object_dict)
 
         @property
-        def api_action(self):
+        def phase(self):
             """ """
-            return self._api_action
+            return self._phase
 
         @property
         def association_objects_groups(self):
@@ -596,11 +605,6 @@ def resource_class(dynamic_attribute_objs, resource_type):
         def resource_type(self):
             """ """
             return self._resource_type
-
-        @property
-        def stage(self):
-            """ """
-            return self._stage
 
         @property
         def tag_objects(self):

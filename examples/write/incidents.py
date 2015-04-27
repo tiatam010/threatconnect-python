@@ -25,7 +25,7 @@ def main():
     for res in resources:
 
         # (Optional) match a particular resource by ID, Name or any other supported attribute.
-        if res.get_id() == 747246:
+        if res.get_id() == 1:
             #
             # update resource if required
             #
@@ -129,7 +129,7 @@ def main():
     #
 
     # (Optional) a resource can be updated directly by using the resource id.
-    resource = resources.update(752672)
+    resource = resources.update(44739)
     resource.set_name('Manual Update Incident Sample %s' % randy)
 
     #
@@ -147,7 +147,7 @@ def main():
         print(res)
 
     # (Optional) display a commit report of all API actions performed
-    tc.display_report()
+    print(tc.report)
 
 if __name__ == "__main__":
     main()

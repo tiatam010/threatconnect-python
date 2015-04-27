@@ -18,9 +18,10 @@ packages.urllib3.disable_warnings()
 
 """ custom """
 from threatconnect.ErrorCodes import ErrorCodes
+from threatconnect.Config.FilterOperator import FilterSetOperator
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.ResourceProperties import ResourceProperties
-from threatconnect.Config.PropertiesEnums import (ApiStatus, FilterSetOperator)
+from threatconnect.Config.PropertiesEnums import ApiStatus
 from threatconnect.ReportEntry import ReportEntry
 from threatconnect.Report import Report
 from threatconnect.Resources.Adversaries import Adversaries
@@ -93,7 +94,7 @@ class ThreatConnect:
         else:
             owners = list(owners)  # get copy of owners list for pop
         count = len(owners)
-        # modified_since = None
+        modified_since = None
         request_payload = {}
         result_start = 0
         result_remaining = 0
@@ -104,7 +105,6 @@ class ThreatConnect:
         body = request_object.body
         content_type = request_object.content_type
         http_method = request_object.http_method
-        modified_since = request_object.modified_since
         owner_allowed = request_object.owner_allowed
         resource_pagination = request_object.resource_pagination
         resource_type = request_object.resource_type
@@ -121,14 +121,14 @@ class ThreatConnect:
         report_entry.add_data({'Owners': str(owners)})
         report_entry.add_data({'Owner Allowed': owner_allowed})
         report_entry.add_data({'Request URI': request_uri})
+        report_entry.add_data({'Request Body': body})
         report_entry.add_data({'Resource Pagination': resource_pagination})
         report_entry.add_data({'Resource Type': resource_type})
 
-        # # special case for modified since
-        # # TODO: what would happen if this was always set to request object value?
-        # if resource_type.name in [
-        # 'INDICATORS', 'ADDRESSES', 'EMAIL_ADDRESSES', 'FILES', 'HOSTS', 'URLS']:
-        #     modified_since = request_object.modified_since
+        # TODO: what would happen if this was always set to request object value?
+        if resource_type.name in [
+                'INDICATORS', 'ADDRESSES', 'EMAIL_ADDRESSES', 'FILES', 'HOSTS', 'URLS']:
+            modified_since = resource_obj.get_modified_since()
 
         # update resource object with max results
         # ???moved to report resource_obj.set_max_results(self._api_max_results)
@@ -201,8 +201,7 @@ class ThreatConnect:
                         report_entry.add_data({'Failure Message': api_response.content})
                         # Logging
                         logging.error('status_code: %s' % api_response.status_code)
-                        logging.error('1 Failure Message: %s' % api_response.content)
-                        logging.error('1 Failure Text: %s' % api_response.text)
+                        logging.error('Failure Message: %s' % api_response.content)
                         break
 
                     #
@@ -296,7 +295,7 @@ class ThreatConnect:
                 report_entry.set_status('Failure')
                 report_entry.add_data({'Failure Message': api_response.content})
                 # Logging
-                logging.error('2 Failure Message: %s' % api_response.content)
+                logging.error('Failure Message: %s' % api_response.content)
             else:
                 report_entry.set_status('Success')
 
@@ -324,7 +323,7 @@ class ThreatConnect:
                 report_entry.set_status('Failure')
                 report_entry.add_data({'Failure Message': failure_message})
                 # Logging
-                logging.error('3 Failure Message: %s' % failure_message)
+                logging.error('Failure Message: %s' % failure_message)
             else:
                 api_response_dict = api_response.json()
                 resource_obj.current_url = api_response.url
@@ -409,6 +408,7 @@ class ThreatConnect:
                 data_obj = properties.resource_object
             data_methods = data_obj.get_data_methods()
 
+            # set values for each resource parameter
             for attrib, obj_method in data_methods.items():
                 # DEBUG
                 if attrib in data:
@@ -483,7 +483,8 @@ class ThreatConnect:
             # update the api response url and current filter
             stored_obj.add_request_url(api_response_url)
             stored_obj.set_request_object(request_object)
-            stored_obj.set_stage('new')
+            data_obj.set_phase('new')  # set phase to new
+
             stored_obj.add_matched_filter(current_filter)
 
             # append the object to obj_list to be returned for further filtering

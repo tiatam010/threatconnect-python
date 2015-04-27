@@ -41,6 +41,8 @@ def get_body(self):
 def set_body(self, data):
     """ """
     self._body = data
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_body')
 attr.add_api_name('body')
@@ -61,9 +63,6 @@ def get_confidence(self):
 
 def set_confidence(self, data):
     """ """
-    if self._stage is 'new':
-        self._api_action = 'update'
-
     if isinstance(data, int):
         if 0 <= data <= 100:
             self._confidence = data
@@ -71,6 +70,8 @@ def set_confidence(self, data):
             self.add_error_msg(ErrorCodes.e10010.value % data)
     else:
         self.add_error_msg(ErrorCodes.e10011.value % data)
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_confidence')
 attr.add_api_name('confidence')
@@ -112,6 +113,8 @@ def get_date(self):
 def set_date(self, data):
     """ """
     self._date = data
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_date')
 attr.add_api_name('date')
@@ -197,6 +200,8 @@ def get_dns_active(self):
 def set_dns_active(self, data):
     """ """
     self._dns_active = data
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_dns_active')
 attr.add_api_name('dnsActive')
@@ -244,6 +249,8 @@ def get_event_date(self):
 def set_event_date(self, data):
     """ """
     self._event_date = data
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_event_date')
 attr.add_api_name('eventDate')
@@ -265,8 +272,8 @@ def get_file_name(self):
 def set_file_name(self, data):
     """ """
     self._file_name = data
-    if self._stage is 'new':
-        self._api_action = 'update'
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_file_name')
 attr.add_api_name('fileName')
@@ -309,6 +316,8 @@ def get_file_text(self):
 def set_file_text(self, data):
     """ """
     self._file_text = data.encode('ascii', 'ignore')
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_file_text')
 attr.add_api_name('fileText')
@@ -330,6 +339,8 @@ def get_file_type(self):
 def set_file_type(self, data):
     """ """
     self._file_type = data
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_file_type')
 attr.add_api_name('fileType')
@@ -351,6 +362,8 @@ def get_from(self):
 def set_from(self, data):
     """ """
     self._from = data.encode('ascii', 'ignore')
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_from')
 attr.add_api_name('from')
@@ -372,6 +385,8 @@ def get_header(self):
 def set_header(self, data):
     """ """
     self._header = data.encode('ascii', 'ignore')
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_header')
 attr.add_api_name('header')
@@ -494,8 +509,8 @@ def get_name(self):
 def set_name(self, data):
     """ """
     self._name = data.encode('ascii', 'ignore')
-    if self._stage is 'new':
-        self._api_action = 'update'
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_name')
 attr.add_api_name('name')
@@ -599,6 +614,8 @@ def get_path(self):
 def set_path(self, data):
     """ """
     self._path = data.encode('ascii', 'ignore')
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_path')
 attr.add_api_name('path')
@@ -619,10 +636,9 @@ def get_rating(self):
 
 def set_rating(self, data):
     """ """
-    if self._stage is 'new':
-        self._api_action = 'update'
-
     self._rating = data
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_rating')
 attr.add_api_name('rating')
@@ -705,6 +721,8 @@ def get_subject(self):
 def set_subject(self, data):
     """ """
     self._subject = data.encode('ascii', 'ignore')
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_subject')
 attr.add_api_name('subject')
@@ -789,6 +807,8 @@ def get_to(self):
 def set_to(self, data):
     """ """
     self._to = data.encode('ascii', 'ignore')
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_to')
 attr.add_api_name('to')
@@ -837,6 +857,8 @@ def get_value(self):
 def set_value(self, data):
     """ """
     self._value = data.encode('ascii', 'ignore')
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_value')
 attr.add_api_name('value')
@@ -879,6 +901,8 @@ def get_whois_active(self):
 def set_whois_active(self, data):
     """ """
     self._whois_active = data
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_whois_active')
 attr.add_api_name('whoisActive')
@@ -919,7 +943,9 @@ def set_address(self, data):
     self._type = ResourceType.EMAIL_ADDRESSES
 
     # update the resource type
-    self._resource_type = get_resource_type(self._indicator)
+    self._resource_type = ResourceType.EMAIL_ADDRESSES
+    if self._phase is 'new':
+        self._phase = 'update'
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('address')
@@ -940,7 +966,7 @@ def set_md5(self, data):
     self._type = ResourceType.FILES
 
     # update the resource type
-    self._resource_type = get_resource_type(self._indicator)
+    self._resource_type = ResourceType.FILES
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('md5')
@@ -962,7 +988,7 @@ def set_sha1(self, data):
     self._type = ResourceType.FILES
 
     # update the resource type
-    self._resource_type = get_resource_type(self._indicator)
+    self._resource_type = ResourceType.FILES
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('sha1')
@@ -984,7 +1010,7 @@ def set_sha256(self, data):
     self._type = ResourceType.FILES
 
     # update the resource type
-    self._resource_type = get_resource_type(self._indicator)
+    self._resource_type = ResourceType.FILES
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('sha256')
@@ -1043,7 +1069,7 @@ def set_hostname(self, data):
     self._type = ResourceType.HOSTS
 
     # update the resource type
-    self._resource_type = get_resource_type(self._indicator)
+    self._resource_type = ResourceType.HOSTS
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('hostName')
@@ -1063,7 +1089,7 @@ def set_ip(self, data):
     self._type = ResourceType.ADDRESSES
 
     # update the resource type
-    self._resource_type = get_resource_type(self._indicator)
+    self._resource_type = ResourceType.ADDRESSES
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('ip')
@@ -1123,15 +1149,17 @@ attr.set_method_get('get_indicator')
 attr.set_method_set('set_summary')
 summary_attr = attr
 
+
 #
 # text (indicator)
 #
 def set_text(self, data):
     """ """
     self._indicator = data.encode('ascii', 'ignore')
+    self._type = ResourceType.URLS
 
     # update the resource type
-    self._resource_type = get_resource_type(self._indicator)
+    self._resource_type = ResourceType.URLS
 
 attr = AttributeDef('_indicator')
 attr.add_api_name('text')

@@ -5,6 +5,13 @@ import operator
 from enum import Enum
 
 
+class FilterSetOperator(Enum):
+    """ """
+    # Query Set Operator
+    AND = 'and'
+    OR = 'or'
+
+
 class FilterOperator(Enum):
     """ """
     # Query Operator

@@ -152,6 +152,9 @@ def main():
     # (Optional) display a commit report of all API actions performed
     print(tc.report)
 
+    for rpt in tc.report:
+        print(rpt)
+
 
 if __name__ == "__main__":
     main()

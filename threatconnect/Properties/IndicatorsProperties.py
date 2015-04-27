@@ -60,6 +60,33 @@ class IndicatorsProperties(Properties):
             ResourceMethods.type_attr,
             ResourceMethods.web_link_attr]
 
+        self._filter_methods = [
+            'add_adversary_id',
+            'add_email_id',
+            'add_incident_id',
+            'add_indicator',
+            'add_owner',
+            'add_security_label',
+            'add_signature_id',
+            'add_threat_id',
+            'add_tag',
+            'add_victim_id',
+            'get_owners',
+            'get_owner_allowed',
+            'get_resource_pagination',
+            'get_request_uri',
+            'get_resource_type',
+            # Post Filters
+            'add_pf_attribute',
+            'add_pf_confidence',
+            'add_pf_date_added',
+            'add_pf_last_modified',
+            'add_pf_rating',
+            'add_pf_tag',
+            'add_pf_threat_assess_confidence',
+            'add_pf_threat_assess_rating',
+            'add_pf_type']
+
     @property
     def base_owner_allowed(self):
         """ """
@@ -93,23 +120,7 @@ class IndicatorsProperties(Properties):
     @property
     def filters(self):
         """ """
-        return [
-            'add_adversary_id',
-            'add_pf_date_added',
-            'add_email_id',
-            'add_incident_id',
-            'add_indicator',
-            'add_owner',
-            'add_security_label',
-            'add_signature_id',
-            'add_threat_id',
-            'add_tag',
-            'add_victim_id',
-            'get_owners',
-            'get_owner_allowed',
-            'get_resource_pagination',
-            'get_request_uri',
-            'get_resource_type']
+        return self._filter_methods
 
     # @property
     # def association_indicator_path(self):

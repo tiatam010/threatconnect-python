@@ -90,13 +90,30 @@ class Report(object):
         report += format_item('Filtered Results', self.results_filtered)
         # status codes
         for k, v in self._status_code_idx.items():
-            report += format_item(k, len(v))
+            report += format_item('Status Code %s' % k, len(v))
         if self.request_time is not None:
             report += format_item('Request Time', self.request_time)
             report += format_item('Processing Time', (self.runtime - self.request_time))
         report += format_item('Run Time', self.runtime)
 
         return report.encode('utf-8')
+
+    @property
+    def stats_dict(self):
+        """ """
+        report = {
+            'API calls': self.api_calls,
+            'Unfiltered Results': self.results_unfiltered,
+            'Filtered Results': self.results_filtered}
+        # status codes
+        for k, v in self._status_code_idx.items():
+            report['Status Code %s' % k] = len(v)
+        if self.request_time is not None:
+            report['Request Time'] = self.request_time
+            report['Processing Time'] = (self.runtime - self.request_time)
+        report['Run Time'] = self.runtime
+
+        return report
 
     def __iter__(self):
         """ """
@@ -107,9 +124,9 @@ class Report(object):
     def __str__(self):
         """ """
         report = format_header('ThreatConnect API Report', '_', '_')
-        for entry in self._report_objects:
-            report += '%s' % entry
-        report += format_header('Stats', '-', '-')
+        # for entry in self._report_objects:
+        #     report += '%s' % entry
+        # report += format_header('Stats', '-', '-')
         report += format_item('API calls', self.api_calls)
         report += format_item('Unfiltered Results', self.results_unfiltered)
         report += format_item('Filtered Results', self.results_filtered)

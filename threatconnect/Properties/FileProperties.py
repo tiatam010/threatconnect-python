@@ -41,6 +41,7 @@ class FileProperties(IndicatorProperties):
         self._object_attributes.append(ResourceMethods.md5_attr)
         self._object_attributes.append(ResourceMethods.sha1_attr)
         self._object_attributes.append(ResourceMethods.sha256_attr)
+        self._object_attributes.append(ResourceMethods.file_size_attr)
 
     @property
     def indicator_owner_allowed(self):

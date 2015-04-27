@@ -94,7 +94,7 @@ class Resource(object):
         # set resource name
         resource_object.set_name(resource_name)
         # set resource api action
-        resource_object.set_api_action('add')
+        resource_object.set_phase('add')
 
         # build request object
         request_object = RequestObject(self._resource_type.name, resource_id)
@@ -117,52 +117,6 @@ class Resource(object):
 
         # return object for modification
         return res
-
-    # @staticmethod
-    # def _associate_group(resource_obj, indicator, http_method, action):
-    #     """
-    #     POST /v2/indicators/addresses/10.0.2.5/groups/incidents/119842
-    #     POST /v2/groups/emails/747227/groups/adversaries/747266
-    #
-    #     DELETE /v2/indicators/addresses/10.0.2.5/groups/incidents/119842
-    #     DELETE /v2/groups/emails/747227/groups/adversaries/747266
-    #     """
-    #
-    #     #
-    #     # get indicator type and properties
-    #     #
-    #     indicator_resource_type = get_resource_type(indicator)
-    #     # switch any multiple resource request to single result request
-    #     if indicator_resource_type.value % 10:
-    #         indicator_resource_type = ResourceType(indicator_resource_type.value - 5)
-    #     # get indicator properties for the object
-    #     indicator_properties = ResourceProperties[indicator_resource_type.name].value()
-    #     indicator_uri = indicator_properties.resource_uri_attribute
-    #
-    #     #
-    #     # prepare the request
-    #     #
-    #     resource_type = resource_obj.request_object.resource_type
-    #
-    #     # switch any multiple resource request to single result request
-    #     if resource_type.value % 10:
-    #         resource_type = ResourceType(resource_type.value - 5)
-    #     # get properties for the object
-    #     properties = ResourceProperties[resource_type.name].value(http_method)
-    #
-    #     request_object = RequestObject(resource_type.name, resource_obj.get_id())
-    #     request_object.set_description(
-    #         '%s association of indicator (%s) with resource id (%s).' % (
-    #             action, indicator, resource_obj.get_id()))
-    #     request_object.set_http_method(properties.http_method)
-    #     request_object.set_request_uri(
-    #         properties.association_add_path % (
-    #             resource_obj.get_id(), indicator_uri, indicator))
-    #     request_object.set_owner_allowed(False)
-    #     request_object.set_resource_pagination(False)
-    #     request_object.set_resource_type(ResourceType.ATTRIBUTES)
-    #
-    #     resource_obj.add_association_request(request_object)
 
     def add_obj(self, data_obj):
         """add object to resource instance"""
@@ -219,6 +173,8 @@ class Resource(object):
         GET /v2/groups/adversaries/747266/groups
         GET /v2/groups/adversaries/747266/groups/adversaries
         """
+        resource_obj.clear_association_objects_groups()
+
         # for indicators
         if 500 <= self._resource_type.value <= 599:
             identifier = resource_obj.get_indicator()
@@ -239,6 +195,8 @@ class Resource(object):
         GET /v2/groups/adversaries/747266/indicators
         GET /v2/groups/adversaries/747266/indicators/addresses
         """
+        resource_obj.clear_association_objects_indicators()
+
         # for indicators
         if 500 <= self._resource_type.value <= 599:
             identifier = resource_obj.get_indicator()
@@ -278,6 +236,8 @@ class Resource(object):
 
     def get_attributes(self, resource_obj):
         """ """
+        resource_obj.clear_tag_objects()
+
         resource_type = resource_obj.request_object.resource_type
 
         # special case for indicators
@@ -448,8 +408,8 @@ class Resource(object):
 
     def commit(self, owners=None):
         """ """
-        # iterate through each object in resource objects
-        for obj in self._objects:
+        # iterate through each object in COPY of resource objects
+        for obj in list(self._objects):
             # time.sleep(.01)
             temporary_id = None
             new_id = None
@@ -460,86 +420,86 @@ class Resource(object):
                 resource_type = get_resource_type(obj.get_indicator())
 
             # the body needs to be set right before the commit
-            if obj.api_action == 'add':
+            if obj.phase == 'add':
                 if obj.validate():
                     temporary_id = str(obj.get_id())
                     # add resource
                     obj.request_object.set_body(obj.get_json())
                     self._tc.api_build_request(self, obj.request_object, owners)
+                    obj.set_phase('added')
                     new_id = str(obj.get_id())
                 else:
                     print('Failed validation.')
                     print(obj)
-            elif obj.api_action == 'update':
-                if obj.request_object is not None and obj.stage != 'new':
-                    request_object = obj.request_object
-                else:
-                    # switch any multiple resource request to single result request
-                    if resource_type.value % 10:
-                        resource_type = ResourceType(resource_type.value - 5)
-                    properties = ResourceProperties[resource_type.name].value(
-                        base_uri=self._tc.base_uri, http_method=PropertiesAction.PUT)
+            elif obj.phase == 'update':
+                # switch any multiple resource request to single result request
+                if resource_type.value % 10:
+                    resource_type = ResourceType(resource_type.value - 5)
+                properties = ResourceProperties[resource_type.name].value(
+                    base_uri=self._tc.base_uri, http_method=PropertiesAction.PUT)
 
-                    if isinstance(properties, IndicatorProperties):
-                        # request object for groups
-                        request_object = RequestObject(resource_type.name, obj.get_indicator())
-                        request_object.set_description(
-                            'Update %s indicator (%s).' % (
-                                self._resource_type.name.lower(), obj.get_indicator()))
-                        request_object.set_body(obj.get_json())
-                        request_object.set_http_method(properties.http_method)
-                        request_object.set_request_uri(
-                            properties.put_path % (
-                                properties.resource_uri_attribute, obj.get_indicator()))
-                        request_object.set_owner_allowed(True)
-                        request_object.set_resource_pagination(False)
-                        request_object.set_resource_type(resource_type)
+                if isinstance(properties, IndicatorProperties):
+                    # request object for groups
+                    request_object = RequestObject(resource_type.name, obj.get_indicator())
+                    request_object.set_description(
+                        'Update %s indicator (%s).' % (
+                            self._resource_type.name.lower(), obj.get_indicator()))
+                    request_object.set_body(obj.get_json())
+                    request_object.set_http_method(properties.http_method)
+                    request_object.set_request_uri(
+                        properties.put_path % (
+                            properties.resource_uri_attribute, obj.get_indicator()))
+                    request_object.set_owner_allowed(True)
+                    request_object.set_resource_pagination(False)
+                    request_object.set_resource_type(resource_type)
 
-                    elif isinstance(properties, GroupProperties):
-                        # request object for groups
-                        request_object = RequestObject(resource_type.name, obj.get_id())
-                        request_object.set_description(
-                            'Update %s resource object with id (%s).' % (
-                                self._resource_type.name.lower(), obj.get_id()))
-                        request_object.set_body(obj.get_json())
-                        request_object.set_http_method(properties.http_method)
-                        request_object.set_request_uri(properties.put_path % obj.get_id())
-                        request_object.set_owner_allowed(False)
-                        request_object.set_resource_pagination(False)
-                        request_object.set_resource_type(resource_type)
+                elif isinstance(properties, GroupProperties):
+                    # request object for groups
+                    request_object = RequestObject(resource_type.name, obj.get_id())
+                    request_object.set_description(
+                        'Update %s resource object with id (%s).' % (
+                            self._resource_type.name.lower(), obj.get_id()))
+                    request_object.set_body(obj.get_json())
+                    request_object.set_http_method(properties.http_method)
+                    request_object.set_request_uri(properties.put_path % obj.get_id())
+                    request_object.set_owner_allowed(False)
+                    request_object.set_resource_pagination(False)
+                    request_object.set_resource_type(resource_type)
+
+                # update resource
                 self._tc.api_build_request(self, request_object)
-            elif obj.api_action == 'delete':
-                if obj.request_object is not None and obj.stage != 'new':
-                    request_object = obj.request_object
-                else:
-                    # switch any multiple resource request to single result request
-                    if resource_type.value % 10:
-                        resource_type = ResourceType(resource_type.value - 5)
-                    properties = ResourceProperties[resource_type.name].value(
-                        base_uri=self._tc.base_uri, http_method=PropertiesAction.DELETE)
+                obj.set_phase('updated')
+            elif obj.phase == 'delete':
+                # switch any multiple resource request to single result request
+                if resource_type.value % 10:
+                    resource_type = ResourceType(resource_type.value - 5)
+                properties = ResourceProperties[resource_type.name].value(
+                    base_uri=self._tc.base_uri, http_method=PropertiesAction.DELETE)
 
-                    if isinstance(properties, IndicatorProperties):
-                        request_object = RequestObject(resource_type.name, obj.get_indicator())
-                        request_object.set_description(
-                            'Deleting %s indicator resource (%s).' % (
-                                resource_type.name.lower(), obj.get_indicator()))
-                        request_object.set_http_method(properties.http_method)
-                        request_object.set_request_uri(
-                            properties.delete_path % obj.get_indicator())
-                        request_object.set_owner_allowed(False)
-                        request_object.set_resource_pagination(False)
-                        request_object.set_resource_type(resource_type)
-                    elif isinstance(properties, GroupProperties):
-                        request_object = RequestObject(resource_type.name, obj.get_id())
-                        request_object.set_description(
-                            'Deleting %s resource object with id (%s).' % (
-                                resource_type.name.lower(), obj.get_id()))
-                        request_object.set_http_method(properties.http_method)
-                        request_object.set_request_uri(properties.delete_path % obj.get_id())
-                        request_object.set_owner_allowed(False)
-                        request_object.set_resource_pagination(False)
-                        request_object.set_resource_type(resource_type)
+                if isinstance(properties, IndicatorProperties):
+                    request_object = RequestObject(resource_type.name, obj.get_indicator())
+                    request_object.set_description(
+                        'Deleting %s indicator resource (%s).' % (
+                            resource_type.name.lower(), obj.get_indicator()))
+                    request_object.set_http_method(properties.http_method)
+                    request_object.set_request_uri(
+                        properties.delete_path % obj.get_indicator())
+                    request_object.set_owner_allowed(False)
+                    request_object.set_resource_pagination(False)
+                    request_object.set_resource_type(resource_type)
+                elif isinstance(properties, GroupProperties):
+                    request_object = RequestObject(resource_type.name, obj.get_id())
+                    request_object.set_description(
+                        'Deleting %s resource object with id (%s).' % (
+                            resource_type.name.lower(), obj.get_id()))
+                    request_object.set_http_method(properties.http_method)
+                    request_object.set_request_uri(properties.delete_path % obj.get_id())
+                    request_object.set_owner_allowed(False)
+                    request_object.set_resource_pagination(False)
+                    request_object.set_resource_type(resource_type)
+
                 self._tc.api_build_request(self, request_object)
+                self._objects.remove(obj)
 
             """
             Process all nested associations, attributes, tags and upload/download
@@ -554,9 +514,10 @@ class Resource(object):
                     attributes = self._tc.attributes()
                     data_set = self._tc.api_build_request(attributes, request_object, owners)
 
-                    # add returned attribute to resource object
-                    for attribute_object in data_set:
-                        obj.add_attribute_object(attribute_object)
+                    if request_object.http_method != 'DELETE':
+                        # add returned attribute to resource object
+                        for attribute_object in data_set:
+                            obj.add_attribute_object(attribute_object)
 
                     del attributes
 
@@ -592,6 +553,7 @@ class Resource(object):
                     self._tc.api_build_request(associations, request_object, owners)
 
                     del associations
+
             #
             # process upload
             #
@@ -636,37 +598,15 @@ class Resource(object):
         properties = ResourceProperties[self._resource_type.name].value(
             base_uri=self._tc.base_uri, http_method=PropertiesAction.DELETE)
 
-        # resource object
-        # if self.get_resource_by_id(resource_id) is not None:
-        #     resource_object = self.get_resource_by_id(resource_id)
-        # else:
-        #     resource_object = properties.resource_object
-        #     # set resource id
-        #     resource_object.set_id(resource_id)
-
         resource_object = properties.resource_object
         # set resource id
         resource_object.set_id(resource_id)
         # set resource api action
-        resource_object.set_api_action('delete')
-
-        # build request object
-        request_object = RequestObject(self._resource_type.name, resource_id)
-        request_object.set_description(
-            'Deleting %s resource object with id (%s).' % (
-                self._resource_type.name.lower(), resource_id))
-        request_object.set_http_method(properties.http_method)
-        request_object.set_request_uri(properties.delete_path % resource_id)
-        request_object.set_owner_allowed(False)
-        request_object.set_resource_pagination(False)
-        request_object.set_resource_type(self._resource_type)
+        resource_object.set_phase('delete')
 
         # add to temporary object storage
         roi = self.add_master_resource_obj(resource_object, resource_id)
-
         res = self.get_resource_by_identity(roi)
-        request_object.set_resource_object_id(id(res))
-        res.set_request_object(request_object)
 
         # add resource object to parent object
         self.add_obj(res)
@@ -681,6 +621,8 @@ class Resource(object):
 
     def get_tags(self, resource_obj):
         """ """
+        resource_obj.clear_tag_objects()
+
         resource_type = resource_obj.request_object.resource_type
 
         # special case for indicators
@@ -717,6 +659,8 @@ class Resource(object):
         for obj in data_set:
             resource_obj.add_tag_object(obj)
 
+        del tags
+
     #
     # Post Filter Methods
     #
@@ -747,7 +691,7 @@ class Resource(object):
                     yield data_obj
         else:
             for key, data_obj_list in self._confidence_idx.items():
-                if operator.value(key, data):
+                if operator.value(int(key), data):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
                             'confidence|%s (%s)' % (data, operator.name.lower()))
@@ -1013,25 +957,12 @@ class Resource(object):
         # set resource id
         resource_object.set_id(resource_id)
         # set resource api action
-        resource_object.set_api_action('update')
-
-        # build request object
-        request_object = RequestObject(self._resource_type.name, resource_id)
-        request_object.set_description(
-            'Update %s resource object with id (%s).' % (
-                self._resource_type.name.lower(), resource_id))
-        request_object.set_http_method(properties.http_method)
-        request_object.set_request_uri(properties.put_path % resource_id)
-        request_object.set_owner_allowed(False)
-        request_object.set_resource_pagination(False)
-        request_object.set_resource_type(self._resource_type)
+        resource_object.set_phase('update')
 
         # add to temporary object storage
         self.add_master_resource_obj(resource_object, resource_id)
 
         res = self.get_resource_by_id(resource_id)
-        request_object.set_resource_object_id(id(res))
-        res.set_request_object(request_object)
 
         # add resource object to parent object
         self.add_obj(res)

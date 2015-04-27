@@ -1,5 +1,6 @@
 """ standard """
 import types
+import re
 
 """ custom """
 from threatconnect import FilterMethods
@@ -54,5 +55,9 @@ class AdversaryFilterObject(FilterObject):
         # add_obj filter methods
         #
         for method_name in self._properties.filters:
+            if re.findall('add_pf_', method_name):
+                self.add_post_filter_names(method_name)
+            else:
+                self.add_api_filter_name(method_name)
             method = getattr(FilterMethods, method_name)
             setattr(self, method_name, types.MethodType(method, self))

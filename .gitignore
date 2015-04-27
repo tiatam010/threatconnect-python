@@ -66,3 +66,5 @@ examples/write/screen1.png
 examples/write/sample_upload.txt
 examples/tc-sumx-us.conf
 examples/tcw-sumx-us.conf
+examples/read/tc.log.1
+examples/read/tc.log.2

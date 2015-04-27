@@ -4,7 +4,7 @@ from examples.working_init import *
 
 """ Toggle the Boolean to enable specific examples """
 enable_example1 = False
-enable_example2 = False
+enable_example2 = True
 enable_example3 = False
 enable_example4 = False
 enable_example5 = False

@@ -3,13 +3,14 @@ from datetime import datetime
 
 """ custom """
 from examples.working_init import *
+from threatconnect.Config.FilterOperator import FilterOperator
 
 """ Working with Indicators """
 
 """ Toggle the Boolean to enable specific examples """
 enable_example1 = False
-enable_example2 = True
-enable_example3 = False
+enable_example2 = False
+enable_example3 = True
 enable_example4 = False
 enable_example5 = False
 
@@ -30,7 +31,7 @@ def show_data(result_obj):
     pd('Result Count (Filtered)', len(result_obj))
 
     print(tc.report)
-    pd('request time', tc.request_time)
+    pd('request time', tc.report.request_time)
 
 
 def main():
@@ -124,6 +125,10 @@ def main():
         filter1.add_indicator('DCF06BCA3B1B87C8AF3289D0B42D8FE0')
         filter1.add_indicator('kate.lanser@gmail.com')
         filter1.add_indicator('http://demo.host.com')
+
+        filter1.add_pf_date_added('2014-04-10T00:00:00Z', FilterOperator.GE)
+        # filter1.add_pf_rating('2.5', FilterOperator.GE)
+        # filter1.add_pf_rating(75, FilterOperator.GE)
 
         # check for any error on filter creation
         if filter1.error:

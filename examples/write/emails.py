@@ -5,6 +5,7 @@ import re
 """ custom """
 from examples.working_init import *
 
+
 def main():
     """ """
 
@@ -24,7 +25,8 @@ def main():
     for res in resources:
 
         # (Optional) match a particular resource by ID, Name or any other supported attribute.
-        if res.get_id() == 747227:
+        # if res.get_id() == 747227:
+        if res.get_id() == 44729:
             #
             # update resource if required
             #
@@ -60,7 +62,8 @@ def main():
                 if re.findall('Loop', association.get_name()):
                     res.disassociate(association.resource_type, association.get_id())
 
-            res.associate(ResourceType.ADVERSARIES, 747266)
+            # res.associate(ResourceType.ADVERSARIES, 747266)
+            res.associate(ResourceType.ADVERSARIES, 3)
 
             #
             # working with victim associations
@@ -136,8 +139,19 @@ def main():
     #
 
     # (Optional) a resource can be updated directly by using the resource id.
-    resource = resources.update(752519)
+    resource = resources.update(44728)
     resource.set_name('Manual Update Email Sample %s' % randy)
+    resource.set_body('This is an updated email body %s.' % randy)
+    resource.set_from('bcs_update%s@badguys.com' % randy)
+    resource.set_header('This is an updated email header %s.' % randy)
+    resource.set_subject('This is an updated email subject %s.' % randy)
+    resource.set_to('victim_update%s@goodguys.com' % randy)
+
+    # (Optional) add attribute to newly created resource
+    resource.add_attribute('Description', 'test attribute %s' % randy)
+
+    # (Optional) add tag to newly created resource
+    resource.add_tag('TAG %s' % randy)
 
     #
     # delete resource
@@ -154,7 +168,9 @@ def main():
         print(res)
 
     # (Optional) display a commit report of all API actions performed
-    tc.display_report()
+    print(tc.report.stats)
+    for fail in tc.report.failures:
+        print(fail)
 
 if __name__ == "__main__":
     main()
