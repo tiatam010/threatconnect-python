@@ -46,6 +46,7 @@ class Resource(object):
         self._date_added_idx = {}
         self._file_type_idx = {}
         self._last_modified_idx = {}
+        self._name_idx = {}
         self._rating_idx = {}
         self._threat_assess_confidence_idx = {}
         self._threat_assess_rating_idx = {}
@@ -340,6 +341,14 @@ class Resource(object):
                     last_modified = dateutil.parser.parse(last_modified)
                     last_modified_seconds = int(time.mktime(last_modified.timetuple()))
                     self._last_modified_idx.setdefault(last_modified_seconds, []).append(data_obj)
+
+            #
+            # name index
+            #
+            if hasattr(data_obj, 'get_name'):
+                if data_obj.get_name() is not None:
+                    self._name_idx.setdefault(
+                        data_obj.get_name(), []).append(data_obj)
 
             #
             # rating index
@@ -744,6 +753,23 @@ class Resource(object):
                         data_obj.add_matched_filter(
                             'last_modified|%s (%s)' % (data, operator.name.lower()))
                         yield data_obj
+
+    def filter_name(self, data, operator):
+        """Post Filter"""
+        if operator == FilterOperator.EQ:
+            if data in self._name_idx:
+                for data_obj in self._name_idx[data]:
+                    data_obj.add_matched_filter(
+                        'name|%s (%s)' % (data, operator.name.lower()))
+                    yield data_obj
+        """ NO OTHER STRING COMPARISON SUPPORTED AT THIS TIME """
+        # else:
+        #     for key, data_obj_list in self._rating_idx.items():
+        #         if operator.value(float(key), float(data)):
+        #             for data_obj in data_obj_list:
+        #                 data_obj.add_matched_filter(
+        #                     'rating|%s (%s)' % (data, operator.name.lower()))
+        #                 yield data_obj
 
     def filter_rating(self, data, operator):
         """Post Filter"""

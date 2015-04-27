@@ -429,6 +429,18 @@ def add_pf_last_modified(self, data_date, operator=FilterOperator.EQ):
     self.add_post_filter(post_filter)
 
 
+def add_pf_name(self, data, operator=FilterOperator.EQ):
+    """ """
+    method = 'filter_name'
+    filter_name = '%s|%s' % ('name', data)
+
+    post_filter = PostFilterObject(filter_name)
+    post_filter.set_method(method)
+    post_filter.set_filter(data)
+    post_filter.set_operator(operator)
+    self.add_post_filter(post_filter)
+
+
 def add_pf_rating(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_rating'

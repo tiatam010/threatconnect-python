@@ -66,6 +66,7 @@ class GroupsProperties(Properties):
             'get_request_uri',
             'get_resource_type',
             # post filter
+            'add_pf_name',
             'add_pf_date_added']
 
     @property
