@@ -535,7 +535,7 @@ class Resource(object):
             for request_object in obj.tag_requests:
                 # replace temporary id
                 if temporary_id != new_id:
-                    request_uri = str(request_object.request_uri).replace(temporary_id, new_id)
+                    request_uri = str(request_object.request_uri.encode("utf-8")).replace(temporary_id, new_id)
                     request_object.set_request_uri(request_uri)
 
                 if request_object.http_method in ['DELETE', 'POST', 'PUT']:
