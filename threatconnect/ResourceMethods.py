@@ -933,6 +933,11 @@ address_attr = attr
 #
 # md5 (indicator)
 #
+def get_md5(self):
+    """ """
+    return self._md5
+
+
 def set_md5(self, data):
     """ """
     self._indicator = data
@@ -947,7 +952,7 @@ attr.add_api_name('md5')
 attr.add_extra_attribute('_md5')
 attr.set_required(False)
 attr.set_writable(True)
-attr.set_method_get('get_indicator')
+attr.set_method_get('get_md5')
 attr.set_method_set('set_md5')
 md5_attr = attr
 
@@ -955,6 +960,11 @@ md5_attr = attr
 #
 # sha1 (indicator)
 #
+def get_sha1(self):
+    """ """
+    return self._sha1
+
+
 def set_sha1(self, data):
     """ """
     self._indicator = data
@@ -969,7 +979,7 @@ attr.add_api_name('sha1')
 attr.add_extra_attribute('_sha1')
 attr.set_required(False)
 attr.set_writable(True)
-attr.set_method_get('get_indicator')
+attr.set_method_get('get_sha1')
 attr.set_method_set('set_sha1')
 sha1_attr = attr
 
@@ -977,6 +987,11 @@ sha1_attr = attr
 #
 # sha256 (indicator)
 #
+def get_sha256(self):
+    """ """
+    return self._sha256
+
+
 def set_sha256(self, data):
     """ """
     self._indicator = data
@@ -991,7 +1006,7 @@ attr.add_api_name('sha256')
 attr.add_extra_attribute('_sha256')
 attr.set_required(False)
 attr.set_writable(True)
-attr.set_method_get('get_indicator')
+attr.set_method_get('get_sha256')
 attr.set_method_set('set_sha256')
 sha256_attr = attr
 
