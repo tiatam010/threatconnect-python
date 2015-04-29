@@ -50,4 +50,4 @@ class SignatureProperties(GroupProperties):
     @property
     def id_path(self):
         """ """
-        return ResourceUri.SIGNATURES.value + '/%s'
+        return ResourceUri.SIGNATURES.value + '/{0}'

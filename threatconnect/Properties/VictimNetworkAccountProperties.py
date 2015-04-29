@@ -26,4 +26,4 @@ class VictimNetworkAccountProperties(VictimNetworkAccountsProperties):
         self._resource_key = 'victimNetworkAccount'
         self._resource_pagination = False
         self._resource_type = ResourceType.VICTIM_NETWORK_ACCOUNT
-        self._resource_uri_attribute += '/%s'
+        self._resource_uri_attribute += '/{0}'

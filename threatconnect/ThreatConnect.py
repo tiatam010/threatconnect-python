@@ -42,14 +42,28 @@ from threatconnect.Resources.Signatures import Signatures
 from threatconnect.Resources.Victims import Victims
 from threatconnect.Resources.VictimAssets import VictimAssets
 
-#
-# logging
-#
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s %(levelname)s %(message)s',
-    filename='tc.log',
-    filemode='w')
+
+def tc_logger():
+    #
+    # create temp logger
+    #
+    log_filename = 'tc.log'
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(funcName)s:%(lineno)d)')
+    tcl = logging.getLogger('threatconnect')
+    tcl.setLevel(logging.CRITICAL)
+    fh = logging.FileHandler(log_filename)
+    fh.set_name('tc_log_file')
+    # fh.setLevel(logging.CRITICAL)
+    fh.setFormatter(formatter)
+    tcl.addHandler(fh)
+    ch = logging.StreamHandler()
+    ch.set_name('console')
+    ch.setLevel(logging.CRITICAL)
+    ch.setFormatter(formatter)
+    tcl.addHandler(ch)
+
+    return tcl
 
 
 class ThreatConnect:
@@ -57,6 +71,9 @@ class ThreatConnect:
 
     def __init__(self, api_aid, api_sec, api_org, api_url, api_max_results=200, base_uri='v2'):
         """ """
+        # logger
+        self.tcl = tc_logger()
+
         # credentials
         self._api_aid = api_aid
         self._api_sec = api_sec
@@ -139,7 +156,7 @@ class ThreatConnect:
         # iterate through all owners and results
         if owner_allowed or resource_pagination:
             # DEBUG
-            # pd('owner or resource_pagination allowed')
+            self.tcl.debug('owner or resource_pagination allowed')
 
             if modified_since is not None:
                 request_payload['modifiedSince'] = modified_since
@@ -160,8 +177,8 @@ class ThreatConnect:
                     request_payload['owner'] = owner
 
                     # DEBUG
-                    # pd(' owner', owner)
-                    # pd('request_payload', request_payload)
+                    self.tcl.debug('owner: %s', owner)
+                    self.tcl.debug('request_payload: %s', request_payload)
 
                 # only add_obj result parameters if resource_pagination is allowed
                 if resource_pagination:
@@ -179,8 +196,8 @@ class ThreatConnect:
                         request_payload['resultStart'] = result_start
 
                         # DEBUG
-                        # pd('result_limit', result_limit)
-                        # pd('result_start', result_start)
+                        self.tcl.debug('result_limit: %s', result_limit)
+                        self.tcl.debug('result_start: %s', result_start)
 
                     #
                     # api request
@@ -200,8 +217,8 @@ class ThreatConnect:
                         report_entry.set_status_code(api_response.status_code)
                         report_entry.add_data({'Failure Message': api_response.content})
                         # Logging
-                        logging.error('status_code: %s' % api_response.status_code)
-                        logging.error('Failure Message: %s' % api_response.content)
+                        self.tcl.error('status_code: {0}'.format(api_response.status_code))
+                        self.tcl.error('Failure Message: {0}'.format(api_response.content))
                         break
 
                     #
@@ -295,7 +312,7 @@ class ThreatConnect:
                 report_entry.set_status('Failure')
                 report_entry.add_data({'Failure Message': api_response.content})
                 # Logging
-                logging.error('Failure Message: %s' % api_response.content)
+                self.tcl.error('Failure Message: {0}'.format(api_response.content))
             else:
                 report_entry.set_status('Success')
 
@@ -323,14 +340,13 @@ class ThreatConnect:
                 report_entry.set_status('Failure')
                 report_entry.add_data({'Failure Message': failure_message})
                 # Logging
-                logging.error('Failure Message: %s' % failure_message)
+                logging.error('Failure Message: {0}'.format(failure_message))
             else:
                 api_response_dict = api_response.json()
                 resource_obj.current_url = api_response.url
 
                 # ReportEntry
                 report_entry.set_status(api_response_dict['status'])
-                report_entry.add_request_url(api_response.url)
 
                 # update group object with api response data
                 resource_obj.add_api_response(api_response.content)
@@ -359,7 +375,6 @@ class ThreatConnect:
     def _api_process_response(self, resource_obj, api_response, request_object):
         """ """
         # DEBUG
-        # pd('api_process_response', header=True)
         resource_object_id = request_object.resource_object_id
         obj_list = []
 
@@ -383,9 +398,8 @@ class ThreatConnect:
             response_data = api_response_dict['data'][resource_key]
 
         # DEBUG
-        # pd('current_filter', current_filter)
-        # pd('resource_type', resource_type)
-        # pd('resource_key', resource_key)
+        self.tcl.debug('current_filter: %s', current_filter)
+        self.tcl.debug('resource_key: %s', resource_key)
 
         # wrap single response item in a list
         if isinstance(response_data, dict):
@@ -395,7 +409,7 @@ class ThreatConnect:
         resource_obj.add_result_count(result_count)
 
         # DEBUG
-        # pd('result_count', result_count)
+        self.tcl.debug('result_count: %s', result_count)
 
         # update group object with result data
         for data in response_data:
@@ -409,7 +423,7 @@ class ThreatConnect:
             data_methods = data_obj.get_data_methods()
 
             # set values for each resource parameter
-            for attrib, obj_method in data_methods.items():
+            for attrib, obj_method in data_methods.viewitems():
                 # DEBUG
                 if attrib in data:
                     obj_method(data[attrib])
@@ -432,7 +446,7 @@ class ThreatConnect:
                         attribute_data_obj = attribute_properties.resource_object
                         attribute_data_methods = attribute_data_obj.get_data_methods()
 
-                        for attrib, obj_method in attribute_data_methods.items():
+                        for attrib, obj_method in attribute_data_methods.viewitems():
                             if attrib in attribute:
                                 obj_method(attribute[attrib])
 
@@ -448,7 +462,7 @@ class ThreatConnect:
                         tag_data_obj = tag_properties.resource_object
                         tag_data_methods = tag_data_obj.get_data_methods()
 
-                        for t, obj_method in tag_data_methods.items():
+                        for t, obj_method in tag_data_methods.viewitems():
                             if t in tag:
                                 obj_method(tag[t])
 
@@ -470,7 +484,7 @@ class ThreatConnect:
                 index = data_obj.get_name()
             else:
                 # all object should either support get_id or get_name.
-                logging.critical('Critical failure in someone\'s logic.')
+                self.tcl.critical('Critical failure in someone\'s logic.')
                 sys.exit(1)
 
             # add the resource to the master resource object list to make intersections
@@ -539,13 +553,12 @@ class ThreatConnect:
         """ """
         start = datetime.now()
         # DEBUG
-        logging.debug('_api_request')
-        logging.debug('request_uri: %s' % request_uri)
-        logging.debug('request_payload: %s' % pformat(request_payload))
-        logging.debug('http_method: %s' % http_method)
-        logging.debug('body: %s' % body)
-        logging.debug('activity_log: %s' % activity_log)
-        logging.debug('content_type: %s' % content_type)
+        self.tcl.debug('request_uri: {0}'.format(request_uri))
+        self.tcl.debug('request_payload: {0}'.format(pformat(request_payload)))
+        self.tcl.debug('http_method: {0}'.format(http_method))
+        self.tcl.debug('body: {0}'.format(body))
+        self.tcl.debug('activity_log: {0}'.format(activity_log))
+        self.tcl.debug('content_type: {0}'.format(content_type))
 
         # Report (count api calls)
         self.report.add_api_call()
@@ -553,7 +566,7 @@ class ThreatConnect:
         # Decide whether or not to suppress all activity logs
         request_payload.setdefault('createActivityLog', activity_log)
 
-        url = '%s%s' % (self._api_url, request_uri)
+        url = '{0}{1}'.format(self._api_url, request_uri)
 
         # api request
         api_request = Request(
@@ -583,42 +596,40 @@ class ThreatConnect:
                     request_prepped, verify=self._verify_ssl, timeout=self.api_request_timeout)
                 break
             except exceptions.ReadTimeout as e:
-                logging.error('Error: %s' % e)
-                logging.error('The server may be experiencing delays at the moment.')
-                logging.info('Pausing for %s seconds to give server time to catch up.' % sleep)
+                self.tcl.error('Error: {0}'.format(e))
+                self.tcl.error('The server may be experiencing delays at the moment.')
+                self.tcl.info('Pausing for {0} seconds to give server time to catch up.'.format(sleep))
                 time.sleep(sleep)
-                logging.info('Retry %s ....' % i)
+                self.tcl.info('Retry {0} ....'.format(i))
                 if i == retries:
-                    logging.error('Exiting Application.')
+                    self.tcl.error('Exiting Application.')
                     sys.exit(1)
             except exceptions.ConnectionError as e:
-                logging.error('Error: %s' % e)
-                logging.error('Connection Error. The server may be down.')
-                logging.info('Pausing for %s seconds to give server time to catch up.' % sleep)
+                self.tcl.error('Error: {0}'.format(e))
+                self.tcl.error('Connection Error. The server may be down.')
+                self.tcl.info('Pausing for {0} seconds to give server time to catch up.'.format(sleep))
                 time.sleep(sleep)
-                logging.info('Retry %s ....' % i)
+                self.tcl.info('Retry {0} ....'.format(i))
                 if i == retries:
-                    logging.error('Exiting Application.')
+                    self.tcl.error('Exiting Application.')
                     sys.exit(1)
             except socket.error as e:
-                logging.error('Error: %s' % e)
-                logging.error('Socket Error. The application could not get a network socket')
-                logging.error('Exiting Application.')
+                self.tcl.error('Error: {0}'.format(e))
+                self.tcl.error('Socket Error. The application could not get a network socket')
+                self.tcl.error('Exiting Application.')
                 sys.exit(1)
             # else:
-            #     logging.debug('%s' % api_response.content)
-            #     logging.error('Error: unhandled exception')
-            #     logging.error('Exiting Application.')
+            #     self.tcl.debug('{0}'.format(api_response.content)
+            #     self.tcl.error('Error: unhandled exception')
+            #     self.tcl.error('Exiting Application.')
             #     sys.exit(1)
 
         # DEBUG
-        # pd('dir', dir(api_response))
-        # pd('url', api_response.url)
-        # pd('text', api_response.text)
-        # pd('content', api_response.content)
-        # pd('status_code', api_response.status_code)
-
-        # pd('path_url', path_url)
+        self.tcl.debug('url: %s', api_response.url)
+        self.tcl.debug('text: %s', api_response.text)
+        self.tcl.debug('content: %s', api_response.content)
+        self.tcl.debug('path_url: %s', path_url)
+        self.tcl.debug('status_code: %s', api_response.status_code)
 
         # Report
         self.report.add_request_time(datetime.now() - start)
@@ -627,9 +638,9 @@ class ThreatConnect:
     def _api_request_headers(self, http_method, api_uri):
         """ """
         timestamp = int(time.time())
-        signature = "%s:%s:%d" % (api_uri, http_method, timestamp)
+        signature = "{0}:{1}:{2}".format(api_uri, http_method, timestamp)
         hmac_signature = hmac.new(self._api_sec, signature, digestmod=hashlib.sha256).digest()
-        authorization = 'TC %s:%s' % (self._api_aid, base64.b64encode(hmac_signature))
+        authorization = 'TC {0}:{1}'.format(self._api_aid, base64.b64encode(hmac_signature))
 
         return {'Timestamp': timestamp, 'Authorization': authorization}
 
@@ -797,3 +808,52 @@ class ThreatConnect:
             print(ErrorCodes.e0100.value)
         else:
             self._api_max_results = max_results
+
+    def set_tcl_filename(self, filename):
+        """ """
+        #console_level = self.tcl.handlers[1].level
+        console_logger = self.tcl.handlers[1]
+        # get log level, close and delete previous file handler
+        level = self.tcl.handlers[0].level
+        self.tcl.handlers[0].stream.close()
+        # remove file logger
+        self.tcl.removeHandler(self.tcl.handlers[0])
+        # remove console logger so it can be readded
+        self.tcl.removeHandler(self.tcl.handlers[0])
+
+
+        # add new handler with new filename
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(funcName)s:%(lineno)d)')
+        fh = logging.FileHandler(filename)
+        fh.setLevel(level)
+        fh.setFormatter(formatter)
+        self.tcl.addHandler(fh)
+        self.tcl.addHandler(console_logger)
+        # self.tcl.handlers[0].setLevel(console_level)
+
+    def set_tcl_level(self, level):
+
+        # logger logging levels
+        log_level = {
+            'debug': logging.DEBUG,
+            'info': logging.INFO,
+            'warning': logging.WARNING,
+            'error': logging.ERROR,
+            'critical': logging.CRITICAL}
+
+        if level in log_level.keys():
+            self.tcl.setLevel(log_level[level])
+
+    def set_tcl_console_level(self, level):
+
+        # logger logging levels
+        log_level = {
+            'debug': logging.DEBUG,
+            'info': logging.INFO,
+            'warning': logging.WARNING,
+            'error': logging.ERROR,
+            'critical': logging.CRITICAL}
+
+        if level in log_level.keys():
+            self.tcl.handlers[1].setLevel(log_level[level])

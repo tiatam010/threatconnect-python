@@ -26,4 +26,4 @@ class VictimSocialNetworkProperties(VictimSocialNetworksProperties):
         self._resource_key = 'victimSocialNetwork'
         self._resource_pagination = False
         self._resource_type = ResourceType.VICTIM_SOCIAL_NETWORK
-        self._resource_uri_attribute += '/%s'
+        self._resource_uri_attribute += '/{0}'

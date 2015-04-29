@@ -67,9 +67,9 @@ def set_confidence(self, data):
         if 0 <= data <= 100:
             self._confidence = data
         else:
-            self.add_error_msg(ErrorCodes.e10010.value % data)
+            self.add_error_msg(ErrorCodes.e10010.value.format(data))
     else:
-        self.add_error_msg(ErrorCodes.e10011.value % data)
+        self.add_error_msg(ErrorCodes.e10011.value.format(data))
     if self._phase is 'new':
         self._phase = 'update'
 
@@ -210,32 +210,6 @@ attr.set_writable(True)
 attr.set_method_get('get_dns_active')
 attr.set_method_set('set_dns_active')
 dns_active_attr = attr
-
-
-# #
-# # download
-# #
-# def get_download(self):
-#     """ """
-#     return self._download
-#
-#
-# def download(self):
-#     """ """
-#     # request_uri = '/v2/groups/signatures/%s/download' % self._id
-#     # # api_response = ThreatConnect._api_request(request_uri, request_payload={}, http_method='GET')
-#     #
-#     # if api_response.status_code == 200:
-#     #     self._download = api_response.content
-#     pass
-#
-# attr = AttributeDef('_download')
-# attr.add_api_name('download')
-# attr.set_required(False)
-# attr.set_writable(False)
-# attr.set_method_get('get_download')
-# attr.set_method_set('download')
-# download_attr = attr
 
 
 #
@@ -1213,9 +1187,10 @@ def upload(self, data, update=False):
         'name2_method': self.get_id,
         'body': data,
         'content_type': 'application/octet-stream',
-        'description': 'Document Upload to document resource (%s)',
+        'description': 'Document Upload to document resource ({0})',
         'http_method': http_method,
-        'request_uri_path': '/v2/groups/documents/%s/upload',
+        # TODO: Fix
+        'request_uri_path': '/v2/groups/documents/{0}/upload',
         'identifier_method': self.get_id,
         'owner_allowed': False,
         'resource_pagination': False,
@@ -1229,10 +1204,10 @@ def upload_request(self):
     request_object.set_body(self._urd['body'])
     request_object.set_content_type(self._urd['content_type'])
     request_object.set_description(
-        self._urd['description'] % self._urd['identifier_method']())
+        self._urd['description'].format(self._urd['identifier_method']()))
     request_object.set_http_method(self._urd['http_method'])
     request_object.set_request_uri(
-        self._urd['request_uri_path'] % self._urd['identifier_method']())
+        self._urd['request_uri_path'].format(self._urd['identifier_method']()))
     request_object.set_owner_allowed(self._urd['owner_allowed'])
     request_object.set_resource_pagination(self._urd['resource_pagination'])
     request_object.set_resource_type(self._urd['resource_type'])
@@ -1265,9 +1240,9 @@ def download(self):
         'name1': 'Document Download',
         'name2_method': self.get_id,
         'content_type': 'application/octet-stream',
-        'description': 'Document download of document resource (%s)',
+        'description': 'Document download of document resource ({0})',
         'http_method': 'GET',
-        'request_uri_path': '/v2/groups/documents/%s/download',
+        'request_uri_path': '/v2/groups/documents/{0}/download',
         'identifier_method': self.get_id,
         'owner_allowed': False,
         'resource_pagination': False,
@@ -1280,10 +1255,10 @@ def download_request(self):
     request_object = RequestObject(self._drd['name1'], self._drd['name2_method']())
     request_object.set_content_type(self._drd['content_type'])
     request_object.set_description(
-        self._drd['description'] % self._drd['identifier_method']())
+        self._drd['description'].format(self._drd['identifier_method']()))
     request_object.set_http_method(self._drd['http_method'])
     request_object.set_request_uri(
-        self._drd['request_uri_path'] % self._drd['identifier_method']())
+        self._drd['request_uri_path'].format(self._drd['identifier_method']()))
     request_object.set_owner_allowed(self._drd['owner_allowed'])
     request_object.set_resource_pagination(self._drd['resource_pagination'])
     request_object.set_resource_type(self._drd['resource_type'])

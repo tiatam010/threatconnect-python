@@ -30,7 +30,7 @@ def main():
     for res in resources:
 
         # (Optional) match a particular resource by ID, Name or any other supported attribute.
-        if res.get_id() == 1837687:
+        if res.get_id() == 196939:
             #
             # update resource if required
             #
@@ -114,7 +114,10 @@ def main():
     #
 
     # this requires that the resource was instantiated at the beginning of the script.
-    resource = resources.add('4.3.254.%s' % randint(0, 254))
+    # resource = resources.add('4.3.254.%s' % randint(0, 254))
+    resource = resources.add('ac11ba81f1dc6d3637589ffa04366599')
+    resource.set_sha1('bec530f8e0104d4521958309eb9852e073150ac1')
+    resource.set_sha256('22010a665da94445f5b505c828d532886541900373d29042cc46c3300a186e28')
     resource.set_confidence(randy)
     resource.set_rating('2.0')
 
@@ -135,7 +138,9 @@ def main():
         print(res)
 
     # (Optional) display a commit report of all API actions performed
-    tc.display_report()
+    print(tc.report.stats)
+    for rpt in tc.report:
+        print(rpt)
 
 if __name__ == "__main__":
     main()

@@ -33,7 +33,7 @@ def get_hash_type(indicator):
 
 def get_resource_type(indicator):
     """Get resource type enum from an indicator."""
-    for indicator_type, regex in indicators_regex.items():
+    for indicator_type, regex in indicators_regex.viewitems():
         for rex in regex:
             if rex.match(indicator):
                 return ResourceType[indicator_type]
@@ -52,7 +52,7 @@ def get_resource_indicator_type(indicator_type):
 
 def validate_indicator(indicator):
     """ """
-    for indicator_type, regex in indicators_regex.items():
+    for indicator_type, regex in indicators_regex.viewitems():
         for rex in regex:
             if rex.match(str(indicator)):
                 return True

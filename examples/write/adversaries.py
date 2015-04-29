@@ -30,7 +30,7 @@ def main():
             #
             # update resource if required
             #
-            res.set_name('Loop Update Adversary Sample %s' % randy)
+            res.set_name('Loop Update Adversary Sample {0}'.format(randy))
 
             #
             # working with indicator associations
@@ -85,9 +85,9 @@ def main():
                     res.delete_attribute(attribute.get_id())
                 # add update flag to all attributes that have 'update' in the value.
                 if re.findall('update', attribute.get_value()):
-                    res.update_attribute(attribute.get_id(), 'updated attribute %s' % randy)
+                    res.update_attribute(attribute.get_id(), 'updated attribute {0}'.format(randy))
             # (Optional) add attribute to resource with type and value
-            res.add_attribute('Description', 'test attribute %s' % randy)
+            res.add_attribute('Description', 'test attribute {0}'.format(randy))
 
             #
             # working with tags
@@ -100,7 +100,7 @@ def main():
                 if re.findall('DELETE', tag.get_name()):
                     res.delete_tag(tag.get_name())
             # (Optional) add tag to resource
-            res.add_tag('DELETE_%s' % randy)
+            res.add_tag('DELETE_{0}'.format(randy))
         #
         # delete resource if required
         #
@@ -112,13 +112,13 @@ def main():
     #
     # add resource if required
     #
-    resource = resources.add('DELETE %s' % randy)
+    resource = resources.add('DELETE {0}'.format(randy))
 
     # (Optional) add attribute to newly created resource
-    resource.add_attribute('Description', 'test attribute %s' % randy)
+    resource.add_attribute('Description', 'test attribute {0}'.format(randy))
 
     # (Optional) add tag to newly created resource
-    resource.add_tag('TAG %s' % randy)
+    resource.add_tag('TAG {0}'.format(randy))
 
     #
     # update resource if required
@@ -127,13 +127,13 @@ def main():
     # (Optional) a resource can be updated directly by using the resource id.
     # resource = resources.update(749422)
     resource = resources.update(4)
-    resource.set_name('Manual Update Adversary Sample %s' % randy)
+    resource.set_name('Manual Update Adversary Sample {0}'.format(randy))
 
     # (Optional) add attribute to newly created resource
-    resource.add_attribute('Description', 'test attribute %s' % randy)
+    resource.add_attribute('Description', 'test attribute {0}'.format(randy))
 
     # (Optional) add tag to newly created resource
-    resource.add_tag('TAG %s' % randy)
+    resource.add_tag('TAG {0}'.format(randy))
 
     #
     # delete resource

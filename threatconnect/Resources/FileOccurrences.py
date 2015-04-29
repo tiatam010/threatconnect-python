@@ -33,7 +33,7 @@ class FileOccurrences(Resource):
         self._http_method = properties.http_method
         self._owner_allowed = False
         self._resource_pagination = False
-        self._request_uri = properties.post_path % file_hash
+        self._request_uri = properties.post_path.format(file_hash)
 
         # resource object
         self._resource_object = properties.resource_object

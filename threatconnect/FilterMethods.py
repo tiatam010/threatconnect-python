@@ -19,7 +19,7 @@ from threatconnect.Validate import validate_indicator
 
 def _get_resource_type(indicator):
     """ """
-    for indicator_type, regex in indicators_regex.items():
+    for indicator_type, regex in indicators_regex.viewitems():
         for rex in regex:
             if rex.match(indicator):
                 return ResourceType[indicator_type]
@@ -38,7 +38,7 @@ def add_adversary_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4000.value % data_int)
+        self._add_error(ErrorCodes.e4000.value.format(data_int))
         self._error = True
     else:
         filter_type = 'adversary_id'
@@ -62,7 +62,7 @@ def add_email_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4010.value % data_int)
+        self._add_error(ErrorCodes.e4010.value.format(data_int))
         self._error = True
     else:
         filter_type = 'email_id'
@@ -83,7 +83,7 @@ def add_hash(self, data, data_int=None):
         properties = self._properties
     # validation of data input
     if not isinstance(data, str):
-        self._add_error(ErrorCodes.e4020.value % data)
+        self._add_error(ErrorCodes.e4020.value.format(data))
         self._error = True
     else:
         filter_type = 'hash'
@@ -112,12 +112,12 @@ def add_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4020.value % data_int)
+        self._add_error(ErrorCodes.e4020.value.format(data_int))
         self._error = True
     else:
         filter_type = 'id'
         if asset_id is not None:
-            filter_values = '%s-%s' % (data_int, asset_id)
+            filter_values = '{0}-{1}'.format(data_int, asset_id)
         else:
             filter_values = data_int
         ro = RequestObject(filter_type, filter_values)
@@ -136,7 +136,7 @@ def add_id_signature(self, data_int, download=False):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4020.value % data_int)
+        self._add_error(ErrorCodes.e4020.value.format(data_int))
         self._error = True
     else:
         filter_type = 'id'
@@ -165,7 +165,7 @@ def add_incident_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4030.value % data_int)
+        self._add_error(ErrorCodes.e4030.value.format(data_int))
         self._error = True
     else:
         filter_type = 'incident_id'
@@ -190,13 +190,13 @@ def add_indicator(self, data, data_type_enum=None):
     error = False
     # validation indicator
     if not validate_indicator(data):
-        self._add_error(ErrorCodes.e5010.value % data)
+        self._add_error(ErrorCodes.e5010.value.format(data))
         self._error = True
         error = True
 
     # validation resource type
     if not isinstance(data_type_enum, ResourceType):
-        self._add_error(ErrorCodes.e5011.value % data_type_enum)
+        self._add_error(ErrorCodes.e5011.value.format(data_type_enum))
         self._error = True
         error = True
 
@@ -238,7 +238,7 @@ def add_name(self, data):
     properties = ResourceProperties[resource_type.name].value()
     # validation of data input
     if not isinstance(data, str):
-        self._add_error(ErrorCodes.e4080.value % data)
+        self._add_error(ErrorCodes.e4080.value.format(data))
         self._error = True
     else:
         filter_type = 'name'
@@ -265,7 +265,7 @@ def add_security_label(self, data):
     """ """
     properties = self._properties
     if not isinstance(data, str):
-        self._add_error(ErrorCodes.e4070.value % data)
+        self._add_error(ErrorCodes.e4070.value.format(data))
         self._error = True
     else:
         filter_type = 'security_label'
@@ -289,7 +289,7 @@ def add_signature_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4040.value % data_int)
+        self._add_error(ErrorCodes.e4040.value.format(data_int))
         self._error = True
     else:
         filter_type = 'signature_id'
@@ -305,7 +305,7 @@ def add_tag(self, data):
     """ """
     properties = self._properties
     if not isinstance(data, str):
-        self._add_error(ErrorCodes.e4080.value % data)
+        self._add_error(ErrorCodes.e4080.value.format(data))
         self._error = True
     else:
         filter_type = 'tag'
@@ -329,7 +329,7 @@ def add_threat_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4050.value % data_int)
+        self._add_error(ErrorCodes.e4050.value.format(data_int))
         self._error = True
     else:
         filter_type = 'threat_id'
@@ -346,7 +346,7 @@ def add_victim_id(self, data_int):
     properties = self._properties
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4060.value % data_int)
+        self._add_error(ErrorCodes.e4060.value.format(data_int))
         self._error = True
     else:
         filter_type = 'victim_id'
@@ -366,7 +366,7 @@ def add_victim_id(self, data_int):
 def add_pf_attribute(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_attribute'
-    filter_name = '%s|%s' % ('attribute', data)
+    filter_name = '{0}|{1}'.format('attribute', data)
 
     post_filter = PostFilterObject(filter_name)
     post_filter.set_method(method)
@@ -378,7 +378,7 @@ def add_pf_attribute(self, data, operator=FilterOperator.EQ):
 def add_pf_confidence(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_confidence'
-    filter_name = '%s|%s' % ('confidence', data)
+    filter_name = '{0}|{1}'.format('confidence', data)
 
     post_filter = PostFilterObject(filter_name)
     post_filter.set_method(method)
@@ -394,7 +394,7 @@ def add_pf_date_added(self, data_date, operator=FilterOperator.EQ):
     date_added = dateutil.parser.parse(date_added)
     date_added_seconds = int(time.mktime(date_added.timetuple()))
 
-    filter_name = '%s|%s (%s)' % ('date_added', data_date, date_added_seconds)
+    filter_name = '{0}|{1} ({2})'.format('date_added', data_date, date_added_seconds)
     post_filter = PostFilterObject(filter_name)
     post_filter.set_method(method)
     post_filter.set_filter(date_added_seconds)
@@ -405,7 +405,7 @@ def add_pf_date_added(self, data_date, operator=FilterOperator.EQ):
 def add_pf_file_type(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_file_type'
-    filter_name = '%s|%s' % ('file_type', data)
+    filter_name = '{0}|{1}'.format('filter_type', data)
 
     post_filter = PostFilterObject(filter_name)
     post_filter.set_method(method)
@@ -421,7 +421,7 @@ def add_pf_last_modified(self, data_date, operator=FilterOperator.EQ):
     last_modified = dateutil.parser.parse(last_modified)
     last_modified_seconds = int(time.mktime(last_modified.timetuple()))
 
-    filter_name = '%s|%s (%s)' % ('last_modified', data_date, last_modified_seconds)
+    filter_name = '{0}|{1} ({2})'.format('last_modified', data_date, last_modified_seconds)
     post_filter = PostFilterObject(filter_name)
     post_filter.set_method(method)
     post_filter.set_filter(last_modified_seconds)
@@ -432,7 +432,7 @@ def add_pf_last_modified(self, data_date, operator=FilterOperator.EQ):
 def add_pf_name(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_name'
-    filter_name = '%s|%s' % ('name', data)
+    filter_name = '{0}|{1}'.format('name', data)
 
     post_filter = PostFilterObject(filter_name)
     post_filter.set_method(method)
@@ -444,7 +444,7 @@ def add_pf_name(self, data, operator=FilterOperator.EQ):
 def add_pf_rating(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_rating'
-    filter_name = '%s|%s' % ('rating', data)
+    filter_name = '{0}|{1}'.format('rating', data)
 
     post_filter = PostFilterObject(filter_name)
     post_filter.set_method(method)
@@ -456,7 +456,7 @@ def add_pf_rating(self, data, operator=FilterOperator.EQ):
 def add_pf_threat_assess_confidence(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_threat_assess_confidence'
-    filter_name = '%s|%s' % ('threat assess confidence', data)
+    filter_name = '{0}|{1}'.format('threat assess confidence', data)
 
     post_filter = PostFilterObject(filter_name)
     post_filter.set_method(method)
@@ -468,7 +468,7 @@ def add_pf_threat_assess_confidence(self, data, operator=FilterOperator.EQ):
 def add_pf_threat_assess_rating(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_threat_assess_rating'
-    filter_name = '%s|%s' % ('threat assess rating', data)
+    filter_name = '{0}|{1}'.format('threat assess rating', data)
 
     post_filter = PostFilterObject(filter_name)
     post_filter.set_method(method)
@@ -480,7 +480,7 @@ def add_pf_threat_assess_rating(self, data, operator=FilterOperator.EQ):
 def add_pf_tag(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_tag'
-    filter_name = '%s|%s' % ('tag', data)
+    filter_name = '{0}|{1}'.format('tag', data)
 
     post_filter = PostFilterObject(filter_name)
     post_filter.set_method(method)
@@ -492,7 +492,7 @@ def add_pf_tag(self, data, operator=FilterOperator.EQ):
 def add_pf_type(self, data, operator=FilterOperator.EQ):
     """ """
     method = 'filter_type'
-    filter_name = '%s|%s' % ('type', data)
+    filter_name = '{0}|{1}'.format('type', data)
 
     post_filter = PostFilterObject(filter_name)
     post_filter.set_method(method)

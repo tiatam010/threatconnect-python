@@ -48,5 +48,5 @@ class VictimAssetsProperties(VictimsProperties):
     @property
     def id_path(self):
         """ """
-        return ResourceUri.VICTIMS.value + '/%s/' + self._resource_uri_attribute
+        return ResourceUri.VICTIMS.value + '/{0}/' + self._resource_uri_attribute
 

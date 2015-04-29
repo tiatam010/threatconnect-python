@@ -45,7 +45,7 @@ class FilterObject(object):
     def add_filter_operator(self, data_enum):
         """ """
         if not isinstance(data_enum, FilterSetOperator):
-            self._add_error(ErrorCodes.e1000.value % data_enum)
+            self._add_error(ErrorCodes.e1000.value.format(data_enum))
         else:
             self._filter_operator = data_enum
 
@@ -109,10 +109,10 @@ class FilterObject(object):
 
     def __str__(self):
         """ """
-        obj_str = format_header('%s Filter Object' % self._resource_type.name)
+        obj_str = format_header('{0} Filter Object'.format(self._resource_type.name))
         printable_items = dict(self.__dict__)
         printable_items.pop('_request_objects')
-        for key, val in sorted(printable_items.items()):
+        for key, val in sorted(printable_items.viewitems()):
             obj_str += format_item(key, val)
 
         return obj_str

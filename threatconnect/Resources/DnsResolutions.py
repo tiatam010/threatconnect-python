@@ -51,7 +51,7 @@ class DnsResolutionObject(object):
         # build data to method mapping
         #
         self._data_methods = {}
-        for data_name, methods in properties.data_methods.items():
+        for data_name, methods in properties.data_methods.viewitems():
             # create variables for object
             attribute = methods['var']
             if attribute is not None:

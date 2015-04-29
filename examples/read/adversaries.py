@@ -4,8 +4,8 @@ from examples.working_init import *
 
 """ Toggle the Boolean to enable specific examples """
 enable_example1 = False
-enable_example2 = True
-enable_example3 = False
+enable_example2 = False
+enable_example3 = True
 enable_example4 = False
 enable_example5 = False
 
@@ -37,7 +37,8 @@ def main():
     # owners = tc.owners()
     # owners.retrieve()
     # owners.get_owner_names()
-    owners = ['Test & Org']
+    # owners = ['Test & Org']
+    owners = ['braceysummers.com']
 
     if enable_example1:
         """ get adversaries for owner org """
@@ -90,9 +91,10 @@ def main():
         # get filter
         filter1 = adversaries.add_filter()
         filter1.add_owner(owners)
-        filter1.add_id(747266)
-        filter1.add_tag('BCS')
-        filter1.add_threat_id(747243)
+        # filter1.add_id(747266)
+        filter1.add_tag('Jupyter')
+        # filter1.add_threat_id(747243)
+        filter1.add_pf_name('Manual Update Adversary Sample 957')
 
         # check for any error on filter creation
         if filter1.error:

@@ -48,4 +48,4 @@ class IncidentProperties(GroupProperties):
     @property
     def id_path(self):
         """ """
-        return ResourceUri.INCIDENTS.value + '/%s'
+        return ResourceUri.INCIDENTS.value + '/{0}'

@@ -101,12 +101,12 @@ class Indicators(Resource):
             set_method = getattr(resource_object, set_method_name)
             set_method(indicator)
             # set resource api action
-            resource_object.set_api_action('add')
+            resource_object.set_phase('add')
 
             # build request object
             request_object = RequestObject(self._resource_type.name, indicator)
             request_object.set_description(
-                'Adding indicator (%s).' % indicator)
+                'Adding indicator ({0}).'.format(indicator))
             request_object.set_http_method(properties.http_method)
             request_object.set_request_uri(properties.post_path)
             request_object.set_owner_allowed(True)
@@ -126,7 +126,7 @@ class Indicators(Resource):
             # return object for modification
             return res
         else:
-            print('(%s) is an invalid indicator.' % indicator)
+            print('({0}) is an invalid indicator.'.format(indicator))
 
         return None
 
@@ -208,12 +208,12 @@ class IndicatorFilterObject(FilterObject):
             request_uri += '/indicators'
             irt = ResourceType.INDICATORS
 
-        description = 'Get indicator associations for %s resource (%s).' % (
+        description = 'Get indicator associations for {0} resource ({1}).'.format(
             base_resource_type.name.lower(), str(identifier))
 
         filter_type = 'indicator association'
         ro = RequestObject(
-            filter_type, '%s|%s' % (base_resource_type.name.lower(), identifier))
+            filter_type, '{0}|{1}'.format(base_resource_type.name.lower(), identifier))
         ro.set_description(description)
         ro.set_owner_allowed(False)
         ro.set_resource_pagination(True)

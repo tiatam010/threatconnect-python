@@ -8,6 +8,13 @@ from examples.working_init import *
 
 def main():
     """ """
+    # set threat connect log (tcl) level
+    tc.set_tcl_filename('tc.log')
+    tc.set_tcl_level('debug')
+    tc.set_tcl_console_level('debug')
+
+    # This is a random number generator used for testing.
+    randy = randint(1, 1000)
 
     # (Required) Instantiate a Resource Object
     resources = tc.documents()
@@ -18,15 +25,12 @@ def main():
     # (Optional) retrieve all results
     resources.retrieve()
 
-    # This is a random number generator used for testing.
-    randy = randint(1, 1000)
-
     # (Optional) iterate through all results if retrieve was used above
     for res in resources:
         print(res)
 
         # (Optional) match a particular resource by ID, Name or any other supported attribute.
-        if res.get_id() == 752435:
+        if res.get_id() == 44813:
             #
             # update resource if required
             #
@@ -58,7 +62,7 @@ def main():
                 if re.findall('Loop', association.get_name()):
                     res.disassociate(association.resource_type, association.get_id())
 
-            res.associate(ResourceType.ADVERSARIES, 747266)
+            res.associate(ResourceType.ADVERSARIES, 3)
 
             #
             # working with victim associations
@@ -126,21 +130,21 @@ def main():
     resource = resources.add('Delete Document Sample %s' % randy)
     # (Required) all required attributes must be provided.
     resource.set_file_name('new_file_%s.txt' % randy)
-    data = 'This is a newly created file content %s.' % randy
+    data = 'This is a newly created file content {0}.'.format(randy)
     resource.upload(data)
 
     # (Optional) add attribute to newly created resource
-    resource.add_attribute('Description', 'test attribute %s' % randy)
+    resource.add_attribute('Description', 'test attribute {0}'.format(randy))
 
     # (Optional) add tag to newly created resource
-    resource.add_tag('TAG %s' % randy)
+    resource.add_tag('TAG {0}'.format(randy))
 
     #
     # update resource if required
     #
 
     # (Optional) a resource can be updated directly by using the resource id.
-    resource = resources.update(752640)
+    resource = resources.update(44812)
     resource.set_name('Manual Update Document Sample %s' % randy)
     resource.set_file_name('sample_%s.txt' % randy)
     # data = open('./sample_upload.txt', 'rb').read()
@@ -166,7 +170,13 @@ def main():
             print(res.document)
 
     # (Optional) display a commit report of all API actions performed
-    tc.display_report()
+    print(tc.report.stats)
+
+    for fail in tc.report.failures:
+        print(fail)
+
+    # for rpt in tc.report:
+    #     print(rpt)
 
 if __name__ == "__main__":
     main()

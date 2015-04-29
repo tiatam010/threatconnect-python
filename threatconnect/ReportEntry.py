@@ -73,14 +73,14 @@ class ReportEntry(object):
 
     def __str__(self):
         """ """
-        obj_str = format_header('%s' % self.action, '.', '.')
+        obj_str = format_header('{0}'.format(self.action), '.', '.')
         obj_str += format_item('Status', self._status)
         obj_str += format_item('Status Code', self._status_code)
         obj_str += format_item('Request URLs', self.request_urls)
         obj_str += format_item('Data', '')
         for data in self._data:
-            for k, v in data.items():
-                obj_str += format_item('%s' % k, v, 1)
+            for k, v in data.viewitems():
+                obj_str += format_item('{0}'.format(k), v, 1)
 
         return obj_str.encode('utf-8')
 

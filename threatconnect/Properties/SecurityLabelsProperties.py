@@ -65,7 +65,7 @@ class SecurityLabelsProperties(Properties):
     @property
     def adversary_path(self):
         """ """
-        return ResourceUri.ADVERSARIES.value + '/%s/' + self._resource_uri_attribute
+        return ResourceUri.ADVERSARIES.value + '/{0}/' + self._resource_uri_attribute
 
     @property
     def base_owner_allowed(self):
@@ -85,7 +85,7 @@ class SecurityLabelsProperties(Properties):
     @property
     def email_path(self):
         """ """
-        return ResourceUri.EMAILS.value + '/%s/' + self._resource_uri_attribute
+        return ResourceUri.EMAILS.value + '/{0}/' + self._resource_uri_attribute
 
     @property
     def filters(self):
@@ -97,7 +97,7 @@ class SecurityLabelsProperties(Properties):
 
     @property
     def incident_path(self):
-        return ResourceUri.INCIDENTS.value + '/%s/' + self._resource_uri_attribute
+        return ResourceUri.INCIDENTS.value + '/{0}/' + self._resource_uri_attribute
 
     @property
     def indicator_owner_allowed(self):
@@ -105,7 +105,7 @@ class SecurityLabelsProperties(Properties):
 
     @property
     def indicator_path(self):
-        return ResourceUri.INDICATORS.value + '/%s/%s/' + self._resource_uri_attribute
+        return ResourceUri.INDICATORS.value + '/{0}/{1}/' + self._resource_uri_attribute
 
     @property
     def resource_object(self):
@@ -117,7 +117,7 @@ class SecurityLabelsProperties(Properties):
 
     @property
     def signature_path(self):
-        return ResourceUri.SIGNATURES.value + '/%s/' + self._resource_uri_attribute
+        return ResourceUri.SIGNATURES.value + '/{0}/' + self._resource_uri_attribute
 
     @property
     def threat_owner_allowed(self):
@@ -125,4 +125,4 @@ class SecurityLabelsProperties(Properties):
 
     @property
     def threat_path(self):
-        return ResourceUri.THREATS.value + '/%s/' + self._resource_uri_attribute
+        return ResourceUri.THREATS.value + '/{0}/' + self._resource_uri_attribute

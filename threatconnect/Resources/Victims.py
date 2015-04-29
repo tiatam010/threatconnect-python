@@ -74,12 +74,12 @@ class VictimFilterObject(FilterObject):
         request_uri += str(identifier)
         request_uri += '/victims'
 
-        description = 'Get victim associations for %s resource (%s).' % (
+        description = 'Get victim associations for {0} resource ({1}).'.format(
             base_resource_type.name.lower(), str(identifier))
 
         filter_type = 'victim association'
         ro = RequestObject(
-            filter_type, '%s|%s' % (base_resource_type.name.lower(), identifier))
+            filter_type, '{0}|{1}'.format(base_resource_type.name.lower(), identifier))
         ro.set_description(description)
         ro.set_owner_allowed(False)
         ro.set_resource_pagination(True)

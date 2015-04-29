@@ -45,9 +45,9 @@ class PostFilterObject(object):
 
     def __str__(self):
         """ """
-        obj_str = format_header('%s (Post Filter Object)' % self._name)
+        obj_str = format_header('{0} (Post Filter Object)'.format(self._name))
         printable_items = dict(self.__dict__)
-        for key, val in sorted(printable_items.items()):
+        for key, val in sorted(printable_items.viewitems()):
             obj_str += format_item(key, val)
 
         return obj_str

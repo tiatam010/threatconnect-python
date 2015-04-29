@@ -25,5 +25,5 @@ class FileOccurrenceProperties(FileOccurrencesProperties):
         self._resource_key = 'fileOccurrence'
         self._resource_pagination = False
         self._resource_type = ResourceType.FILE_OCCURRENCE
-        self._resource_uri_attribute += '/%s'
+        self._resource_uri_attribute += '/{0}'
 

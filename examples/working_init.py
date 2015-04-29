@@ -8,7 +8,7 @@ from threatconnect.Config.IndicatorType import IndicatorType
 
 # configuration file
 # config_file = "../tc.conf"
-# config_file = "../tc_test.conf"
+# config_file = "../tc_tcdev-test.conf"
 config_file = "../tc-sumx-us.conf"
 
 # read configuration file

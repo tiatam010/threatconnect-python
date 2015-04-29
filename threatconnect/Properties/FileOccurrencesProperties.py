@@ -58,7 +58,7 @@ class FileOccurrencesProperties(Properties):
     @property
     def delete_path(self):
         """ """
-        return ResourceUri.INDICATORS.value + '/files/%s/' + self._resource_uri_attribute
+        return ResourceUri.INDICATORS.value + '/files/{0}/' + self._resource_uri_attribute
 
     @property
     def filters(self):
@@ -73,17 +73,17 @@ class FileOccurrencesProperties(Properties):
     @property
     def hash_path(self):
         """ """
-        return ResourceUri.INDICATORS.value + '/files/%s/' + self._resource_uri_attribute
+        return ResourceUri.INDICATORS.value + '/files/{0}/' + self._resource_uri_attribute
 
     @property
     def post_path(self):
         """ """
-        return ResourceUri.INDICATORS.value + '/files/%s/' + self._resource_uri_attribute
+        return ResourceUri.INDICATORS.value + '/files/{0}/' + self._resource_uri_attribute
 
     @property
     def put_path(self):
         """ """
-        return ResourceUri.INDICATORS.value + '/files/%s/' + self._resource_uri_attribute
+        return ResourceUri.INDICATORS.value + '/files/{0}/' + self._resource_uri_attribute
 
     @property
     def resource_object(self):

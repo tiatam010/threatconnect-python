@@ -52,4 +52,4 @@ class UrlProperties(IndicatorProperties):
     @property
     def indicator_path(self):
         """ """
-        return ResourceUri.INDICATORS.value + '/%s/%s'
+        return ResourceUri.INDICATORS.value + '/{0}/{1}'

@@ -7,17 +7,17 @@ api_version = 'v2'
 
 class ResourceUri(Enum):
     """ """
-    ADVERSARIES = '/%s/groups/adversaries' % api_version
-    ATTRIBUTES = '/%s/groups' % api_version
-    DOCUMENTS = '/%s/groups/documents' % api_version
-    EMAILS = '/%s/groups/emails' % api_version
-    FILE_OCCURRENCES = '/%s/indicators/files' % api_version
-    GROUPS = '/%s/groups' % api_version
-    INCIDENTS = '/%s/groups/incidents' % api_version
-    INDICATORS = '/%s/indicators' % api_version
-    OWNERS = '/%s/owners' % api_version
-    SECURITY_LABELS = '/%s/securityLabels' % api_version
-    SIGNATURES = '/%s/groups/signatures' % api_version
-    TAGS = '/%s/tags' % api_version
-    THREATS = '/%s/groups/threats' % api_version
-    VICTIMS = '/%s/victims' % api_version
+    ADVERSARIES = '/{0}/groups/adversaries'.format(api_version)
+    ATTRIBUTES = '/{0}/groups'.format(api_version)
+    DOCUMENTS = '/{0}/groups/documents'.format(api_version)
+    EMAILS = '/{0}/groups/emails'.format(api_version)
+    FILE_OCCURRENCES = '/{0}/indicators/files'.format(api_version)
+    GROUPS = '/{0}/groups'.format(api_version)
+    INCIDENTS = '/{0}/groups/incidents'.format(api_version)
+    INDICATORS = '/{0}/indicators'.format(api_version)
+    OWNERS = '/{0}/owners'.format(api_version)
+    SECURITY_LABELS = '/{0}/securityLabels'.format(api_version)
+    SIGNATURES = '/{0}/groups/signatures'.format(api_version)
+    TAGS = '/{0}/tags'.format(api_version)
+    THREATS = '/{0}/groups/threats'.format(api_version)
+    VICTIMS = '/{0}/victims'.format(api_version)

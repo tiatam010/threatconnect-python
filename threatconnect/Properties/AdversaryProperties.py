@@ -44,4 +44,4 @@ class AdversaryProperties(GroupProperties):
     @property
     def id_path(self):
         """ """
-        return ResourceUri.ADVERSARIES.value + '/%s'
+        return ResourceUri.ADVERSARIES.value + '/{0}'

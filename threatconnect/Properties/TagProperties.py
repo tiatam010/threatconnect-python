@@ -33,4 +33,4 @@ class TagProperties(TagsProperties):
     @property
     def name_path(self):
         """ """
-        return ResourceUri.TAGS.value + '/%s'
+        return ResourceUri.TAGS.value + '/{0}'

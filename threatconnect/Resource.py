@@ -100,7 +100,7 @@ class Resource(object):
         # build request object
         request_object = RequestObject(self._resource_type.name, resource_id)
         request_object.set_description(
-            'Adding %s resource (%s)' % (self._resource_type.name.lower(), resource_name))
+            'Adding {0} resource ({1})'.format(self._resource_type.name.lower(), resource_name))
         request_object.set_http_method(properties.http_method)
         request_object.set_request_uri(properties.post_path)
         request_object.set_owner_allowed(True)
@@ -237,7 +237,7 @@ class Resource(object):
 
     def get_attributes(self, resource_obj):
         """ """
-        resource_obj.clear_tag_objects()
+        resource_obj.clear_attribute_objects()
 
         resource_type = resource_obj.request_object.resource_type
 
@@ -263,14 +263,14 @@ class Resource(object):
 
             request_object = RequestObject(resource_type.name, resource_obj.get_indicator())
             request_object.set_http_method(properties.http_method)
-            request_object.set_request_uri(properties.attribute_path % resource_obj.get_indicator())
+            request_object.set_request_uri(properties.attribute_path.format(resource_obj.get_indicator()))
             request_object.set_owner_allowed(True)
             request_object.set_resource_pagination(True)
             request_object.set_resource_type(ResourceType.ATTRIBUTES)
         elif isinstance(properties, GroupProperties):
             request_object = RequestObject(resource_type.name, resource_obj.get_id())
             request_object.set_http_method(properties.http_method)
-            request_object.set_request_uri(properties.attribute_path % resource_obj.get_id())
+            request_object.set_request_uri(properties.attribute_path.format(resource_obj.get_id()))
             request_object.set_owner_allowed(False)
             request_object.set_resource_pagination(True)
             request_object.set_resource_type(ResourceType.ATTRIBUTES)
@@ -422,7 +422,10 @@ class Resource(object):
             # time.sleep(.01)
             temporary_id = None
             new_id = None
-            resource_type = obj.request_object.resource_type
+
+            # BCS - is there a reason to use the resource type in the request object?
+            # resource_type = obj.request_object.resource_type
+            resource_type = obj.resource_type
 
             # special case for indicators
             if 500 <= resource_type.value <= 599:
@@ -451,12 +454,12 @@ class Resource(object):
                     # request object for groups
                     request_object = RequestObject(resource_type.name, obj.get_indicator())
                     request_object.set_description(
-                        'Update %s indicator (%s).' % (
+                        'Update {0} indicator ({1}).'.format(
                             self._resource_type.name.lower(), obj.get_indicator()))
                     request_object.set_body(obj.get_json())
                     request_object.set_http_method(properties.http_method)
                     request_object.set_request_uri(
-                        properties.put_path % (
+                        properties.put_path.format(
                             properties.resource_uri_attribute, obj.get_indicator()))
                     request_object.set_owner_allowed(True)
                     request_object.set_resource_pagination(False)
@@ -466,11 +469,11 @@ class Resource(object):
                     # request object for groups
                     request_object = RequestObject(resource_type.name, obj.get_id())
                     request_object.set_description(
-                        'Update %s resource object with id (%s).' % (
+                        'Update {0} resource object with id ({1}).'.format(
                             self._resource_type.name.lower(), obj.get_id()))
                     request_object.set_body(obj.get_json())
                     request_object.set_http_method(properties.http_method)
-                    request_object.set_request_uri(properties.put_path % obj.get_id())
+                    request_object.set_request_uri(properties.put_path.format(obj.get_id()))
                     request_object.set_owner_allowed(False)
                     request_object.set_resource_pagination(False)
                     request_object.set_resource_type(resource_type)
@@ -488,21 +491,21 @@ class Resource(object):
                 if isinstance(properties, IndicatorProperties):
                     request_object = RequestObject(resource_type.name, obj.get_indicator())
                     request_object.set_description(
-                        'Deleting %s indicator resource (%s).' % (
+                        'Deleting {0} indicator resource ({1}).'.format(
                             resource_type.name.lower(), obj.get_indicator()))
                     request_object.set_http_method(properties.http_method)
                     request_object.set_request_uri(
-                        properties.delete_path % obj.get_indicator())
+                        properties.delete_path.format(obj.get_indicator()))
                     request_object.set_owner_allowed(False)
                     request_object.set_resource_pagination(False)
                     request_object.set_resource_type(resource_type)
                 elif isinstance(properties, GroupProperties):
                     request_object = RequestObject(resource_type.name, obj.get_id())
                     request_object.set_description(
-                        'Deleting %s resource object with id (%s).' % (
+                        'Deleting {0} resource object with id ({1}).'.format(
                             resource_type.name.lower(), obj.get_id()))
                     request_object.set_http_method(properties.http_method)
-                    request_object.set_request_uri(properties.delete_path % obj.get_id())
+                    request_object.set_request_uri(properties.delete_path.format(obj.get_id()))
                     request_object.set_owner_allowed(False)
                     request_object.set_resource_pagination(False)
                     request_object.set_resource_type(resource_type)
@@ -521,14 +524,10 @@ class Resource(object):
                 if request_object.http_method in ['DELETE', 'POST', 'PUT']:
                     # instantiate attribute resource object
                     attributes = self._tc.attributes()
-                    data_set = self._tc.api_build_request(attributes, request_object, owners)
-
-                    if request_object.http_method != 'DELETE':
-                        # add returned attribute to resource object
-                        for attribute_object in data_set:
-                            obj.add_attribute_object(attribute_object)
+                    self._tc.api_build_request(attributes, request_object, owners)
 
                     del attributes
+                    self.get_attributes(obj)
 
             #
             # process tag requests
@@ -545,6 +544,7 @@ class Resource(object):
                     self._tc.api_build_request(tags, request_object, owners)
 
                     del tags
+                    self.get_tags(obj)
 
             #
             # process associations requests
@@ -562,6 +562,8 @@ class Resource(object):
                     self._tc.api_build_request(associations, request_object, owners)
 
                     del associations
+                    self.get_group_associations(obj)
+                    self.get_indicator_associations(obj)
 
             #
             # process upload
@@ -597,6 +599,9 @@ class Resource(object):
                 obj.set_document(document_content)
 
                 del documents
+
+        # clear filters
+        del self._filter_objects[:]
 
     def delete(self, resource_id):
         """ """
@@ -648,14 +653,14 @@ class Resource(object):
         if isinstance(properties, IndicatorProperties):
             request_object = RequestObject(resource_type.name, resource_obj.get_indicator())
             request_object.set_http_method(properties.http_method)
-            request_object.set_request_uri(properties.tag_path % resource_obj.get_indicator())
+            request_object.set_request_uri(properties.tag_path.format(resource_obj.get_indicator()))
             request_object.set_owner_allowed(True)
             request_object.set_resource_pagination(True)
             request_object.set_resource_type(ResourceType.TAGS)
         elif isinstance(properties, GroupProperties):
             request_object = RequestObject(resource_type.name, resource_obj.get_id())
             request_object.set_http_method(properties.http_method)
-            request_object.set_request_uri(properties.tag_path % resource_obj.get_id())
+            request_object.set_request_uri(properties.tag_path.format(resource_obj.get_id()))
             request_object.set_owner_allowed(False)
             request_object.set_resource_pagination(True)
             request_object.set_resource_type(ResourceType.TAGS)
@@ -680,14 +685,14 @@ class Resource(object):
             if data in self._attribute_idx:
                 for data_obj in self._attribute_idx[data]:
                     data_obj.add_matched_filter(
-                        'attribute|%s (%s)' % (data, operator.name.lower()))
+                        'attribute|{0} ({1})'.format(data, operator.name.lower()))
                     yield data_obj
         else:
-            for key, data_obj_list in self._attribute_idx.items():
+            for key, data_obj_list in self._attribute_idx.viewitems():
                 if operator.value(key, data):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
-                            'attribute|%s (%s)' % (data, operator.name.lower()))
+                            'attribute|{0} ({1})'.format(data, operator.name.lower()))
                         yield data_obj
 
     def filter_confidence(self, data, operator):
@@ -696,14 +701,14 @@ class Resource(object):
             if data in self._confidence_idx:
                 for data_obj in self._confidence_idx[data]:
                     data_obj.add_matched_filter(
-                        'confidence|%s (%s)' % (data, operator.name.lower()))
+                        'confidence|{0} ({1})'.format(data, operator.name.lower()))
                     yield data_obj
         else:
-            for key, data_obj_list in self._confidence_idx.items():
+            for key, data_obj_list in self._confidence_idx.viewitems():
                 if operator.value(int(key), data):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
-                            'confidence|%s (%s)' % (data, operator.name.lower()))
+                            'confidence|{0} ({1})'.format(data, operator.name.lower()))
                         yield data_obj
 
     def filter_date_added(self, data, operator):
@@ -712,14 +717,14 @@ class Resource(object):
             if data in self._date_added_idx:
                 for data_obj in self._date_added_idx[data]:
                     data_obj.add_matched_filter(
-                        'date_added|%s (%s)' % (data, operator.name.lower()))
+                        'date_added|{0} ({1})'.format(data, operator.name.lower()))
                     yield data_obj
         else:
-            for key, data_obj_list in self._date_added_idx.items():
+            for key, data_obj_list in self._date_added_idx.viewitems():
                 if operator.value(key, data):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
-                            'date_added|%s (%s)' % (data, operator.name.lower()))
+                            'date_added|{0} ({1})'.format(data, operator.name.lower()))
                         yield data_obj
 
     def filter_file_type(self, data, operator):
@@ -728,14 +733,14 @@ class Resource(object):
             if data in self._file_type_idx:
                 for data_obj in self._file_type_idx[data]:
                     data_obj.add_matched_filter(
-                        'file_type|%s (%s)' % (data, operator.name.lower()))
+                        'file_type|{0} ({1})'.format(data, operator.name.lower()))
                     yield data_obj
         else:
-            for key, data_obj_list in self._file_type_idx.items():
+            for key, data_obj_list in self._file_type_idx.viewitems():
                 if operator.value(key, data):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
-                            'file_type|%s (%s)' % (data, operator.name.lower()))
+                            'file_type|{0} ({1})'.format(data, operator.name.lower()))
                         yield data_obj
 
     def filter_last_modified(self, data, operator):
@@ -744,14 +749,14 @@ class Resource(object):
             if data in self._last_modified_idx:
                 for data_obj in self._last_modified_idx[data]:
                     data_obj.add_matched_filter(
-                        'last_modified|%s (%s)' % (data, operator.name.lower()))
+                        'last_modified|{0} ({1})'.format(data, operator.name.lower()))
                     yield data_obj
         else:
-            for key, data_obj_list in self._last_modified_idx.items():
+            for key, data_obj_list in self._last_modified_idx.viewitems():
                 if operator.value(key, data):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
-                            'last_modified|%s (%s)' % (data, operator.name.lower()))
+                            'last_modified|{0} ({1})'.format(data, operator.name.lower()))
                         yield data_obj
 
     def filter_name(self, data, operator):
@@ -760,15 +765,15 @@ class Resource(object):
             if data in self._name_idx:
                 for data_obj in self._name_idx[data]:
                     data_obj.add_matched_filter(
-                        'name|%s (%s)' % (data, operator.name.lower()))
+                        'name|{0} ({1})'.format(data, operator.name.lower()))
                     yield data_obj
         """ NO OTHER STRING COMPARISON SUPPORTED AT THIS TIME """
         # else:
-        #     for key, data_obj_list in self._rating_idx.items():
+        #     for key, data_obj_list in self._rating_idx.viewitems():
         #         if operator.value(float(key), float(data)):
         #             for data_obj in data_obj_list:
         #                 data_obj.add_matched_filter(
-        #                     'rating|%s (%s)' % (data, operator.name.lower()))
+        #                     'rating|{0} ({1})'.format(data, operator.name.lower()))
         #                 yield data_obj
 
     def filter_rating(self, data, operator):
@@ -777,14 +782,14 @@ class Resource(object):
             if data in self._rating_idx:
                 for data_obj in self._rating_idx[data]:
                     data_obj.add_matched_filter(
-                        'rating|%s (%s)' % (data, operator.name.lower()))
+                        'rating|{0} ({1})'.format(data, operator.name.lower()))
                     yield data_obj
         else:
-            for key, data_obj_list in self._rating_idx.items():
+            for key, data_obj_list in self._rating_idx.viewitems():
                 if operator.value(float(key), float(data)):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
-                            'rating|%s (%s)' % (data, operator.name.lower()))
+                            'rating|{0} ({1})'.format(data, operator.name.lower()))
                         yield data_obj
 
     def filter_threat_assess_confidence(self, data, operator):
@@ -793,14 +798,14 @@ class Resource(object):
             if data in self._threat_assess_confidence_idx:
                 for data_obj in self._threat_assess_confidence_idx[data]:
                     data_obj.add_matched_filter(
-                        'threat assess confidence|%s (%s)' % (data, operator.name.lower()))
+                        'threat assess confidence|{0} ({1})'.format(data, operator.name.lower()))
                     yield data_obj
         else:
-            for key, data_obj_list in self._threat_assess_confidence_idx.items():
+            for key, data_obj_list in self._threat_assess_confidence_idx.viewitems():
                 if operator.value(float(key), float(data)):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
-                            'threat assess confidence|%s (%s)' % (data, operator.name.lower()))
+                            'threat assess confidence|{0} ({1})'.format(data, operator.name.lower()))
                         yield data_obj
 
     def filter_threat_assess_rating(self, data, operator):
@@ -809,14 +814,14 @@ class Resource(object):
             if data in self._threat_assess_rating_idx:
                 for data_obj in self._threat_assess_rating_idx[data]:
                     data_obj.add_matched_filter(
-                        'threat assess rating|%s (%s)' % (data, operator.name.lower()))
+                        'threat assess rating|{0} ({1})'.format(data, operator.name.lower()))
                     yield data_obj
         else:
-            for key, data_obj_list in self._threat_assess_rating_idx.items():
+            for key, data_obj_list in self._threat_assess_rating_idx.viewitems():
                 if operator.value(float(key), float(data)):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
-                            'threat assess rating|%s (%s)' % (data, operator.name.lower()))
+                            'threat assess rating|{0} ({1})'.format(data, operator.name.lower()))
                         yield data_obj
 
     def filter_tag(self, data, operator):
@@ -825,14 +830,14 @@ class Resource(object):
             if data in self._tag_idx:
                 for data_obj in self._tag_idx[data]:
                     data_obj.add_matched_filter(
-                        'tag|%s (%s)' % (data, operator.name.lower()))
+                        'tag|{0} ({1})'.format(data, operator.name.lower()))
                     yield data_obj
         else:
-            for key, data_obj_list in self._tag_idx.items():
+            for key, data_obj_list in self._tag_idx.viewitems():
                 if operator.value(key, data):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
-                            'tag|%s (%s)' % (data, operator.name.lower()))
+                            'tag|{0} ({1})'.format(data, operator.name.lower()))
                         yield data_obj
 
     def filter_type(self, data, operator):
@@ -841,14 +846,14 @@ class Resource(object):
             if data in self._type_idx:
                 for data_obj in self._type_idx[data]:
                     data_obj.add_matched_filter(
-                        'type|%s (%s)' % (data, operator.name.lower()))
+                        'type|{0} ({1})'.format(data, operator.name.lower()))
                     yield data_obj
         else:
-            for key, data_obj_list in self._type_idx.items():
+            for key, data_obj_list in self._type_idx.viewitems():
                 if operator.value(key, data):
                     for data_obj in data_obj_list:
                         data_obj.add_matched_filter(
-                            'type|%s (%s)' % (data, operator.name.lower()))
+                            'type|{0} ({1})'.format(data, operator.name.lower()))
                         yield data_obj
 
     def get_http_method(self):
@@ -884,7 +889,7 @@ class Resource(object):
         if data in self._master_res_id_idx:
             return self._master_res_id_idx[data]
         else:
-            print('(%s) was not found in index.' % data)
+            print('({0}) was not found in index.'.format(data))
             return None
             # sys.exit(1)
 
@@ -893,7 +898,7 @@ class Resource(object):
         if data in self._master_res_id_idx:
             return self._master_res_id_idx[data]
         else:
-            print('(%s) was not found in index.' % data)
+            print('({0}) was not found in index.'.format(data))
             sys.exit(1)
 
     def get_request_uri(self):
@@ -940,6 +945,9 @@ class Resource(object):
         # retrieve resources for good filters
         if not self._error_messages:
             self._tc.get_filtered_resource(self, good_filters)
+
+        # clear filters
+        del self._filter_objects[:]
 
     def set_current_filter(self, data):
         """ """
@@ -1008,7 +1016,7 @@ class Resource(object):
         """ """
         obj_str = format_header('Resource Object')
         printable_items = dict(self.__dict__)
-        for key, val in sorted(printable_items.items()):
+        for key, val in sorted(printable_items.viewitems()):
             obj_str += format_item(key, val)
 
         return obj_str

@@ -12,7 +12,7 @@ class RequestObject(object):
         self._download = False
         self._http_method = 'GET'
         self._modified_since = None
-        self._name = '%s|%s' % (filter_type, filter_value)
+        self._name = '{0}|{1}'.format(filter_type, filter_value)
         self._owner_allowed = None
         self._owners = []
         self._request_uri = None
@@ -57,7 +57,7 @@ class RequestObject(object):
         if values is None:
             self._request_uri = uri_template
         else:
-            self._request_uri = uri_template % tuple(values)
+            self._request_uri = uri_template.format(*values)
 
     def set_resource_object_id(self, data):
         """ """
@@ -138,9 +138,9 @@ class RequestObject(object):
 
     def __str__(self):
         """ """
-        obj_str = format_header('%s Request Object' % self._name)
+        obj_str = format_header('{0} Request Object'.format(self._name))
         printable_items = dict(self.__dict__)
-        for key, val in sorted(printable_items.items()):
+        for key, val in sorted(printable_items.viewitems()):
             obj_str += format_item(key, val)
 
         return obj_str

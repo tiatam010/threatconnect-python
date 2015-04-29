@@ -29,7 +29,7 @@ class SecurityLabelProperties(SecurityLabelsProperties):
         self._resource_key = 'securityLabel'
         self._resource_pagination = False
         self._resource_type = ResourceType.SECURITY_LABEL
-        self._resource_uri_attribute += '/%s'
+        self._resource_uri_attribute += '/{0}'
 
     @property
     def name_owner_allowed(self):
@@ -37,4 +37,4 @@ class SecurityLabelProperties(SecurityLabelsProperties):
 
     @property
     def name_path(self):
-        return ResourceUri.SECURITY_LABELS.value + '/%s'
+        return ResourceUri.SECURITY_LABELS.value + '/{0}'

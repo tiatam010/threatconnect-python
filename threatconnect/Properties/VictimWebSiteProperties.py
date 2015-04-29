@@ -26,4 +26,4 @@ class VictimWebSiteProperties(VictimWebSitesProperties):
         self._resource_key = 'victimWebSite'
         self._resource_pagination = False
         self._resource_type = ResourceType.VICTIM_WEBSITE
-        self._resource_uri_attribute += '/%s'
+        self._resource_uri_attribute += '/{0}'

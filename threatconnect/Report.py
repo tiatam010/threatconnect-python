@@ -59,7 +59,7 @@ class Report(object):
         """ """
         if 'Failure' in self._status_idx:
             for failed_entry in self._status_idx['Failure']:
-                yield '%s' % failed_entry
+                yield '{0!s}'.format(failed_entry)
 
     @property
     def request_time(self):
@@ -89,8 +89,8 @@ class Report(object):
         report += format_item('Unfiltered Results', self.results_unfiltered)
         report += format_item('Filtered Results', self.results_filtered)
         # status codes
-        for k, v in self._status_code_idx.items():
-            report += format_item('Status Code %s' % k, len(v))
+        for k, v in self._status_code_idx.viewitems():
+            report += format_item('Status Code {0}'.format(k), len(v))
         if self.request_time is not None:
             report += format_item('Request Time', self.request_time)
             report += format_item('Processing Time', (self.runtime - self.request_time))
@@ -106,8 +106,8 @@ class Report(object):
             'Unfiltered Results': self.results_unfiltered,
             'Filtered Results': self.results_filtered}
         # status codes
-        for k, v in self._status_code_idx.items():
-            report['Status Code %s' % k] = len(v)
+        for k, v in self._status_code_idx.viewitems():
+            report['Status Code {0}'.format(k)] = len(v)
         if self.request_time is not None:
             report['Request Time'] = self.request_time
             report['Processing Time'] = (self.runtime - self.request_time)
@@ -125,7 +125,7 @@ class Report(object):
         """ """
         report = format_header('ThreatConnect API Report', '_', '_')
         # for entry in self._report_objects:
-        #     report += '%s' % entry
+        #     report += '{0!s}'.format(entry)
         # report += format_header('Stats', '-', '-')
         report += format_item('API calls', self.api_calls)
         report += format_item('Unfiltered Results', self.results_unfiltered)
@@ -141,6 +141,6 @@ class Report(object):
         # if 'Failure' in self._status_idx:
         #     report += format_header('Failed Request', '!', '!')
         #     for failed_entry in self._status_idx['Failure']:
-        #         report += '%s' % failed_entry
+        #         report += '{0!s}'.format(failed_entry)
 
         return report.encode('utf-8')

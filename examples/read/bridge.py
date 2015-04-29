@@ -18,7 +18,7 @@ logging.basicConfig(
 
 
 # read source configuration file
-src_config_file = "../tc_test.conf"
+src_config_file = "../tc_tcdev-test.conf"
 src_config = ConfigParser.RawConfigParser()
 src_config.read(src_config_file)
 
@@ -54,7 +54,7 @@ dst_tc = ThreatConnect(dst_api_access_id, dst_api_secret_key, dst_api_default_or
 
 def progress_bar(char, count):
     count += 1
-    sys.stdout.write('%s' % char)
+    sys.stdout.write('{0}'.format(char))
     if not count % 100:
         print('')
     return count
@@ -103,7 +103,7 @@ def main():
             line_wrap = progress_bar('i', line_wrap)
 
             # log indicator
-            logging.info('%s: %s' % (obj.resource_type.name.lower(), obj.get_indicator()))
+            logging.info('%s: %s', obj.resource_type.name.lower(), obj.get_indicator())
 
             #
             # add resource if required
@@ -112,7 +112,7 @@ def main():
 
             if indicator is None:
                 # logs
-                logging.critical('Invalid Indicator: %s' % obj)
+                logging.critical('Invalid Indicator: %s', obj)
                 continue
 
             # TEMPORARILY ignore 0 until bug if fixed

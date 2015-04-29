@@ -108,7 +108,7 @@ class AttributeDef(object):
     def __str__(self):
         """ """
         obj_str = ''
-        for k, v in self.__dict__.items():
+        for k, v in self.__dict__.viewitems():
             obj_str += format_item(k, v)
 
         return obj_str

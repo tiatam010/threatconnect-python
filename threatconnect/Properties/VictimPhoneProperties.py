@@ -26,4 +26,4 @@ class VictimPhoneProperties(VictimPhonesProperties):
         self._resource_key = 'victimPhone'
         self._resource_pagination = False
         self._resource_type = ResourceType.VICTIM_PHONE
-        self._resource_uri_attribute += '/%s'
+        self._resource_uri_attribute += '/{0}'

@@ -10,9 +10,9 @@ from threatconnect.Config.FilterOperator import FilterOperator
 """ Toggle the Boolean to enable specific examples """
 enable_example1 = False
 enable_example2 = False
-enable_example3 = True
+enable_example3 = False
 enable_example4 = False
-enable_example5 = False
+enable_example5 = True
 
 
 def show_data(result_obj):
@@ -22,16 +22,17 @@ def show_data(result_obj):
     pd('Status Code', result_obj.get_status_code())
     pd('URIs', result_obj.get_uris())
 
-    # if result_obj.get_status().name == "SUCCESS":
-    #     for obj in result_obj:
-    #         print(obj)
+    if result_obj.get_status().name == "SUCCESS":
+        for obj in result_obj:
+            print(obj)
 
     pd('Stats', header=True)
     pd('Result Count (Total)', result_obj.get_result_count())
     pd('Result Count (Filtered)', len(result_obj))
 
-    print(tc.report)
-    pd('request time', tc.report.request_time)
+    print(tc.report.stats)
+    for fail in tc.report.failures:
+        print(fail)
 
 
 def main():
@@ -42,7 +43,8 @@ def main():
     # all owners
     # owners = owners_obj.get_owner_names()
     # owners = ['Test & Org']
-    owners = ['Common Community']
+    # owners = ['Common Community']
+    owners = ['braceysummers.com']
 
     if enable_example1:
         """ get indicators for owner org """
@@ -103,13 +105,13 @@ def main():
         # get filter
         # filter1 = indicators.add_filter()
         # filter1 = indicators.add_filter(IndicatorType.ADDRESSES)
-        # filter1 = indicators.add_filter(IndicatorType.EMAIL_ADDRESSES)
+        filter1 = indicators.add_filter(IndicatorType.EMAIL_ADDRESSES)
         # filter1 = indicators.add_filter(IndicatorType.FILES)
-        filter1 = indicators.add_filter(IndicatorType.HOSTS)
+        # filter1 = indicators.add_filter(IndicatorType.HOSTS)
         # filter1.add_tag('China')
         # filter1 = indicators.add_filter(IndicatorType.URLS)
         filter1.add_owner(owners)
-        # filter1.add_adversary_id(64571)
+        filter1.add_adversary_id(3)
         # filter1.add_email_id(45621)
         filter1.add_incident_id(708917)
         # filter1.add_incident_id(708996)

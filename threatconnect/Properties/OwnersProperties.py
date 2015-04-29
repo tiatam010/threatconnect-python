@@ -61,7 +61,7 @@ class OwnersProperties(Properties):
 
     @property
     def indicator_path(self):
-        return ResourceUri.INDICATORS.value + '/%s/%s/' + self._resource_uri_attribute
+        return ResourceUri.INDICATORS.value + '/{0}/{1}/' + self._resource_uri_attribute
 
     @property
     def resource_object(self):

@@ -30,42 +30,42 @@ class GroupProperties(Properties):
     @property
     def association_add_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/%s'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/{1}'
 
     @property
     def association_group_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/groups'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/groups'
 
     @property
     def association_indicator_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/indicators'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/indicators'
 
     @property
     def association_victim_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/victims'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/victims'
 
     @property
     def attribute_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/attributes'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/attributes'
 
     @property
     def attribute_add_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/attributes'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/attributes'
 
     @property
     def attribute_update_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/attributes/%s'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/attributes/{1}'
 
     @property
     def attribute_delete_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/attributes/%s'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/attributes/{1}'
 
     @property
     def base_path(self):
@@ -75,7 +75,7 @@ class GroupProperties(Properties):
     @property
     def delete_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}'
 
     @property
     def post_path(self):
@@ -85,7 +85,7 @@ class GroupProperties(Properties):
     @property
     def put_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}'
 
     @property
     def resource_object(self):
@@ -94,19 +94,19 @@ class GroupProperties(Properties):
     @property
     def tag_add_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/tags/%s'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/tags/{1}'
 
     @property
     def tag_mod_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/tags/%s'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/tags/{1}'
 
     @property
     def tag_delete_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/tags/%s'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/tags/{1}'
 
     @property
     def tag_path(self):
         """ """
-        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/%s/tags'
+        return ResourceUri.GROUPS.value + '/' + self.resource_uri_attribute + '/{0}/tags'

@@ -185,7 +185,7 @@ def resource_class(dynamic_attribute_objs, resource_type):
 
             description = action + ' association of ' + r_type.name.lower() + ' ('
             description += str(r_id) + ') with ' + self._resource_type.name.lower()
-            description += ' resource id (%s).'
+            description += ' resource id ({0}).'
 
             # build request object dict so that the identifier can be
             # pulled at the very end.  This is important due to using
@@ -222,7 +222,7 @@ def resource_class(dynamic_attribute_objs, resource_type):
                 identifier_method = self.get_id
 
             description = action + ' the tag (' + tag + ') on '
-            description += self._resource_type.name.lower() + ' resource (%s).'
+            description += self._resource_type.name.lower() + ' resource ({0}).'
 
             # build request object dict so that the identifier can be
             # pulled at the very end.  This is important due to using
@@ -289,14 +289,14 @@ def resource_class(dynamic_attribute_objs, resource_type):
                 identifier_method = self.get_id
 
             description = 'Adding attribute type (' + attribute_type + ') with value of ('
-            description += value + ') on ' + self._resource_type.name.lower() + ' resource (%s).'
+            description += value + ') on ' + self._resource_type.name.lower() + ' resource ({0}).'
 
             # build request object dict so that the identifier can be
             # pulled at the very end.  This is important due to using
             # temp ids when creating a resource.
             request_object_dict = {
                 'name1': 'attribute',
-                'name2': '%s|%s' % (attribute_type, value),
+                'name2': '{0}|{1}'.format(attribute_type, value),
                 'body': body_json,
                 'description': description.encode('utf-8').strip(),
                 'http_method': properties.http_method,
@@ -326,7 +326,8 @@ def resource_class(dynamic_attribute_objs, resource_type):
 
         def add_request_url(self, data):
             """ """
-            self._request_url.append(data)
+            if data not in self._request_url:
+                self._request_url.append(data)
 
         def add_required_attr(self, data):
             """ """
@@ -389,7 +390,7 @@ def resource_class(dynamic_attribute_objs, resource_type):
                 owner_allowed = False
 
             description = 'Deleting attribute id (' + str(attribute_id) + ') from '
-            description += self._resource_type.name.lower() + ' resource (%s).'
+            description += self._resource_type.name.lower() + ' resource ({0}).'
 
             # build request object dict so that the identifier can be
             # pulled at the very end.  This is important due to using
@@ -434,8 +435,8 @@ def resource_class(dynamic_attribute_objs, resource_type):
         def get_json(self):
             """ """
             json_data = {}
-            for key, val in self._writable_attrs.items():
-                key_attr = '_%s' % key
+            for key, val in self._writable_attrs.viewitems():
+                key_attr = '_{0}'.format(key)
                 if hasattr(self, key_attr):
                     # file hash
                     data_val = getattr(self, key_attr)
@@ -494,14 +495,14 @@ def resource_class(dynamic_attribute_objs, resource_type):
                 owner_allowed = False
 
             description = 'Updating attribute id (' + str(attribute_id) + ') with value of ('
-            description += value + ') on ' + self._resource_type.name.lower() + ' resource (%s).'
+            description += value + ') on ' + self._resource_type.name.lower() + ' resource ({0}).'
 
             # build request object dict so that the identifier can be
             # pulled at the very end.  This is important due to using
             # temp ids when creating a resource.
             request_object_dict = {
                 'name1': 'attribute',
-                'name2': '%s|%s' % (attribute_id, value),
+                'name2': '{0}|{1}'.format(attribute_id, value),
                 'body': body_json,
                 'description': description.encode('utf-8').strip(),
                 'http_method': properties.http_method,
@@ -545,10 +546,10 @@ def resource_class(dynamic_attribute_objs, resource_type):
             for rod in self._association_requests:
                 # build request object
                 request_object = RequestObject(rod['name1'], rod['name2_method']())
-                request_object.set_description(rod['description'] % rod['uri_attribute_1_method']())
+                request_object.set_description(rod['description'].format(rod['uri_attribute_1_method']()))
                 request_object.set_http_method(rod['http_method'])
                 request_object.set_request_uri(
-                    rod['request_uri_path'] % (
+                    rod['request_uri_path'].format(
                         rod['uri_attribute_1_method'](),
                         rod['uri_attribute_2']))
                 request_object.set_owner_allowed(rod['owner_allowed'])
@@ -568,7 +569,7 @@ def resource_class(dynamic_attribute_objs, resource_type):
             for rod in self._attribute_requests:
                 # build request object
                 request_object = RequestObject(rod['name1'], rod['name2'])
-                # request_object.set_description(rod['description'] % rod['identifier_method']())
+                # request_object.set_description(rod['description'].format(rod['identifier_method']()))
                 request_object.set_description('temp')
                 request_object.set_http_method(rod['http_method'])
                 identifier = rod['identifier_method']()
@@ -580,10 +581,10 @@ def resource_class(dynamic_attribute_objs, resource_type):
                 # uri is different depending on the http method
                 if rod['http_method'] == 'POST':
                     request_object.set_request_uri(
-                        rod['request_uri_path'] % identifier)
+                        rod['request_uri_path'].format(identifier))
                 elif rod['http_method'] in ['DELETE', 'PUT']:
                     request_object.set_request_uri(
-                        rod['request_uri_path'] % (
+                        rod['request_uri_path'].format(
                             identifier, rod['attribute_id']))
                 request_object.set_owner_allowed(rod['owner_allowed'])
                 request_object.set_resource_pagination(rod['resource_pagination'])
@@ -617,13 +618,13 @@ def resource_class(dynamic_attribute_objs, resource_type):
             for rod in self._tag_requests:
                 # build request object
                 request_object = RequestObject(rod['name1'], rod['name2'])
-                request_object.set_description(rod['description'] % rod['identifier_method']())
+                request_object.set_description(rod['description'].format(rod['identifier_method']()))
                 request_object.set_http_method(rod['http_method'])
                 identifier = rod['identifier_method']()
                 if self._resource_type in [ResourceType.URL, ResourceType.URLS]:
                     identifier = urllib.quote(identifier, safe='~')
                 request_object.set_request_uri(
-                    rod['request_uri_path'] % (identifier, rod['tag']))
+                    rod['request_uri_path'].format(identifier, rod['tag']))
                 request_object.set_owner_allowed(rod['owner_allowed'])
                 request_object.set_resource_pagination(rod['resource_pagination'])
                 request_object.set_resource_type(rod['resource_type'])
@@ -654,20 +655,20 @@ def resource_class(dynamic_attribute_objs, resource_type):
             printable_items = dict(self.__dict__)
             if hasattr(self, 'get_indicator'):
                 obj_str = format_header(
-                    '%s (%s)' % (self.get_indicator(), self.resource_type.name.lower()))
+                    '{0} ({1})'.format(self.get_indicator(), self.resource_type.name.lower()))
                 printable_items.pop('_indicator')
             elif hasattr(self, 'get_name'):
                 obj_str = format_header(
-                    '%s (%s)' % (self.get_name(), self.resource_type.name.lower()))
+                    '{0} ({1})'.format(self.get_name(), self.resource_type.name.lower()))
                 printable_items.pop('_name')
             elif hasattr(self, 'get_id'):
                 obj_str = format_header(
-                    '%s (%s)' % (self.get_id(), self.resource_type.name.lower()))
+                    '{0} ({1})'.format(self.get_id(), self.resource_type.name.lower()))
                 printable_items.pop('_id')
             else:
                 obj_str = format_header('ResourceObject')
 
-            for key, val in sorted(printable_items.items()):
+            for key, val in sorted(printable_items.viewitems()):
                 if key in self._a_names:
                     obj_str += format_item(key, val)
 

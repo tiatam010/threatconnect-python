@@ -3,7 +3,7 @@ from examples.working_init import *
 """ Working with Incidents """
 
 """ Toggle the Boolean to enable specific examples """
-enable_example1 = False
+enable_example1 = True
 enable_example2 = False
 enable_example3 = False
 enable_example4 = False

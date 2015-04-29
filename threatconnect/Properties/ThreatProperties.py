@@ -44,4 +44,4 @@ class ThreatProperties(GroupProperties):
     @property
     def id_path(self):
         """ """
-        return ResourceUri.THREATS.value + '/%s'
+        return ResourceUri.THREATS.value + '/{0}'

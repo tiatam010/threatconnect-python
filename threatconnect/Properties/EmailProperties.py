@@ -55,4 +55,4 @@ class EmailProperties(GroupProperties):
     @property
     def id_path(self):
         """ """
-        return ResourceUri.EMAILS.value + '/%s'
+        return ResourceUri.EMAILS.value + '/{0}'

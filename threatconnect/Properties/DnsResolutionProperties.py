@@ -78,4 +78,4 @@ def base_owner_allowed(self):
 @property
 def base_path(self):
     """ """
-    return ResourceUri.INDICATORS.value + '/host/%s/' + self._resource_uri_attribute
+    return ResourceUri.INDICATORS.value + '/host/{0}/' + self._resource_uri_attribute

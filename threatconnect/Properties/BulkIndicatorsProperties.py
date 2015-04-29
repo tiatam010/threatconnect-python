@@ -96,7 +96,7 @@ class BulkIndicatorsProperties(Properties):
     @property
     def base_path(self):
         """ """
-        return '/' + self._base_uri + '/indicators/' + self._resource_uri_attribute + '/%s'
+        return '/' + self._base_uri + '/indicators/' + self._resource_uri_attribute + '/{0}'
 
     @property
     def filters(self):

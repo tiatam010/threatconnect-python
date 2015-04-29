@@ -69,7 +69,7 @@ class BulkProperties(Properties):
     @property
     def download_path(self):
         """ """
-        return ResourceUri.INDICATORS.value + '/' + self._resource_uri_attribute + '/download/%s'
+        return ResourceUri.INDICATORS.value + '/' + self._resource_uri_attribute + '/download/{0}'
 
     @property
     def resource_object(self):

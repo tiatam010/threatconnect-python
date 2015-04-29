@@ -34,7 +34,7 @@ class VictimProperties(VictimsProperties):
         self._resource_key = 'victim'
         self._resource_pagination = False
         self._resource_type = ResourceType.VICTIM
-        self._resource_uri_attribute += '/%s'
+        self._resource_uri_attribute += '/{0}'
 
     @property
     def id_owner_allowed(self):
@@ -42,5 +42,5 @@ class VictimProperties(VictimsProperties):
 
     @property
     def id_path(self):
-        return ResourceUri.VICTIMS.value + '/%s'
+        return ResourceUri.VICTIMS.value + '/{0}'
 
