@@ -40,7 +40,7 @@ class EmailAddressProperties(IndicatorProperties):
     @property
     def indicator_owner_allowed(self):
         """ """
-        return False
+        return True
 
     @property
     def indicator_path(self):
