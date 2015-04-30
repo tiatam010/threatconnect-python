@@ -40,14 +40,16 @@ def resource_class(dynamic_attribute_objs, resource_type):
         '_validated',  # validation boolean for this resource
         '_writable_attrs')  # attributes that are writable for this resource
 
+    attribute_list = set()
     for dao in dynamic_attribute_objs:
-        attributes += tuple(dao.name)  # add_obj attr to tuple of attributes
-        attributes += tuple(dao.method_get)
-        attributes += tuple(dao.method_set)
-        for ea in dao.extra_attributes:
-            attributes += tuple(ea)
-        for em in dao.extra_methods:
-            attributes += tuple(em)
+        attribute_list.add(dao.name)  # add_obj attr to tuple of attributes
+        attribute_list.add(dao.method_get)
+        attribute_list.add(dao.method_set)
+        attribute_list.union(set(dao.extra_attributes))
+        attribute_list.union(set(dao.extra_methods))
+
+    attributes += tuple(attribute_list)
+    del attribute_list
 
     class ResourceObject():
         __slots__ = attributes
@@ -108,8 +110,10 @@ def resource_class(dynamic_attribute_objs, resource_type):
 
                 # add extra methods
                 for aem in a_obj.extra_methods:
-                    extra_method = getattr(threatconnect.ResourceMethods, aem)
-                    setattr(self, aem, types.MethodType(extra_method, self))
+                    if not hasattr(self, aem):
+                        extra_method = getattr(threatconnect.ResourceMethods, aem)
+                        setattr(self, aem, types.MethodType(extra_method, self))
+                        self.add_method(aem)
 
                 # add_obj get method
                 get_method = getattr(threatconnect.ResourceMethods, a_obj.method_get)

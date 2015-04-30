@@ -49,7 +49,7 @@ class IndicatorsProperties(Properties):
             ResourceMethods.date_added_attr,
             ResourceMethods.description_attr,
             ResourceMethods.id_attr,
-            ResourceMethods.indicator_attr,
+            # ResourceMethods.indicator_attr,
             ResourceMethods.last_modified_attr,
             ResourceMethods.owner_name_attr,
             ResourceMethods.matched_filters_attr,

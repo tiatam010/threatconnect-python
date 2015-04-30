@@ -417,6 +417,7 @@ class Resource(object):
 
     def commit(self, owners=None):
         """ """
+        self._tc.tcl.debug('committing')
         # iterate through each object in COPY of resource objects
         for obj in list(self._objects):
             # time.sleep(.01)
@@ -433,6 +434,7 @@ class Resource(object):
 
             # the body needs to be set right before the commit
             if obj.phase == 'add':
+                self._tc.tcl.debug('add')
                 if obj.validate():
                     temporary_id = str(obj.get_id())
                     # add resource
