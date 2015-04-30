@@ -198,7 +198,7 @@ def resource_class(dynamic_attribute_objs, resource_type):
                 'request_uri_path': properties.association_add_path,
                 'uri_attribute_1_method': identifier_method,
                 'uri_attribute_2': uri,
-                'owner_allowed': False,
+                'owner_allowed': True,
                 'resource_pagination': False,
                 # TODO: what does this need to be?
                 'resource_type': ResourceType.ATTRIBUTES}
