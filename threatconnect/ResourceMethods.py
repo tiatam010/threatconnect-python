@@ -943,6 +943,8 @@ def set_md5(self, data):
     self._indicator = data
     self._md5 = data
     self._type = ResourceType.FILES
+    if self._phase is 'new':
+        self._phase = 'update'
 
     # update the resource type
     self._resource_type = ResourceType.FILES
@@ -971,6 +973,8 @@ def set_sha1(self, data):
     self._indicator = data
     self._sha1 = data
     self._type = ResourceType.FILES
+    if self._phase is 'new':
+        self._phase = 'update'
 
     # update the resource type
     self._resource_type = ResourceType.FILES
@@ -999,6 +1003,8 @@ def set_sha256(self, data):
     self._indicator = data
     self._sha256 = data
     self._type = ResourceType.FILES
+    if self._phase is 'new':
+        self._phase = 'update'
 
     # update the resource type
     self._resource_type = ResourceType.FILES
