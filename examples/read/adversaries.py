@@ -13,44 +13,49 @@ enable_example5 = False
 def show_data(result_obj):
     """  """
     pd('Adversaries', header=True)
-    # pd('Status', result_obj.get_status())
-    # pd('Status Code', result_obj.get_status_code())
-    # pd('URIs', result_obj.get_uris())
 
     if result_obj.get_status().name == "SUCCESS":
         for obj in result_obj:
-            # tc.get_attributes(obj)
             print(obj)
+            # tc.get_attributes(obj)
+            # for attr_obj in obj.attribute_objects:
+            #     print(attr_obj)
+
             # result_obj.get_tags(obj)
             # for tag_obj in obj.tag_objects:
             #     print(tag_obj)
-    # pd('Stats', header=True)
-    # pd('Result Count (Total)', result_obj.get_result_count())
-    # pd('Result Count (Filtered)', len(result_obj))
 
+    #
+    # print any error messages
+    #
+    print("Errors:")
+    for err in result_obj.get_errors():
+        print(err)
+
+    #
+    # print report
+    #
     print(tc.report)
 
 
 def main():
     """ """
-    # get all owner names
-    # owners = tc.owners()
-    # owners.retrieve()
-    # owners.get_owner_names()
+    # set threat connect log (tcl) level
+    tc.set_tcl_filename('tc.log')
+    tc.set_tcl_level('debug')
+    tc.set_tcl_console_level('debug')
+
     # owners = ['Test & Org']
-    owners = ['braceysummers.com']
+    owners = ['sumx.us']
 
     if enable_example1:
         """ get adversaries for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # adversary object
-        adversaries = tc.adversaries()
-
-        # retrieve indicators
-        adversaries.retrieve()
+        adversaries = Adversaries(tc).retrieve()
 
         # show indicator data
         show_data(adversaries)
@@ -59,7 +64,7 @@ def main():
         """ get adversaries for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # adversary object
         adversaries = tc.adversaries()
@@ -83,7 +88,8 @@ def main():
     if enable_example3:
         """ get adversaries by id """
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
+        tc.set_api_sleep(1)
 
         # adversary object
         adversaries = tc.adversaries()
@@ -93,7 +99,7 @@ def main():
         filter1.add_owner(owners)
         # filter1.add_id(747266)
         filter1.add_tag('Jupyter')
-        # filter1.add_threat_id(747243)
+        filter1.add_threat_id(747243)
         filter1.add_pf_name('Manual Update Adversary Sample 957')
 
         # check for any error on filter creation
@@ -112,7 +118,7 @@ def main():
         """ get adversaries by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # adversary object
         adversaries = tc.adversaries()
@@ -145,7 +151,7 @@ def main():
         """ get adversaries by multiple filters """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # adversary object
         adversaries = tc.adversaries()
@@ -155,16 +161,16 @@ def main():
         filter1.add_owner(owners)
         filter1.add_tag('BCS')
 
-        filter2 = adversaries.add_filter()
-        filter2.add_filter_operator(FilterSetOperator.AND)
-        filter2.add_owner(owners)
-        filter2.add_indicator('4.3.2.1')
-
         # check for any error on filter creation
         if filter1.error:
             for error in filter1.get_errors():
                 pd(error)
             sys.exit(1)
+
+        filter2 = adversaries.add_filter()
+        filter2.add_filter_operator(FilterSetOperator.AND)
+        filter2.add_owner(owners)
+        filter2.add_indicator('4.3.2.1')
 
         # check for any error on filter creation
         if filter2.error:

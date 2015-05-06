@@ -5,6 +5,7 @@ import time
 import uuid
 
 """ custom """
+from threatconnect.ErrorCodes import ErrorCodes
 from threatconnect.Config.FilterOperator import FilterOperator
 from threatconnect.Config.PropertiesAction import PropertiesAction
 from threatconnect.Config.PropertiesEnums import ApiStatus
@@ -25,6 +26,7 @@ class Resource(object):
         # instance of the ThreatConnect object
         self._tc = tc_obj
         self.base_uri = self._tc.base_uri
+        self.tcl = self._tc.tcl
 
         # filtered resource object list
         self._objects = []
@@ -150,16 +152,18 @@ class Resource(object):
 
     def add_error_message(self, data):
         """ """
+        self.tcl.error(data)
         self._error_messages.append(data)
 
     def add_filter(self, resource_type=None):
         if resource_type is not None:
-            filter_obj = self._filter_class(self.base_uri, resource_type)
+            filter_obj = self._filter_class(self.base_uri, self.tcl, resource_type)
         else:
-            filter_obj = self._filter_class(base_uri=self.base_uri)
+            filter_obj = self._filter_class(self.base_uri, self.tcl)
 
         # append filter object
         self._filter_objects.append(filter_obj)
+
         return filter_obj
 
     def add_owners(self, data):
@@ -421,7 +425,7 @@ class Resource(object):
 
     def commit(self, owners=None):
         """ """
-        self._tc.tcl.debug('committing')
+        self.tcl.debug('committing')
         # iterate through each object in COPY of resource objects
         for obj in list(self._objects):
             # time.sleep(.01)
@@ -438,7 +442,7 @@ class Resource(object):
 
             # the body needs to be set right before the commit
             if obj.phase == 'add':
-                self._tc.tcl.debug('add')
+                self.tcl.debug('add')
                 if obj.validate():
                     temporary_id = str(obj.get_id())
                     # add resource
@@ -895,17 +899,16 @@ class Resource(object):
         if data in self._master_res_id_idx:
             return self._master_res_id_idx[data]
         else:
-            print('({0}) was not found in index.'.format(data))
-            return None
-            # sys.exit(1)
+            self.tcl.warning(ErrorCodes.e10012.value.format(data))
+            return []
 
     def get_resource_by_name(self, data):
         """ """
         if data in self._master_res_id_idx:
             return self._master_res_id_idx[data]
         else:
-            print('({0}) was not found in index.'.format(data))
-            sys.exit(1)
+            self.tcl.warning(ErrorCodes.e10013.value.format(data))
+            return []
 
     def get_request_uri(self):
         """ """
@@ -954,6 +957,9 @@ class Resource(object):
 
         # clear filters
         del self._filter_objects[:]
+
+        # if class is called directly
+        return self
 
     def set_current_filter(self, data):
         """ """

@@ -73,7 +73,7 @@ def main():
     """ get bulk indicators """
 
     # optionally set max results
-    src_tc.set_max_results("500")
+    src_tc.set_max_results(500)
 
     # indicator object
     src_indicators = src_tc.bulk_indicators()

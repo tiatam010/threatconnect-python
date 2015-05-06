@@ -28,7 +28,7 @@ def main():
     """
     if enable_example1:
         # optionally set the max results the api should return in one request
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         owners = tc.owners()
         owners.retrieve()

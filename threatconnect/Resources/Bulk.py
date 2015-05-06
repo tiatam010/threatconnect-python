@@ -36,9 +36,9 @@ class Bulk(Resource):
 
 class BulkFilterObject(FilterObject):
     """ """
-    def __init__(self, base_uri):
+    def __init__(self, base_uri, tcl):
         """ """
-        super(BulkFilterObject, self).__init__(base_uri)
+        super(BulkFilterObject, self).__init__(base_uri, tcl)
         self._owners = []
 
         # define properties for resource type

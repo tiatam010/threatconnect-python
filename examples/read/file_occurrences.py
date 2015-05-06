@@ -31,7 +31,7 @@ def main():
     if enable_example1:
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # file occurrence object
         file_occurrences = tc.file_occurrences()
@@ -56,7 +56,7 @@ def main():
     if enable_example2:
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # file occurrence object
         file_occurrences = tc.file_occurrences()

@@ -159,7 +159,10 @@ def main():
     # resources.delete(752422)
 
     # (Required) commit all changes above.  No changes are made until the commit phase.
-    resources.commit()
+    try:
+        resources.commit()
+    except RuntimeError as e:
+        print(e)
 
     # (Optional) iterate through the result sets after changes.
     for res in resources:

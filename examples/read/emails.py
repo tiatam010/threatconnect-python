@@ -39,7 +39,7 @@ def main():
         """ get emails for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # email object
         email = tc.emails()
@@ -54,7 +54,7 @@ def main():
         """ get emails for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # email object
         email = tc.emails()
@@ -79,7 +79,7 @@ def main():
         """ get emails by id """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # email object
         email = tc.emails()
@@ -105,7 +105,7 @@ def main():
         """ get emails by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # email object
         email = tc.emails()
@@ -134,7 +134,7 @@ def main():
         """ get emails by multiple filters """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # email object
         email = tc.emails()

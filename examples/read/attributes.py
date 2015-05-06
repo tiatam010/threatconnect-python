@@ -41,7 +41,7 @@ def main():
         """ get attributes for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         attributes = tc.attributes()
@@ -67,7 +67,7 @@ def main():
         """ get attributes by group_id/group_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         attributes = tc.attributes()
@@ -93,7 +93,7 @@ def main():
         """ get attributes by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         attributes = tc.attributes()
@@ -120,7 +120,7 @@ def main():
         """ get attributes by group_id/group_type and indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         attributes = tc.attributes()

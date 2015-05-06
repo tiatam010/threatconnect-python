@@ -11,8 +11,8 @@ from threatconnect.Config.FilterOperator import FilterOperator
 enable_example1 = False
 enable_example2 = False
 enable_example3 = False
-enable_example4 = False
-enable_example5 = True
+enable_example4 = True
+enable_example5 = False
 
 
 def show_data(result_obj):
@@ -37,6 +37,11 @@ def show_data(result_obj):
 
 def main():
     """ """
+    # set threat connect log (tcl) level
+    tc.set_tcl_filename('tc.log')
+    tc.set_tcl_level('debug')
+    tc.set_tcl_console_level('debug')
+
     # get all owner names
     # owners_obj = tc.owners()
     # owners_obj.retrieve()
@@ -50,7 +55,7 @@ def main():
         """ get indicators for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # indicator object
         indicators = tc.indicators()
@@ -69,7 +74,7 @@ def main():
         """ get indicators for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # indicator object
         indicators = tc.indicators()
@@ -93,7 +98,7 @@ def main():
     if enable_example3:
         """ get indicators by id """
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # indicator object
         indicators = tc.indicators()
@@ -148,34 +153,35 @@ def main():
         """ get indicators by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
-        # indicator object
-        indicators = tc.indicators()
+        for i in xrange(0, 2):
+            # indicator object
+            indicators = tc.indicators()
 
-        # get filter
-        filter1 = indicators.add_filter(IndicatorType.ADDRESSES)
-        filter1.add_owner(owners)
-        filter1.add_indicator('dotster.com20@shepherdstown.com')
-        filter1.add_tag('backdoor')
+            # get filter
+            # filter1 = indicators.add_filter()
+            filter1 = indicators.add_filter(IndicatorType.FILES)
+            filter1.add_owner(owners)
+            filter1.add_tag('BCS_FILE')
 
-        # check for any error on filter creation
-        if filter1.error:
-            for filter_error in filter1.get_errors():
-                pd(filter_error)
-            sys.exit(1)
+            # check for any error on filter creation
+            if filter1.error:
+                for filter_error in filter1.get_errors():
+                    pd(filter_error)
+                sys.exit(1)
 
-        # retrieve indicators
-        indicators.retrieve()
+            # retrieve indicators
+            indicators.retrieve()
 
-        # show indicator data
-        show_data(indicators)
+            # show indicator data
+            show_data(indicators)
 
     if enable_example5:
         """ get indicators by multiple filters """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # indicator object
         indicators = tc.indicators()

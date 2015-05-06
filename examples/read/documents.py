@@ -39,7 +39,7 @@ def main():
         """ get documents for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # documents object
         documents = tc.documents()
@@ -54,7 +54,7 @@ def main():
         """ get documents for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # documents object
         documents = tc.documents()
@@ -78,7 +78,7 @@ def main():
     if enable_example3:
         """ get documents by id """
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # documents object
         documents = tc.documents()
@@ -106,7 +106,7 @@ def main():
         """ get documents by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # documents object
         documents = tc.documents()
@@ -139,7 +139,7 @@ def main():
         """ get documents by multiple filters """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # documents object
         documents = tc.documents()

@@ -134,9 +134,9 @@ class Indicators(Resource):
 class IndicatorFilterObject(FilterObject):
     """ """
 
-    def __init__(self, base_uri, indicator_type_enum=None):
+    def __init__(self, base_uri, tcl, indicator_type_enum=None):
         """ """
-        super(IndicatorFilterObject, self).__init__(base_uri)
+        super(IndicatorFilterObject, self).__init__(base_uri, tcl)
         self._owners = []
 
         # pd('IndicatorFilterObject', header=True)

@@ -38,7 +38,7 @@ def main():
         """ get signatures for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # signatures object
         signatures = tc.signatures()
@@ -53,7 +53,7 @@ def main():
         """ get signatures for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # signatures object
         signatures = tc.signatures()
@@ -79,7 +79,7 @@ def main():
         """ get signatures by id """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # signatures object
         signatures = tc.signatures()
@@ -105,7 +105,7 @@ def main():
         """ get signatures by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # signatures object
         signatures = tc.signatures()
@@ -135,7 +135,7 @@ def main():
         """ get signatures by multiple filters """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # signatures object
         signatures = tc.signatures()

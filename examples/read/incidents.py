@@ -37,7 +37,7 @@ def main():
         """ get incidents for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # incidents object
         incidents = tc.incidents()
@@ -52,7 +52,7 @@ def main():
         """ get incidents for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # incidents object
         incidents = tc.incidents()
@@ -77,7 +77,7 @@ def main():
         """ get incidents by id """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # incidents object
         incidents = tc.incidents()
@@ -103,7 +103,7 @@ def main():
         """ get incidents by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # incidents object
         incidents = tc.incidents()
@@ -129,7 +129,7 @@ def main():
         """ get incidents by multiple filters """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # incidents object
         incidents = tc.incidents()

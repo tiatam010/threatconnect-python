@@ -70,9 +70,9 @@ class FileOccurrences(Resource):
 class FileOccurrenceFilterObject(FilterObject):
     """ """
 
-    def __init__(self, base_uri):
+    def __init__(self, base_uri, tcl):
         """ """
-        super(FileOccurrenceFilterObject, self).__init__(base_uri)
+        super(FileOccurrenceFilterObject, self).__init__(base_uri, tcl)
         self._owners = []
 
         # define properties for resource type

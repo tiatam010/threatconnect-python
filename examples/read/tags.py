@@ -37,7 +37,7 @@ def main():
         """ get tags for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # tags object
         tags = tc.tags()
@@ -52,7 +52,7 @@ def main():
         """ get tags for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         tags = tc.tags()
@@ -77,7 +77,7 @@ def main():
         """ get tags by group_id/group_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         tags = tc.tags()
@@ -103,7 +103,7 @@ def main():
         """ get tags by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         tags = tc.tags()
@@ -129,7 +129,7 @@ def main():
         """ get tags by group_id/group_type and indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         tags = tc.tags()

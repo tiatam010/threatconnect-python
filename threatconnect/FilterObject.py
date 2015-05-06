@@ -5,14 +5,15 @@ from threatconnect.Config.FilterOperator import FilterSetOperator
 from threatconnect.DataFormatter import (format_header, format_item)
 from threatconnect.ErrorCodes import ErrorCodes
 
-""" Note: PEP 8 intentionally ignored for variable/methods to match API standard. """
-
 
 class FilterObject(object):
     """ """
-    def __init__(self, base_uri):
+    def __init__(self, base_uri, tcl):
         """ """
         self.base_uri = base_uri
+
+        # threatconnect logger
+        self.tcl = tcl
 
         self._api_filter_names = []
         self._error = False
@@ -30,7 +31,7 @@ class FilterObject(object):
         """ """
         return self._error
 
-    def _add_error(self, data):
+    def add_error(self, data):
         """ """
         self._errors.append(data)
 
@@ -45,7 +46,7 @@ class FilterObject(object):
     def add_filter_operator(self, data_enum):
         """ """
         if not isinstance(data_enum, FilterSetOperator):
-            self._add_error(ErrorCodes.e1000.value.format(data_enum))
+            self.add_error(ErrorCodes.e1000.value.format(data_enum))
         else:
             self._filter_operator = data_enum
 

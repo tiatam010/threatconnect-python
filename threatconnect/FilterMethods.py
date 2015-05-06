@@ -38,7 +38,7 @@ def add_adversary_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4000.value.format(data_int))
+        self.add_error(ErrorCodes.e4000.value.format(data_int))
         self._error = True
     else:
         filter_type = 'adversary_id'
@@ -62,7 +62,7 @@ def add_email_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4010.value.format(data_int))
+        self.add_error(ErrorCodes.e4010.value.format(data_int))
         self._error = True
     else:
         filter_type = 'email_id'
@@ -83,7 +83,7 @@ def add_hash(self, data, data_int=None):
         properties = self._properties
     # validation of data input
     if not isinstance(data, str):
-        self._add_error(ErrorCodes.e4020.value.format(data))
+        self.add_error(ErrorCodes.e4020.value.format(data))
         self._error = True
     else:
         filter_type = 'hash'
@@ -112,7 +112,7 @@ def add_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4020.value.format(data_int))
+        self.add_error(ErrorCodes.e4020.value.format(data_int))
         self._error = True
     else:
         filter_type = 'id'
@@ -136,7 +136,7 @@ def add_id_signature(self, data_int, download=False):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4020.value.format(data_int))
+        self.add_error(ErrorCodes.e4020.value.format(data_int))
         self._error = True
     else:
         filter_type = 'id'
@@ -165,7 +165,7 @@ def add_incident_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4030.value.format(data_int))
+        self.add_error(ErrorCodes.e4030.value.format(data_int))
         self._error = True
     else:
         filter_type = 'incident_id'
@@ -190,13 +190,13 @@ def add_indicator(self, data, data_type_enum=None):
     error = False
     # validation indicator
     if not validate_indicator(data):
-        self._add_error(ErrorCodes.e5010.value.format(data))
+        self.add_error(ErrorCodes.e5010.value.format(data))
         self._error = True
         error = True
 
     # validation resource type
     if not isinstance(data_type_enum, ResourceType):
-        self._add_error(ErrorCodes.e5011.value.format(data_type_enum))
+        self.add_error(ErrorCodes.e5011.value.format(data_type_enum))
         self._error = True
         error = True
 
@@ -238,7 +238,7 @@ def add_name(self, data):
     properties = ResourceProperties[resource_type.name].value()
     # validation of data input
     if not isinstance(data, str):
-        self._add_error(ErrorCodes.e4080.value.format(data))
+        self.add_error(ErrorCodes.e4080.value.format(data))
         self._error = True
     else:
         filter_type = 'name'
@@ -265,7 +265,7 @@ def add_security_label(self, data):
     """ """
     properties = self._properties
     if not isinstance(data, str):
-        self._add_error(ErrorCodes.e4070.value.format(data))
+        self.add_error(ErrorCodes.e4070.value.format(data))
         self._error = True
     else:
         filter_type = 'security_label'
@@ -289,7 +289,7 @@ def add_signature_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4040.value.format(data_int))
+        self.add_error(ErrorCodes.e4040.value.format(data_int))
         self._error = True
     else:
         filter_type = 'signature_id'
@@ -305,7 +305,7 @@ def add_tag(self, data):
     """ """
     properties = self._properties
     if not isinstance(data, str):
-        self._add_error(ErrorCodes.e4080.value.format(data))
+        self.add_error(ErrorCodes.e4080.value.format(data))
         self._error = True
     else:
         filter_type = 'tag'
@@ -329,7 +329,7 @@ def add_threat_id(self, data_int, asset_id=None):
 
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4050.value.format(data_int))
+        self.add_error(ErrorCodes.e4050.value.format(data_int))
         self._error = True
     else:
         filter_type = 'threat_id'
@@ -346,7 +346,7 @@ def add_victim_id(self, data_int):
     properties = self._properties
     # validation of data input
     if not isinstance(data_int, int):
-        self._add_error(ErrorCodes.e4060.value.format(data_int))
+        self.add_error(ErrorCodes.e4060.value.format(data_int))
         self._error = True
     else:
         filter_type = 'victim_id'

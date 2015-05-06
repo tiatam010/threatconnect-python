@@ -54,7 +54,7 @@ def main():
         """ get community/source status """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # indicator object
         bulk = tc.bulk()
@@ -71,7 +71,7 @@ def main():
         """ get bulk indicators """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # indicator object
         indicators = tc.bulk_indicators()
@@ -103,7 +103,7 @@ def main():
         # type
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # indicator object
         indicators = tc.bulk_indicators()

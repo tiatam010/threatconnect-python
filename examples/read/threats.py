@@ -37,7 +37,7 @@ def main():
         """ get threats for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # threats object
         threats = tc.threats()
@@ -52,7 +52,7 @@ def main():
         """ get threats for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # threats object
         threats = tc.threats()
@@ -77,7 +77,7 @@ def main():
         """ get threats by id """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # threats object
         threats = tc.threats()
@@ -103,7 +103,7 @@ def main():
         """ get threats by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # threats object
         threats = tc.threats()
@@ -130,7 +130,7 @@ def main():
         """ get threats by multiple filters """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # threats object
         threats = tc.threats()

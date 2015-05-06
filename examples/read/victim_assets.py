@@ -40,7 +40,7 @@ def main():
         """ get victim assets for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # victim assets object
         victim_assets = tc.victim_assets()
@@ -89,7 +89,7 @@ def main():
         """ get victim assets for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # victim_assets object
         victim_assets = tc.victim_assets()
@@ -115,7 +115,7 @@ def main():
         """ get victim assets by id """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # victim_assets object
         victim_assets = tc.victim_assets()
@@ -142,7 +142,7 @@ def main():
         """ get victim assets by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # victim_assets object
         victim_assets = tc.victim_assets()
@@ -171,7 +171,7 @@ def main():
         """ get victim assets by multiple filters """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # victim_assets object
         victim_assets = tc.victim_assets()

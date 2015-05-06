@@ -40,7 +40,7 @@ def main():
         """ get groups for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         groups = tc.groups()
@@ -55,7 +55,7 @@ def main():
         """ get groups for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         groups = tc.groups()
@@ -80,7 +80,7 @@ def main():
         """ get groups by group_id/group_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         groups = tc.groups()
@@ -107,7 +107,7 @@ def main():
         """ get groups by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         groups = tc.groups()
@@ -133,7 +133,7 @@ def main():
         """ get groups by group_id/group_type and indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # group object
         groups = tc.groups()

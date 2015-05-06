@@ -24,27 +24,25 @@ def main():
     for res in resources:
 
         # (Optional) match a particular resource by ID, Name or any other supported attribute.
-        # testdev
-        # if res.get_id() == 747266:
-        if res.get_id() == 3:
+        if res.get_id() == 44875:
             #
             # update resource if required
             #
-            res.set_name('Loop Update Adversary Sample {0}'.format(randy))
+            res.set_name('Number {0}'.format(randy))
 
             #
             # working with indicator associations
             #
 
             # (Optional) get all indicator associations
-            # resources.get_indicator_associations(res)
-            resources.get_indicator_associations(res, IndicatorType.EMAIL_ADDRESSES)
+            # resources.get_indicator_associations(res, IndicatorType.EMAIL_ADDRESSES)
+            resources.get_indicator_associations(res)
             for association in res.association_objects_indicators:
                 # add delete flag to all indicator association that have a confidence under 10
                 if association.get_confidence() < 10:
                     res.disassociate(association.resource_type, association.get_indicator())
 
-            res.associate(ResourceType.EMAIL_ADDRESSES, 'bcs_bad_guy@badguysareus.com')
+            res.associate(ResourceType.EMAIL_ADDRESSES, 'notsobad@gmail.com')
 
             #
             # working with group associations
@@ -57,7 +55,7 @@ def main():
                 if re.findall('Loop', association.get_name()):
                     res.disassociate(association.resource_type, association.get_id())
 
-            res.associate(ResourceType.EMAILS, 747227)
+            res.associate(ResourceType.EMAILS, 44877)
 
             #
             # working with victim associations

@@ -35,9 +35,9 @@ class Documents(Resource):
 class DocumentFilterObject(FilterObject):
     """ """
 
-    def __init__(self, base_uri):
+    def __init__(self, base_uri, tcl):
         """ """
-        super(DocumentFilterObject, self).__init__(base_uri)
+        super(DocumentFilterObject, self).__init__(base_uri, tcl)
         self._owners = []
 
         # define properties for resource type

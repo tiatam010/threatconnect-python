@@ -52,9 +52,9 @@ class Owners(Resource):
 class OwnerFilterObject(FilterObject):
     """ """
 
-    def __init__(self, base_uri):
+    def __init__(self, base_uri, tcl):
         """ """
-        super(OwnerFilterObject, self).__init__(base_uri)
+        super(OwnerFilterObject, self).__init__(base_uri, tcl)
         self._property_class = OwnersProperties
         self._properties_class = OwnersProperties
 

@@ -37,7 +37,7 @@ def main():
         """ get victims for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # victims object
         victims = tc.victims()
@@ -52,7 +52,7 @@ def main():
         """ get victims for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # victims object
         victims = tc.victims()
@@ -77,7 +77,7 @@ def main():
         """ get victims by id """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # victims object
         victims = tc.victims()
@@ -103,7 +103,7 @@ def main():
         """ get victims by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # victims object
         victims = tc.victims()
@@ -134,7 +134,7 @@ def main():
         """ get victims by multiple filters """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # victims object
         victims = tc.victims()

@@ -38,9 +38,9 @@ class VictimAssets(Resource):
 class VictimAssetFilterObject(FilterObject):
     """ """
 
-    def __init__(self, base_uri, victim_asset_type_enum=None):
+    def __init__(self, base_uri, tcl, victim_asset_type_enum=None):
         """ """
-        super(VictimAssetFilterObject, self).__init__(base_uri)
+        super(VictimAssetFilterObject, self).__init__(base_uri, tcl)
         self._owners = []
 
         # get resource type from indicator type

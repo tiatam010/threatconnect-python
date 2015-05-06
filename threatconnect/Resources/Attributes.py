@@ -34,9 +34,9 @@ class Attributes(Resource):
 
 class AttributeFilterObject(FilterObject):
     """ """
-    def __init__(self, base_uri):
+    def __init__(self, base_uri, tcl):
         """ """
-        super(AttributeFilterObject, self).__init__(base_uri)
+        super(AttributeFilterObject, self).__init__(base_uri, tcl)
         self._owners = []
 
         # define properties for resource type

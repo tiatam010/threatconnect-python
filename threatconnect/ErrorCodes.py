@@ -2,7 +2,14 @@ from enum import Enum
 
 
 class ErrorCodes(Enum):
-    e0100 = 'Settings Error: ({0}) is an invalid value. Max result counts must be a interger.'
+    """ """
+    #
+    # NOTE: Testing to see if Enums as error codes is usable.
+    #
+
+    e0100 = 'Settings Error: ({0}) is an invalid value. Max result counts must be a integer.'
+    e0101 = 'Settings Error: ({0}) is an invalid value. Retries must be a integer.'
+    e0102 = 'Settings Error: ({0}) is an invalid value. Sleep must be a integer.'
     #
     # Resource Error Codes
     #
@@ -41,5 +48,19 @@ class ErrorCodes(Enum):
     #
     # Resource Object Error Codes
     #
+    e10000 = 'Resource Error: {0}'
     e10010 = 'Resource Error: Confidence must be >= 0 and <=100. ({0}) is not in this range.'
     e10011 = 'Resource Error: Confidence must be of integer type. ({0}) is not an integer value.'
+    e10012 = 'Resource Error: ({0}) was not found in id index.'
+    e10013 = 'Resource Error: ({0}) was not found in name index.'
+
+    #
+    # API Errors
+    #
+    e80000 = 'API Error: {0}'
+
+    #
+    # Runtime Errors
+    #
+    e90000 = 'Resource object is not properly formatted.  Missing get_id or get_name methods.'
+    e90001 = 'API returned failed status code.'

@@ -37,7 +37,7 @@ def main():
         """ get security_labels for owner org """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # security_labels object
         security_labels = tc.security_labels()
@@ -52,7 +52,7 @@ def main():
         """ get security_labels for filtered owners """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # security_labels object
         security_labels = tc.security_labels()
@@ -77,7 +77,7 @@ def main():
         """ get security_labels by id """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # security_labels object
         security_labels = tc.security_labels()
@@ -106,7 +106,7 @@ def main():
         """ get security_labels by indicator/indicator_type """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # security_labels object
         security_labels = tc.security_labels()
@@ -135,7 +135,7 @@ def main():
         """ get security_labels by multiple filters """
 
         # optionally set max results
-        tc.set_max_results("500")
+        tc.set_max_results(500)
 
         # security_labels object
         security_labels = tc.security_labels()
