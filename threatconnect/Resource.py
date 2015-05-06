@@ -169,6 +169,10 @@ class Resource(object):
         else:
             self._owners.append(data)
 
+    def get_errors(self):
+        """ """
+        return self._error_messages
+
     def get_group_associations(self, resource_obj, group_type=None):
         """
         GET /v2/groups/adversaries/747266/groups
@@ -938,7 +942,7 @@ class Resource(object):
         good_filters = []
         for filter_obj in self._filter_objects:
             if filter_obj.error:
-                self._error_messages = True
+                self._error = True
                 for filter_error in filter_obj.get_errors():
                     self.add_error_message(filter_error)
             else:
