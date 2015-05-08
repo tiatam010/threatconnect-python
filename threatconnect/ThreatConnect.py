@@ -43,9 +43,7 @@ from threatconnect.Resources.VictimAssets import VictimAssets
 
 
 def tc_logger():
-    #
-    # create temp logger
-    #
+    """create temp logger"""
     log_filename = 'tc.log'
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(funcName)s:%(lineno)d)')
@@ -385,6 +383,8 @@ class ThreatConnect:
 
     def _api_process_response(self, resource_obj, api_response, request_object):
         """ """
+        start = datetime.now()
+
         # DEBUG
         resource_object_id = request_object.resource_object_id
         obj_list = []
@@ -422,8 +422,13 @@ class ThreatConnect:
         # DEBUG
         self.tcl.debug('result_count: %s', result_count)
 
+        report_counter = 0
+        report_units = 100
+
         # update group object with result data
         for data in response_data:
+            report_counter += 1
+
             if resource_object_id is not None:
                 # if this is an existing resource pull it from Resource object
                 # so that it can be updated
@@ -516,6 +521,13 @@ class ThreatConnect:
 
             # append the object to obj_list to be returned for further filtering
             obj_list.append(stored_obj)
+
+            if report_counter % report_units:
+                # timer report
+                self.tcl.debug('Process Time ({0}): {1}'.format(report_units, datetime.now() - start))
+
+        # timer report
+        self.tcl.debug('Total Process Time: {0}'.format(datetime.now() - start))
 
         return obj_list
 
@@ -656,6 +668,7 @@ class ThreatConnect:
 
         # Report
         self.report.add_request_time(datetime.now() - start)
+        self.tcl.debug('Request Time: {0}'.format(datetime.now() - start))
         return api_response
 
     def _api_request_headers(self, http_method, api_uri):
@@ -720,6 +733,7 @@ class ThreatConnect:
 
                 pf_obj_set = set(obj_list)
                 for pf_obj in filter_obj.get_post_filters():
+                    self.tcl.debug('Post Filter: {0}'.format(pf_obj.name))
                     # current post filter method
                     filter_method = getattr(resource_obj, pf_obj.method)
 
