@@ -3,6 +3,7 @@ import base64
 import hashlib
 import hmac
 import logging
+import os
 from pprint import pformat
 import re
 import socket
@@ -44,21 +45,8 @@ from threatconnect.Resources.VictimAssets import VictimAssets
 
 def tc_logger():
     """create temp logger"""
-    log_filename = 'tc.log'
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(funcName)s:%(lineno)d)')
     tcl = logging.getLogger('threatconnect')
     tcl.setLevel(logging.CRITICAL)
-    fh = logging.FileHandler(log_filename)
-    fh.set_name('tc_log_file')
-    fh.setLevel(logging.CRITICAL)
-    fh.setFormatter(formatter)
-    tcl.addHandler(fh)
-    ch = logging.StreamHandler()
-    ch.set_name('console')
-    ch.setLevel(logging.CRITICAL)
-    ch.setFormatter(formatter)
-    tcl.addHandler(ch)
     return tcl
 
 
@@ -68,6 +56,14 @@ class ThreatConnect:
     def __init__(self, api_aid, api_sec, api_org, api_url, api_max_results=200, base_uri='v2'):
         """ """
         # logger
+        self.log_level = {
+            'debug': logging.DEBUG,
+            'info': logging.INFO,
+            'warning': logging.WARNING,
+            'error': logging.ERROR,
+            'critical': logging.CRITICAL}
+        self.formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(funcName)s:%(lineno)d)')
         self.tcl = tc_logger()
 
         # credentials
@@ -856,55 +852,58 @@ class ThreatConnect:
         else:
             print(ErrorCodes.e0100.value.format(max_results))
 
-    def set_tcl_filename(self, filename):
+    def set_tcl_file(self, fqpn, level='info'):
         """ """
-        # get console logger
-        console_logger = self.tcl.handlers[1]
+        file_path = os.path.dirname(fqpn)
+        if os.access(file_path, os.W_OK):
+            if self.tcl.level > self.log_level[level]:
+                self.tcl.setLevel(self.log_level[level])
+            fh = logging.FileHandler(fqpn)
+            fh.set_name('tc_log_file')
+            if level in self.log_level.keys():
+                fh.setLevel(self.log_level[level])
+            else:
+                fh.setLevel(self.log_level['info'])
+            fh.setFormatter(self.formatter)
+            self.tcl.addHandler(fh)
 
-        # get log level, close and delete previous file handler
-        level = self.tcl.handlers[0].level
-        self.tcl.handlers[0].stream.close()
-        # remove file logger
-        self.tcl.removeHandler(self.tcl.handlers[0])
-        # remove console logger so it can be re-added
-        self.tcl.removeHandler(self.tcl.handlers[0])
-
-        # add new handler with new filename
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(funcName)s:%(lineno)d)')
-        fh = logging.FileHandler(filename)
-        fh.setLevel(level)
-        fh.setFormatter(formatter)
-        self.tcl.addHandler(fh)
-
-        # add console logger back with same settings
-        self.tcl.addHandler(console_logger)
+        # # get console logger
+        # console_logger = self.tcl.handlers[1]
+        #
+        # # get log level, close and delete previous file handler
+        # level = self.tcl.handlers[0].level
+        # self.tcl.handlers[0].stream.close()
+        # # remove file logger
+        # self.tcl.removeHandler(self.tcl.handlers[0])
+        # # remove console logger so it can be re-added
+        # self.tcl.removeHandler(self.tcl.handlers[0])
+        #
+        # # add new handler with new filename
+        # formatter = logging.Formatter(
+        #     '%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(funcName)s:%(lineno)d)')
+        # fh = logging.FileHandler(filename)
+        # fh.setLevel(level)
+        # fh.setFormatter(formatter)
+        # self.tcl.addHandler(fh)
+        #
+        # # add console logger back with same settings
+        # self.tcl.addHandler(console_logger)
 
     def set_tcl_level(self, level):
         """ """
-
-        # logger logging levels
-        log_level = {
-            'debug': logging.DEBUG,
-            'info': logging.INFO,
-            'warning': logging.WARNING,
-            'error': logging.ERROR,
-            'critical': logging.CRITICAL}
-
-        self.tcl.setLevel(log_level[level])
-        if level in log_level.keys():
-            self.tcl.handlers[0].setLevel(log_level[level])
+        if level in self.log_level.keys():
+            if self.tcl.level > self.log_level[level]:
+                self.tcl.setLevel(self.log_level[level])
+            self.tcl.handlers[0].setLevel(self.log_level[level])
 
     def set_tcl_console_level(self, level):
+        """ """
 
-        # logger logging levels
-        log_level = {
-            'debug': logging.DEBUG,
-            'info': logging.INFO,
-            'warning': logging.WARNING,
-            'error': logging.ERROR,
-            'critical': logging.CRITICAL}
-
-        self.tcl.setLevel(log_level[level])
-        if level in log_level.keys():
-            self.tcl.handlers[1].setLevel(log_level[level])
+        if level in self.log_level.keys():
+            if self.tcl.level > self.log_level[level]:
+                self.tcl.setLevel(self.log_level[level])
+            ch = logging.StreamHandler()
+            ch.set_name('console')
+            ch.setLevel(self.log_level[level])
+            ch.setFormatter(self.formatter)
+            self.tcl.addHandler(ch)

@@ -9,8 +9,7 @@ from examples.working_init import *
 def main():
     """ """
     # set threat connect log (tcl) level
-    tc.set_tcl_filename('tc.log')
-    tc.set_tcl_level('debug')
+    tc.set_tcl_file('log/tc.log', 'debug')
     tc.set_tcl_console_level('debug')
 
     # This is a random number generator used for testing.

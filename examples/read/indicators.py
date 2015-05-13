@@ -38,8 +38,7 @@ def show_data(result_obj):
 def main():
     """ """
     # set threat connect log (tcl) level
-    tc.set_tcl_filename('tc.log')
-    tc.set_tcl_level('debug')
+    tc.set_tcl_file('log/tc.log', 'debug')
     tc.set_tcl_console_level('debug')
 
     # get all owner names
