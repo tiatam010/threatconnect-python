@@ -37,7 +37,7 @@ class SignatureProperties(GroupProperties):
 
         # update object attributes
         self._object_attributes.remove(ResourceMethods.type_attr)
-        self._object_attributes.append(ResourceMethods.download_attr)
+        # self._object_attributes.append(ResourceMethods.download_attr)
         self._object_attributes.append(ResourceMethods.file_name_attr)
         self._object_attributes.append(ResourceMethods.file_text_attr)
         self._object_attributes.append(ResourceMethods.file_type_attr)
@@ -51,3 +51,8 @@ class SignatureProperties(GroupProperties):
     def id_path(self):
         """ """
         return ResourceUri.SIGNATURES.value + '/{0}'
+
+    @property
+    def download_path(self):
+        """ """
+        return ResourceUri.SIGNATURES.value + '/{0}/download'

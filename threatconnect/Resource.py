@@ -291,6 +291,33 @@ class Resource(object):
         for obj in data_set:
             resource_obj.add_attribute_object(obj)
 
+    def get_signature(self, resource_obj):
+        """ """
+        # resource_obj.clear_signature()
+
+        resource_type = resource_obj.request_object.resource_type
+
+        # switch any multiple resource request to single result request
+        if resource_type.value % 10:
+            resource_type = ResourceType(resource_type.value - 5)
+
+        if resource_type == ResourceType.SIGNATURE:
+            properties = ResourceProperties[resource_type.name].value()
+
+            request_object = RequestObject(resource_type.name, resource_obj.get_id())
+            request_object.set_http_method(properties.http_method)
+            request_object.set_request_uri(properties.download_path.format(resource_obj.get_id()))
+            request_object.set_owner_allowed(False)
+            request_object.set_resource_pagination(False)
+            request_object.set_resource_type(ResourceType.SIGNATURE)
+
+            print("here")
+            signatures = self._tc.signatures()
+            signature = self._tc.api_build_request(signatures, request_object, resource_obj.get_owner_name())
+            print('signature: {0}'.format(signature))
+            resource_obj.set_file_text(signature)
+            del signatures
+
     def get_resource_by_identity(self, data):
         if data in self._master_object_id_idx:
             return self._master_object_id_idx[data]
@@ -594,7 +621,7 @@ class Resource(object):
                     del documents
 
             #
-            # process download
+            # process document download
             #
             if hasattr(obj, '_drd') and obj._drd is not None:
                 request_object = obj.download_request()

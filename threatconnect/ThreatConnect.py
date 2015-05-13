@@ -328,6 +328,8 @@ class ThreatConnect:
             api_response = self._api_request(
                 request_uri, request_payload={}, http_method=http_method, body=body)
             api_response.encoding = 'utf-8'
+            if 'content-type' in api_response.headers:
+                content_type = api_response.headers['content-type']
 
             # ReportData
             report_entry.set_status_code(api_response.status_code)
@@ -346,6 +348,9 @@ class ThreatConnect:
                 # Logging
                 self.tcl.critical(ErrorCodes.e80000.value.format(api_response.content))
                 raise RuntimeError(ErrorCodes.e90001.value)
+            elif content_type == "text/plain":
+                # signature download
+                return api_response.content
             else:
                 api_response_dict = api_response.json()
                 resource_obj.current_url = api_response.url

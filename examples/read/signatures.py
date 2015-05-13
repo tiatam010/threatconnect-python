@@ -1,4 +1,5 @@
 from examples.working_init import *
+from threatconnect.Config.FilterOperator import FilterOperator
 
 """ Working with Signatures """
 
@@ -19,7 +20,7 @@ def show_data(result_obj):
 
     if result_obj.get_status().name == "SUCCESS":
         for obj in result_obj:
-            obj.download()
+            result_obj.get_signature(obj)
             print(obj)
     pd('Stats', header=True)
     pd('Result Count (Total)', result_obj.get_result_count())
@@ -28,11 +29,12 @@ def show_data(result_obj):
 
 def main():
     """ """
+    # set threat connect log (tcl) level
+    tc.set_tcl_file('log/tc.log', 'debug')
+    tc.set_tcl_console_level('info')
+
     # get all owner names
-    # owners = tc.owners()
-    # owners.retrieve()
-    # owners.get_owner_names()
-    owners = ['Test & Org']
+    owners = ['sumx.us']
 
     if enable_example1:
         """ get signatures for owner org """
@@ -87,7 +89,7 @@ def main():
         # get filter
         filter1 = signatures.add_filter()
         filter1.add_owner(owners)
-        filter1.add_id(747239)
+        filter1.add_id(44895)
 
         # check for any error on filter creation
         if filter1.error:
@@ -96,7 +98,11 @@ def main():
             sys.exit(1)
 
         # retrieve indicators
-        signatures.retrieve()
+        try:
+            signatures.retrieve()
+        except RuntimeError as e:
+            print(e)
+            sys.exit(1)
 
         # show indicator data
         show_data(signatures)
