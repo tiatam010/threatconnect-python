@@ -27,6 +27,7 @@ def show_data(result_obj):
     pd('Result Count (Filtered)', len(result_obj))
 
 
+
 def main():
     """ """
     # set threat connect log (tcl) level

@@ -311,10 +311,8 @@ class Resource(object):
             request_object.set_resource_pagination(False)
             request_object.set_resource_type(ResourceType.SIGNATURE)
 
-            print("here")
             signatures = self._tc.signatures()
             signature = self._tc.api_build_request(signatures, request_object, resource_obj.get_owner_name())
-            print('signature: {0}'.format(signature))
             resource_obj.set_file_text(signature)
             del signatures
 
