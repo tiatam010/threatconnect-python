@@ -16,11 +16,15 @@ API credentials with a ThreatConnect instance is required to run this module.  P
 
 Installation
 -----
+```
 cd threatconnect-python
 python setup.py install
+```
 
 To automatically pull prerequisites.
+```
 pip setup.py install
+```
   
 Instantiation
 -----
