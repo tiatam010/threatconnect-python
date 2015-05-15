@@ -28,6 +28,12 @@ Instantiation
 ```
 from threatconnect import ThreatConnect
 
+api_access_id = '<api access id>'
+api_secret_key = '<api secret key>'
+api_default_org = '<default org>'
+api_base_url = '<api.threatconnect.com or mytc.example.com/api>'
+api_max_results = '300'
+
 tc = ThreatConnect(api_access_id, api_secret_key, api_default_org, api_base_url, api_max_results)
 
 owners = tc.owners()
