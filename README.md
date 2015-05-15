@@ -1,65 +1,44 @@
 threatconnect-python
 =========================
 
-The threatconnect-python project is a Python implementation of the ThreatConnect V2 API.  It will allow you to instantiate an object to retrieve data from ThreatConnect, as well as put data into ThreatConnect.  Please note that this is an extension of the [V1 Python Client](https://github.com/Cyber-Squared-Inc/ThreatConnectPythonClient), and uses similar syntax and naming conventions.  However, some things have been changed to reflect certain enhancements made to the V2 API.
+The threatconnect-python project is a part of the ThreatConnect SDK.  This module implement methods that can be used to pull data from the ThreatConnect V2 REST API.  This module provides method for pushing and pulling data via the API.
 
 Requirements
 ------
-The threatconnect-python project can run under Python 2.6 or later.
+The threatconnect-python project can run under Python 2.6+.
 Python 2.x requirements:
- * Requests module (http://docs.python-requests.org/en/latest/).
+ * Requests 2.7+ module (http://docs.python-requests.org/en/latest/).
  * enum34 module (https://pypi.python.org/pypi/enum34).
  
-Python 3.x requirements:
- * Requests module (http://docs.python-requests.org/en/latest/).
+Python 3.x support coming soon.
 
-Note:
-Please note that there are bug fixes in the Request module as of December 2014 that will affect proxy usage, so you will want to make sure you're using at least version 2.5.1 of Requests. 
+API credentials with a ThreatConnect instance is required to run this module.  Please see http://www.threatconnect.com/product/threatconnect_API for more information on obtaining API credentials.  
 
-It will also require a set of API credentials with a ThreatConnect instance.  
-
-Configuration
+Installation
 -----
-The ThreatConnectPythonClient contains two important files:
-  1.  ```tc.conf``` contains the configuration for your API Access ID and Secret Key, as well as your Organization and ThreatConnect instance you'd like to access.
+cd threatconnect-python
+python setup.py install
+
+To automatically pull prerequisites.
+pip setup.py install
   
 Instantiation
 -----
-To instantiate the ThreatConnectPythonClient, simply load the ```working_init``` module in the root directory (i.e. alongside ```working_init.py```.  For example:
 
 ```
-from working_init import *
+from threatconnect import ThreatConnect
 
-results = tc.get_indicators()
+tc = ThreatConnect(api_access_id, api_secret_key, api_default_org, api_base_url, api_max_results)
 
-if results.status() == "Success":
-  print "{} Indicators retrieved.".format(results.count())
+owners = tc.owners()
+owners.retrieve()
+
+if owners.get_status().name == "SUCCESS":
+    for owner in owners():
+        print(owner)
 ```
 
-Usage
------
-The usage for ThreatConnectPythonClient varies depending on what you're trying to accomplish.  You can query for indicators and groups, you can filter by rating and confidence, and you can also retrieve tags and conduct pivots programmatically.  The TCPy_V2 client also allows you to create indicators.
-
-For examples of "read" functionality, you can use the same syntax and functions that you would use from the V1 client.  These are documented in the `working_with` files, such as the following excerpt from the `working_with_indicators.py` file:
-```
-  tc.add_filter('rating', '>', '4', False)
-  tc.add_filter('confidence', '>', '25')
-
-  # get all indicators by user defined indicator type for default owner
-  tc.set_max_results("350")  # optionally override default max results
-  indicator_type = 'addresses'
-  results = tc.get_indicators(indicator_type=indicator_type)
-```
-
-For examples of "write" functionality, please see the `v2_examples.py` file.  It contains examples of the supported V2 "write" functionality, to include the following excerpt which creates a Host indicator and applies the tag "test indicator tag":
-```
-host = "testhost-%d-%d.net" % (randint(1,1000), randint(1,1000))
-results = tc.create_host(host)
-tag_name = "test indicator tag"
-results = tc.add_tag_to_indicator("hosts", host, tag_name)
-```
-
-**Note:** The example scripts contain a variety of code samples segmented into blocks by "If" statements.  This allows you to test specific segments of code with some degree fo granularity.  These If statements are all set by default to `if False` and must be toggled on individually by changing the respective line to `if True`.
+For more examples see the examples folder under the project.
 
 Contact
 -----
