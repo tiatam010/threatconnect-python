@@ -79,6 +79,7 @@ class ThreatConnect:
         # default values
         self.api_retries = 3
         self.api_sleep = 15  # seconds
+        self.proxies = {'https': None}
 
         # config items
         self.api_request_timeout = 30
@@ -617,7 +618,7 @@ class ThreatConnect:
         for i in range(1, self.api_retries + 1, 1):
             try:
                 api_response = self._session.send(
-                    request_prepped, verify=self._verify_ssl, timeout=self.api_request_timeout)
+                    request_prepped, verify=self._verify_ssl, timeout=self.api_request_timeout, proxies=self.proxies)
                 break
             except exceptions.ReadTimeout as e:
                 self.tcl.critical('Error: {0}'.format(e))
@@ -856,6 +857,11 @@ class ThreatConnect:
             self._api_max_results = max_results
         else:
             print(ErrorCodes.e0100.value.format(max_results))
+
+    def set_proxies(self, proxy_address, proxy_port):
+        """ """
+        #TODO: add validation
+        self.proxies['https'] = '%s:%s'.format(proxy_address, proxy_port)
 
     def set_tcl_file(self, fqpn, level='info'):
         """ """
