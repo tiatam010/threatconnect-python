@@ -1,7 +1,7 @@
 threatconnect-python
 =========================
 
-The threatconnect-python project is a part of the ThreatConnect SDK.  This module implement methods that can be used to pull data from the ThreatConnect V2 REST API.  This module provides method for pushing and pulling data via the API.
+The threatconnect-python project is a part of the ThreatConnect SDK.  This module implement methods that can be used to push or pull data from the ThreatConnect V2 REST API.
 
 Requirements
 ------
