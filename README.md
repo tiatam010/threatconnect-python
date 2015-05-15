@@ -50,7 +50,7 @@ if owners.get_status().name == "SUCCESS":
 
 Examples
 -----
-For more examples see the examples folder under the project.
+For more examples see the examples folder under the project (https://github.com/ThreatConnect-Inc/threatconnect-python/tree/master/examples).
 
 Contact
 -----
