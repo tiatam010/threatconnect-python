@@ -68,7 +68,6 @@ class VictimFilterObject(FilterObject):
 
         """
         base_properties = ResourceProperties[base_resource_type.name].value()
-        print(base_resource_type)
 
         request_uri = base_properties.base_path + '/'
         request_uri += str(identifier)

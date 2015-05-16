@@ -5,18 +5,32 @@ import re
 """ custom """
 from examples.working_init import *
 
+#
+# CHANGE FOR YOUR TESTING ENVIRONMENT
+# - These emails must be created before running this script
+#
+owners = ['Example Community']  # org or community
+lu_id = 17  # email id for loop update
+mu_id = 28  # email id for manual update
+# dl_id = 999999  # threat id to delete
+adversary_id = 5  # adversary resource id to associate with email
+victim_id = 1  # victim resource id to associate with email
+ip_address = '10.20.30.40'  # email address to associate to adversary
+rn = randint(1, 1000)  # random number generator for testing
+
 
 def main():
     """ """
-
-    # This is a random number generator used for testing.
-    randy = randint(1, 1000)
+    # set threat connect log (tcl) level
+    tc.set_tcl_file('log/tc.log', 'debug')
+    tc.set_tcl_console_level('critical')
 
     # (Required) Instantiate a Resource Object
     resources = tc.emails()
 
     # (Optional) Filters can be added here if required to narrow the result set.
-    # filter1 = resources.add_filter()
+    filter1 = resources.add_filter()
+    filter1.add_owner(owners)
 
     # (Optional) retrieve all results
     resources.retrieve()
@@ -25,17 +39,16 @@ def main():
     for res in resources:
 
         # (Optional) match a particular resource by ID, Name or any other supported attribute.
-        # if res.get_id() == 747227:
-        if res.get_id() == 44729:
+        if res.get_id() == lu_id:
             #
             # update resource if required
             #
-            res.set_name('Loop Update Email Sample %s' % randy)
-            res.set_body('This is an email body %s.' % randy)
-            res.set_header('This is an email header %s.' % randy)
-            res.set_subject('This is an email subject %s.' % randy)
-            res.set_from('adversary_%s@badguys.com' % randy)
-            res.set_to('victim_%s@goodguys.com' % randy)
+            res.set_name('LU Email #{0}'.format(rn))
+            res.set_body('This is an email body #{0}.'.format(rn))
+            res.set_header('This is an email header #{0}.'.format(rn))
+            res.set_subject('This is an email subject #{0}.'.format(rn))
+            res.set_from('adversary_{0}@badguys.com'.format(rn))
+            res.set_to('victim_{0}@goodguys.com'.format(rn))
 
             #
             # working with indicator associations
@@ -49,7 +62,8 @@ def main():
                 if association.get_confidence() < 10:
                     res.disassociate(association.resource_type, association.get_indicator())
 
-            res.associate(ResourceType.EMAIL_ADDRESSES, 'bcs_bad_guy@badguysareus.com')
+            # associate an indicator
+            res.associate(ResourceType.ADDRESSES, ip_address)
 
             #
             # working with group associations
@@ -62,8 +76,8 @@ def main():
                 if re.findall('Loop', association.get_name()):
                     res.disassociate(association.resource_type, association.get_id())
 
-            # res.associate(ResourceType.ADVERSARIES, 747266)
-            res.associate(ResourceType.ADVERSARIES, 3)
+            # associate a group
+            res.associate(ResourceType.ADVERSARIES, adversary_id)
 
             #
             # working with victim associations
@@ -73,10 +87,10 @@ def main():
             resources.get_victim_associations(res)
             for association in res.association_objects_victims:
                 # add delete flag to all group association that match DELETE
-                if re.findall('BCS', association.get_name()):
+                if re.findall('Loop', association.get_name()):
                     res.disassociate(association.resource_type, association.get_id())
 
-            res.associate(ResourceType.VICTIMS, 628)
+            res.associate(ResourceType.VICTIMS, victim_id)
 
             #
             # working with attributes
@@ -90,9 +104,9 @@ def main():
                     res.delete_attribute(attribute.get_id())
                 # add update flag to all attributes that have 'update' in the value.
                 if re.findall('update', attribute.get_value()):
-                    res.update_attribute(attribute.get_id(), 'updated attribute %s' % randy)
+                    res.update_attribute(attribute.get_id(), 'updated attribute #{0}'.format(rn))
             # (Optional) add attribute to resource with type and value
-            res.add_attribute('Description', 'test attribute %s' % randy)
+            res.add_attribute('Description', 'test attribute #{0}'.format(rn))
 
             #
             # working with tags
@@ -105,7 +119,7 @@ def main():
                 if re.findall('DELETE', tag.get_name()):
                     res.delete_tag(tag.get_name())
             # (Optional) add tag to resource
-            res.add_tag('DELETE_%s' % randy)
+            res.add_tag('DELETE #{0}'.format(rn))
 
         #
         # delete resource if required
@@ -120,48 +134,51 @@ def main():
     #
 
     # this requires that the resource was instantiated at the beginning of the script.
-    resource = resources.add('DELETE %s' % randy)
+    resource = resources.add('DELETE #{0}'.format(rn))
     # (Required) all required attributes must be provided.
-    resource.set_body('This is an email body %s.' % randy)
-    resource.set_from('bcs%s@badguys.com' % randy)
-    resource.set_header('This is an email header %s.' % randy)
-    resource.set_subject('This is an email subject %s.' % randy)
-    resource.set_to('victim%s@goodguys.com' % randy)
+    resource.set_body('This is an email body #{0}.'.format(rn))
+    resource.set_from('bcs{0}@badguys.com'.format(rn))
+    resource.set_header('This is an email header #{0}.'.format(rn))
+    resource.set_subject('This is an email subject #{0}.'.format(rn))
+    resource.set_to('victim{0}@goodguys.com'.format(rn))
 
     # (Optional) add attribute to newly created resource
-    resource.add_attribute('Description', 'test attribute %s' % randy)
+    resource.add_attribute('Description', 'Delete example #{0}'.format(rn))
 
     # (Optional) add tag to newly created resource
-    resource.add_tag('TAG %s' % randy)
+    resource.add_tag('TAG {0}'.format(rn))
 
     #
     # update resource if required
     #
 
     # (Optional) a resource can be updated directly by using the resource id.
-    resource = resources.update(44728)
-    resource.set_name('Manual Update Email Sample %s' % randy)
-    resource.set_body('This is an updated email body %s.' % randy)
-    resource.set_from('bcs_update%s@badguys.com' % randy)
-    resource.set_header('This is an updated email header %s.' % randy)
-    resource.set_subject('This is an updated email subject %s.' % randy)
-    resource.set_to('victim_update%s@goodguys.com' % randy)
+    resource = resources.update(mu_id)
+    resource.set_name('MU Email #{0}'.format(rn))
+    resource.set_body('This is an updated email body #{0}.'.format(rn))
+    resource.set_from('bcs_update{0}@badguys.com'.format(rn))
+    resource.set_header('This is an updated email header #{0}.'.format(rn))
+    resource.set_subject('This is an updated email subject #{0}.'.format(rn))
+    resource.set_to('victim_update{0}@goodguys.com'.format(rn))
 
     # (Optional) add attribute to newly created resource
-    resource.add_attribute('Description', 'test attribute %s' % randy)
+    resource.add_attribute('Description', 'Manual Update #{0}'.format(rn))
 
     # (Optional) add tag to newly created resource
-    resource.add_tag('TAG %s' % randy)
+    resource.add_tag('TAG #{0}'.format(rn))
 
     #
     # delete resource
     #
 
     # (Optional) a resource can be deleted directly by using the resource id.
-    # resources.delete(752422)
+    # resources.delete(dl_id)
 
     # (Required) commit all changes above.  No changes are made until the commit phase.
-    resources.commit()
+    try:
+        resources.commit(owners)
+    except RuntimeError as e:
+        print(e)
 
     # (Optional) iterate through the result sets after changes.
     for res in resources:
@@ -169,6 +186,7 @@ def main():
 
     # (Optional) display a commit report of all API actions performed
     print(tc.report.stats)
+
     for fail in tc.report.failures:
         print(fail)
 
