@@ -138,20 +138,23 @@ class ThreatConnect:
         # debug
         #
         self.tcl.debug('Action: {0}'.format(request_object.name))
-        self.tcl.debug(resource_obj.resource_type)
-        self.tcl.debug('HTTP Method'.format(http_method))
-        self.tcl.debug('Max Results'.format(self._api_max_results))
-        self.tcl.debug('Owners'.format(str(owners)))
-        self.tcl.debug('Owner Allowed'.format(owner_allowed))
-        self.tcl.debug('Request URI'.format(request_uri))
-        self.tcl.debug('Request Body'.format(body))
-        self.tcl.debug('Resource Pagination'.format(resource_pagination))
-        self.tcl.debug('Resource Type'.format(resource_type))
+        self.tcl.debug('Resource Type: {0}'.format(resource_obj.resource_type))
+        self.tcl.debug('HTTP Method: {0}'.format(http_method))
+        self.tcl.debug('Max Results: {0}'.format(self._api_max_results))
+        self.tcl.debug('Owners: {0}'.format(str(owners)))
+        self.tcl.debug('Owner Allowed: {0}'.format(owner_allowed))
+        self.tcl.debug('Request URI: {0}'.format(request_uri))
+        self.tcl.debug('Request Body: {0}'.format(body))
+        self.tcl.debug('Resource Pagination: {0}'.format(resource_pagination))
+        self.tcl.debug('Resource Type: {0}'.format(resource_type))
 
         # TODO: what would happen if this was always set to request object value?
         if resource_type.name in [
                 'INDICATORS', 'ADDRESSES', 'EMAIL_ADDRESSES', 'FILES', 'HOSTS', 'URLS']:
-            modified_since = resource_obj.get_modified_since()
+
+            # TODO: find a cleaner way
+            if not re.findall('bulk', request_uri):
+                modified_since = resource_obj.get_modified_since()
 
         # update resource object with max results
         # ???moved to report resource_obj.set_max_results(self._api_max_results)
