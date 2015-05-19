@@ -58,7 +58,8 @@ class BulkIndicators(Resource):
                 ]
             csv_data.writerow(csv_row)
 
-        yield csv_output.getvalue()
+        for row in csv_output.getvalue().split('\r\n'):
+            yield row
 
 
 class BulkIndicatorFilterObject(FilterObject):
