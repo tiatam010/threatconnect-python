@@ -1,4 +1,6 @@
 """ standard """
+import csv
+import io
 import types
 
 """ custom """
@@ -31,6 +33,32 @@ class BulkIndicators(Resource):
         self._request_object.set_request_uri(properties.base_path)
         self._request_object.set_resource_pagination(properties.resource_pagination)
         self._request_object.set_resource_type(properties.resource_type)
+
+    @property
+    def csv(self):
+        """ """
+        headers = [
+            'confidence', 'dateAdded', 'id', 'indicator', 'lastModified', 'ownerName', 'rating', 'type', 'webLink']
+        csv_output = io.BytesIO()
+
+        csv_data = csv.writer(csv_output, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
+        csv_data.writerow(headers)
+
+        for obj in self._objects:
+            csv_row = [
+                obj.get_confidence(),
+                obj.get_date_added(),
+                obj.get_id(),
+                obj.get_indicator(),
+                obj.get_last_modified(),
+                obj.get_owner_name(),
+                obj.get_rating(),
+                obj.get_type(),
+                obj.get_web_link(),
+                ]
+            csv_data.writerow(csv_row)
+
+        yield csv_output.getvalue()
 
 
 class BulkIndicatorFilterObject(FilterObject):
